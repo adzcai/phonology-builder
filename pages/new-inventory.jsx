@@ -1,4 +1,6 @@
-import { manners, matchFeatures, places } from '../src/assets/ipaData';
+import {
+  allFeatures, manners, matchFeatures, places,
+} from '../src/assets/ipaData';
 
 export default function NewInventory() {
   return (
@@ -13,8 +15,8 @@ export default function NewInventory() {
               {JSON.stringify(place)}
             </p>
             <ul>
-              {matchFeatures(place.features, { syllabic: false })
-                .map((feature) => <li style={{ display: 'inline', margin: '0px 4px' }}>{feature.Unicode}</li>)}
+              {matchFeatures(allFeatures, place.features, { syllabic: false })
+                .map((feature) => <li style={{ display: 'inline', margin: '0px 4px' }}>{feature.name}</li>)}
             </ul>
           </div>
         ))}
@@ -26,8 +28,8 @@ export default function NewInventory() {
               {JSON.stringify(manner)}
             </p>
             <ul>
-              {matchFeatures(manner.features, { syllabic: false })
-                .map((feature) => <li style={{ display: 'inline', margin: '0px 4px' }}>{feature.Unicode}</li>)}
+              {matchFeatures(allFeatures, manner.features, { syllabic: false })
+                .map((feature) => <li style={{ display: 'inline', margin: '0px 4px' }}>{feature.name}</li>)}
             </ul>
           </div>
         ))}

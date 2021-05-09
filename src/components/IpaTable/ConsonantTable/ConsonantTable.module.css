@@ -1,0 +1,11 @@
+.ipa-chart {
+  border-collapse: separate;
+  border-spacing: 0px;
+  border: 1px solid black;
+}
+
+.ipa-chart td,
+.ipa-chart th {
+  border: 1px solid black;
+  padding: 0.1rem 0.2rem;
+}

@@ -1,14 +1,53 @@
-// import phonemes from './phonemes.json';
-import rawFeatures from './rawFeatures.tsv';
+import { Dispatch, SetStateAction } from 'react';
+import rawSounds from './rawFeatures.tsv';
+
+// const exceptions = ['ɫ']
+
+export type Sound = {
+  name: string;
+  syllabic: boolean | 0;
+  stress: boolean | 0;
+  long: boolean | 0;
+  consonantal: boolean | 0;
+  sonorant: boolean | 0;
+  continuant: boolean | 0;
+  'delayed release': boolean | 0;
+  approximant: boolean | 0;
+  tap: boolean | 0;
+  trill: boolean | 0;
+  nasal: boolean | 0;
+  voice: boolean | 0;
+  'spread gl': boolean | 0;
+  'constr gl': boolean | 0;
+  labial: boolean | 0;
+  round: boolean | 0;
+  labiodental: boolean | 0;
+  coronal: boolean | 0;
+  anterior: boolean | 0;
+  distributed: boolean | 0;
+  strident: boolean | 0;
+  lateral: boolean | 0;
+  dorsal: boolean | 0;
+  high: boolean | 0;
+  low: boolean | 0;
+  front: boolean | 0;
+  back: boolean | 0;
+  tense: boolean | 0;
+};
 
 // the two features missing from the original book are
 // implosive and ATR (equivalent to tense in some languages)
-export const allFeatures = rawFeatures;
+export const allSounds: Sound[] = rawSounds;
 
 // jeqqa
 // xela
 
-export const manners = [
+export type Manner = {
+  name: string;
+  features: Partial<Sound>;
+};
+
+export const manners: Manner[] = [
   {
     name: 'plosive',
     features: {
@@ -20,6 +59,7 @@ export const manners = [
     features: {
       'delayed release': true,
       continuant: false,
+      lateral: false,
     },
   },
   {
@@ -34,12 +74,15 @@ export const manners = [
     name: 'fricative',
     features: {
       continuant: true,
+      sonorant: false,
+      lateral: false,
     },
   },
   {
     name: 'lateral fricative',
     features: {
       continuant: true,
+      sonorant: false,
       lateral: true,
     },
   },
@@ -59,6 +102,7 @@ export const manners = [
     name: 'tap/flap',
     features: {
       tap: true,
+      lateral: false,
     },
   },
   {
@@ -72,6 +116,9 @@ export const manners = [
     name: 'approximant',
     features: {
       approximant: true,
+      trill: false,
+      tap: false,
+      lateral: false,
     },
   },
   {
@@ -79,16 +126,24 @@ export const manners = [
     features: {
       approximant: true,
       lateral: true,
+      tap: false,
     },
   },
 ];
 
-export const places = [
+export type Place = {
+  name: string;
+  features: Partial<Sound>;
+};
+
+export const places: Place[] = [
   {
     name: 'bilabial',
     features: {
       labial: true,
       labiodental: false,
+      dorsal: false,
+      coronal: false,
     },
   },
   {
@@ -115,13 +170,16 @@ export const places = [
   {
     name: 'palatoalveolar',
     features: {
+      coronal: true,
       anterior: false,
       distributed: true,
+      dorsal: false,
     },
   },
   {
     name: 'retroflex',
     features: {
+      coronal: true,
       anterior: false,
       distributed: false,
     },
@@ -129,7 +187,10 @@ export const places = [
   {
     name: 'fronted velar',
     features: {
+      labial: false,
+      coronal: false,
       high: true,
+      low: false,
       front: true,
       back: false,
     },
@@ -137,15 +198,19 @@ export const places = [
   {
     name: 'velar',
     features: {
+      labial: false,
       high: true,
-      front: 0,
-      back: 0,
+      low: false,
+      front: 0, // false
+      back: 0, // false
     },
   },
   {
-    name: 'backed velar',
+    name: 'back velar',
     features: {
+      labial: false,
       high: true,
+      low: false,
       front: false,
       back: true,
     },
@@ -153,8 +218,11 @@ export const places = [
   {
     name: 'uvular',
     features: {
+      coronal: false,
       high: false,
       low: false,
+      front: false,
+      back: true,
     },
   },
   {
@@ -162,6 +230,8 @@ export const places = [
     features: {
       high: false,
       low: true,
+      front: false,
+      back: true,
     },
   },
   {
@@ -173,24 +243,36 @@ export const places = [
     },
   },
   {
-    name: 'labial-back velar',
+    name: 'labial-front velar',
     features: {
       labial: true,
-      back: true,
+      coronal: false,
+      lateral: false,
+      dorsal: true,
+      high: true,
+      low: false,
+      front: true,
+      back: false,
     },
   },
   {
     name: 'labial-velar',
     features: {
       labial: true,
-      round: false,
+      high: true,
+      low: false,
+      front: 0, // false
+      back: 0, // false
     },
   },
   {
-    name: 'labial-front velar',
+    name: 'labial-back velar',
     features: {
       labial: true,
-      front: true,
+      high: true,
+      low: false,
+      front: false,
+      back: true,
     },
   },
   {
@@ -206,16 +288,28 @@ export const places = [
   {
     name: 'palatal',
     features: {
+      coronal: true,
       anterior: false,
       distributed: true,
+      dorsal: true,
       high: true,
+      low: false,
+      front: true,
+      back: false,
     },
   },
 ];
 
-export function matchFeatures(...featureObjs) {
+export function matchFeatures(
+  sounds: Sound[],
+  ...featureObjs: Partial<Sound>[]
+) {
   const merged = Object.assign({}, ...featureObjs);
-  return allFeatures.filter((feature) =>
-    Object.keys(merged).every((key) => feature[key] === merged[key]),
-  );
+  return sounds.filter((feature) => Object.keys(merged).every((key) => feature[key] === merged[key]));
 }
+
+export type Column = Place & { colSpan: number };
+
+export type Row = Manner & { rowSpan: number };
+
+export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
