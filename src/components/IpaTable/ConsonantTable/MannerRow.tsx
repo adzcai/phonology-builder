@@ -18,8 +18,8 @@ export default function MannerRow({
   return (
     <tr key={manner.name} className="p-0 m-0">
       {/* head of row */}
-      <th className={`border-gray-300 border-t-2 ${!last && 'border-b-2'} border-r-4 sticky left-0 bg-gradient-to-r from-white to-transparent px-2 py-0 m-0`}>
-        {manner.name}
+      <th className={`border-gray-300 border-t-2 ${!last && 'border-b-2'} border-r-4 sticky left-0 bg-gradient-to-r from-white via-white to-transparent px-2`}>
+        {manner.name.replace('lateral', 'lat.').replace('approximant', 'approx.')}
       </th>
       {editable && (
       <th

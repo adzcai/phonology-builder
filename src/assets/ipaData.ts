@@ -12,6 +12,18 @@ export type Diacritic = FeatureSet & {
   displayName: string;
   requirements: Partial<Sound>;
 };
+export type Frontness = {
+  name: string;
+  round: boolean;
+  front: boolean;
+  back: boolean;
+};
+export type Height = {
+  name: string;
+  high: boolean;
+  low: boolean;
+  tense?: boolean;
+};
 
 export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
 
@@ -65,7 +77,7 @@ export const rawSounds: Sound[] = rawSoundsTsv;
 // jeqqa
 // xela
 
-export const manners: Manner[] = [
+export const allManners: Manner[] = [
   {
     name: 'plosive',
     features: {
@@ -149,7 +161,7 @@ export const manners: Manner[] = [
   },
 ];
 
-export const places: Place[] = [
+export const allPlaces: Place[] = [
   {
     name: 'bilabial',
     features: {
@@ -318,8 +330,11 @@ export function matchFeatures(
   ...featureObjs: Partial<Sound>[]
 ) {
   const merged = Object.assign({}, ...featureObjs);
-  return sounds.filter((feature) => Object.keys(merged)
-    .every((key) => feature[key] === merged[key]));
+  return sounds.filter((feature) =>
+    Object.keys(merged).every(
+      (key) => key === 'name' || feature[key] === merged[key],
+    ),
+  );
 }
 
 export const TableContext = createContext<TableContextType>({
@@ -578,3 +593,22 @@ export const diacritics: Diacritic[] = [
     },
   },
 ];
+
+/* eslint-disable object-curly-newline */
+export const allFrontnesses = [
+  { name: 'front unrounded', round: false, front: true, back: false },
+  { name: 'front rounded', round: true, front: true, back: false },
+  { name: 'central unrounded', round: false, front: false, back: false },
+  { name: 'central rounded', round: true, front: false, back: false },
+  { name: 'back unrounded', round: false, front: false, back: true },
+  { name: 'back rounded', round: true, front: false, back: true },
+];
+
+export const allHeights = [
+  { name: 'close', high: true, low: false, tense: true },
+  { name: 'near-close', high: true, low: false, tense: false },
+  { name: 'mid', high: false, low: false, tense: true },
+  { name: 'near-open', high: false, low: false, tense: false },
+  { name: 'open', high: false, low: true },
+];
+/* eslint-enable object-curly-newline */

@@ -8,10 +8,11 @@ type TableCellProps = {
   last: boolean;
   lastRow: boolean;
   editable: boolean;
+  areBordersCollapsed?: boolean;
 };
 
 export default function TableCell({
-  features, last, lastRow, editable,
+  features, last, lastRow, editable, areBordersCollapsed = false,
 }: TableCellProps) {
   const {
     allSounds, setAllSounds,
@@ -28,7 +29,7 @@ export default function TableCell({
   if (diacritic !== null) {
     className = (sound) => (matchFeatures([sound], diacritic.requirements).length > 0
       ? 'bg-blue-300 hover:bg-green-300' : 'bg-yellow-300 hover:bg-yellow-500');
-    handleClick = (sound) => {
+    handleClick = (e: MouseEvent, sound) => {
       const newSound: Sound = { ...sound };
       newSound.name += diacritic.name;
       Object.keys(diacritic.features).forEach((feature) => {
@@ -41,16 +42,25 @@ export default function TableCell({
   } else {
     className = (sound) => (selectedSounds.includes(sound)
       ? 'bg-green-300 hover:bg-red-300' : 'bg-blue-300 hover:bg-blue-500');
-    handleClick = (sound) => {
-      setSounds((prev: Sound[]) => (
-        prev.includes(sound) ? prev.filter((s) => s !== sound) : [...prev, sound]
-      ));
+    handleClick = (e: MouseEvent, sound) => {
+      if (e.shiftKey) {
+        if (sound === neighbor) setNeighbor(null);
+        else setNeighbor(sound);
+      } else {
+        setSounds((prev: Sound[]) => (
+          prev.includes(sound) ? prev.filter((s) => s !== sound) : [...prev, sound]
+        ));
+      }
     };
   }
 
+  const borderClassName = areBordersCollapsed
+    ? 'border-t-4 border-l-4'
+    : `border-l-2 ${!last && 'border-r-2'} border-t-2 ${!lastRow && 'border-b-2'}`;
+
   return (
     <td
-      className={`border-gray-300 border-l-2 ${!last && 'border-r-2'} border-t-2 ${!lastRow && 'border-b-2'} px-2 py-0 m-0`}
+      className={`border-gray-300 px-2 py-0 m-0 ${borderClassName}`}
     >
       <div className="flex items-center justify-around">
         {/* unvoiced on left, voiced on right */}
@@ -58,13 +68,8 @@ export default function TableCell({
           <button
             key={sound.name}
             type="button"
-            className={`${className(sound)} px-1 w-8 focus:outline-none`}
-            onClick={() => handleClick(sound)}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              if (sound === neighbor) setNeighbor(null);
-              else setNeighbor(sound);
-            }}
+            className={`${className(sound)} px-1 w-8 focus:outline-none font-serif`}
+            onClick={(e) => handleClick(e, sound)}
           >
             {sound.name}
           </button>

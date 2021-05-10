@@ -30,7 +30,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
         {allFeatures.map(([feature]) => (
           <td
             key={feature}
-            className="text-center p-0 m-0 border-gray-300 border-2"
+            className="text-center border-gray-300 border-2"
           >
             {feature === 'name'
               ? sound[feature]
@@ -47,13 +47,11 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
 
   return (
     <tr>
-      {contrastWith && (
       <td className={`text-center p-0 m-0 border-gray-300 border-2
         ${nDistinct === 0 ? 'sticky top-36 bg-white' : `bg-red-${Math.min(Math.max(nDistinct, 1), 9)}00`}`}
       >
         {nDistinct}
       </td>
-      )}
       {allFeatures.map(([feature]) => (
         <td
           key={feature}
@@ -79,10 +77,14 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
     );
 
   return (
-    <TableContainer classes="overflow-y-auto max-h-64">
+    <TableContainer classes="overflow-y-auto max-h-96">
       <thead>
         <tr>
-          {contrastWith && <td className="bg-white sticky top-0 h-8" />}
+          {contrastWith && (
+          <td className="bg-white sticky top-0 h-8">
+            <div className="w-full h-full border-gray-300 border-r-2 border-b-2" />
+          </td>
+          )}
           {Array.from(allFeatures.reduce((map, [_, __, category]) => {
             map.set(category, (map.get(category) || 0) + 1);
             return map;
@@ -97,14 +99,12 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
           ))}
         </tr>
         <tr>
-          {contrastWith && <td className="w-8 h-28 p-0 m-0 sticky top-8 border-gray-300 border-2 bg-gradient-to-b from-white to-transparent via-white" />}
+          {contrastWith && <td className="w-8 h-28 sticky top-8 border-gray-300 border-2 bg-white" />}
           {allFeatures.map(([feature]) => (
-            <th key={feature} className="w-8 h-28 p-0 m-0 sticky top-8 bg-gradient-to-b from-white to-transparent via-white">
+            <th key={feature} className="w-8 h-28 sticky top-8 bg-white">
               <div
-                className="flex items-center justify-end w-full h-full border-gray-300 border-2"
-                style={{
-                  writingMode: 'vertical-rl', textOrientation: 'mixed', textAlign: 'right', height: '100%',
-                }}
+                className="flex items-center w-full h-full border-gray-300 border-2"
+                style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
               >
                 {feature === 'delayed release' ? 'del rel' : feature}
               </div>

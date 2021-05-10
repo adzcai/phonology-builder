@@ -30,6 +30,7 @@
   font-style: italic;
 }
 
-* {
-    font-family: "Charis SIL";
+td, th {
+  padding: 0px;
+  margin: 0px;
 }

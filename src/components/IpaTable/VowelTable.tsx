@@ -1,74 +1,79 @@
-import { Fragment } from 'react';
+import { VowelTableProps } from '../../assets/props';
 import TableCell from '../TableCell';
 import TableContainer from '../TableContainer';
 
-const allFrontness = [
-  { front: true, back: false },
-  { front: false, back: false },
-  { front: false, back: true },
-];
+const blBorder = 'border-gray-300 border-l-4 border-b-4';
+const brBorder = 'border-gray-300 border-r-4 border-b-4';
 
-const heights = [
-  { high: true, low: false, tense: true },
-  { high: true, low: false, tense: false },
-  { high: false, low: false, tense: true },
-  { high: false, low: false, tense: false },
-  { high: false, low: true },
-];
-
-const sign = (bool) => (bool ? '+' : '-');
-
-export default function VowelTable() {
+export default function VowelTable({
+  heights, setHeights, frontnesses, setFrontnesses, editable,
+}: VowelTableProps) {
   return (
-    <TableContainer>
+    <TableContainer borderCollapse>
       <thead>
-        <tr>
+        {/* <tr>
           <td />
-          {allFrontness.map(({ front, back }) => (
-            <th colSpan={2} key={`${front} ${back}`}>
-              [
-              {sign(front)}
-              front,
-              {sign(back)}
-              back]
+          {frontnesses.map(({ name }) => (
+            <th colSpan={2} key={name}>
+              {name}
+            </th>
+          ))}
+        </tr> */}
+        <tr>
+          <td className="border-gray-300 border-r-4 border-b-4" />
+          {editable && <td className="border-gray-300 border-r-4 border-b-4" />}
+          {frontnesses.map(({ name }) => (
+            <th key={name} className="border-gray-300 border-l-4 border-b-4 h-24 whitespace-normal">
+              <div
+                className="flex items-center justify-end mx-auto leading-4"
+                style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
+              >
+                {name}
+              </div>
             </th>
           ))}
         </tr>
+        {editable && (
         <tr>
-          <td />
-          {allFrontness.map((f) => (
-            <Fragment key={JSON.stringify(f)}>
-              <td>+round</td>
-              <td>-round</td>
-            </Fragment>
+          <td className={brBorder} />
+          <td className={brBorder} />
+          {frontnesses.map((frontness) => (
+            <th
+              key={frontness.name}
+              role="button"
+              className={`${blBorder} bg-blue-300 hover:bg-blue-500 w-full leading-none`}
+              onClick={() => setFrontnesses((prev) => prev.filter((f) => f !== frontness))}
+            >
+              -
+            </th>
           ))}
         </tr>
+        )}
       </thead>
       <tbody>
         {heights.map((height, row) => (
-          <tr key={JSON.stringify(height)}>
-            <th>
-              {`${sign(height.high)}high, ${sign(height.low)}low${
-                'tense' in height ? `, ${sign(height.tense)}tense` : ''}`}
+          <tr key={height.name}>
+            <th className="border-gray-300 border-t-4 border-r-4 px-2">
+              {height.name}
             </th>
-            {
-              allFrontness.map((f, i) => (
-                <>
-                  <TableCell
-                    features={[f, height, { round: false, syllabic: true }]}
-                    last={i === allFrontness.length - 1}
-                    lastRow={row === heights.length - 1}
-                    editable
-                  />
-                  <TableCell
-                    features={[f, height, { round: true, syllabic: true }]}
-                    last={i === allFrontness.length - 1}
-                    lastRow={row === heights.length - 1}
-                    editable
-                  />
-                </>
-              ))
-            }
+            {editable && (
+            <th
+              role="button"
+              className="border-gray-300 border-t-4 border-r-4 bg-blue-300 hover:bg-blue-500 w-4"
+              onClick={() => setHeights((prev) => prev.filter((f) => f !== height))}
+            >
+              -
+            </th>
+            )}
+            {frontnesses.map((frontness, i) => (
+              <TableCell
+                features={[frontness, height, { syllabic: true }]}
+                last={i === frontnesses.length}
+                lastRow={row === heights.length - 1}
+                editable={editable}
+                areBordersCollapsed
+              />
+            ))}
           </tr>
         ))}
       </tbody>
