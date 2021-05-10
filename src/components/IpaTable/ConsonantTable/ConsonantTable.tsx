@@ -1,14 +1,10 @@
 import { Dispatch, SetStateAction } from 'react';
 import {
-  SoundHook, Sound, Manner, Place,
+  Manner, Place,
 } from '../../../assets/ipaData';
 import MannerRow from './MannerRow';
 
 type Props = {
-  selectedSounds: Sound[];
-  setSelectedSounds: SoundHook,
-  setSoundsToCompare: SoundHook
-
   rows: Manner[];
   setRows: Dispatch<SetStateAction<Manner[]>>;
   cols: Place[];
@@ -18,7 +14,7 @@ type Props = {
 };
 
 export default function ConsonantTable({
-  selectedSounds, setSelectedSounds, setSoundsToCompare, rows, setRows, cols, setCols, editable,
+  rows, setRows, cols, setCols, editable,
 }: Props) {
   return (
     <div className="max-w-2xl overflow-x-auto mx-auto border-black border-4 border-dashed rounded-xl">
@@ -61,9 +57,6 @@ export default function ConsonantTable({
               manner={manner}
               columns={cols}
               setRows={setRows}
-              selectedSounds={selectedSounds}
-              setSelectedSounds={setSelectedSounds}
-              setSoundsToCompare={setSoundsToCompare}
               last={i === rows.length - 1}
               editable={editable}
             />

@@ -1,14 +1,10 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import {
-  Manner, Place, Sound, SoundHook,
+  Manner, Place, SoundContext,
 } from '../../assets/ipaData';
 import ConsonantTable from './ConsonantTable';
 
 type Props = {
-  selectedSounds: Sound[];
-  setSelectedSounds: SoundHook;
-  setSoundsToCompare: SoundHook;
-
   rows: Manner[];
   setRows: Dispatch<SetStateAction<Manner[]>>;
   cols: Place[];
@@ -17,8 +13,9 @@ type Props = {
 };
 
 export default function IpaTable({
-  rows, setRows, cols, setCols, selectedSounds, setSelectedSounds, setSoundsToCompare, editable,
+  rows, setRows, cols, setCols, editable,
 }: Props) {
+  const { setSounds } = useContext(SoundContext);
   return (
     <div>
       {editable && (
@@ -26,7 +23,7 @@ export default function IpaTable({
         <button
           type="button"
           className="px-2 py-2 bg-blue-300 hover:bg-blue-500 rounded"
-          onClick={() => setSelectedSounds([])}
+          onClick={() => setSounds([])}
         >
           Clear
         </button>
@@ -37,9 +34,6 @@ export default function IpaTable({
         setRows={setRows}
         cols={cols}
         setCols={setCols}
-        selectedSounds={selectedSounds}
-        setSelectedSounds={setSelectedSounds}
-        setSoundsToCompare={setSoundsToCompare}
         editable={editable}
       />
     </div>

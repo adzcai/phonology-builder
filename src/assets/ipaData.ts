@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react';
 import rawSounds from './rawFeatures.tsv';
 
 // const exceptions = ['ɫ']
@@ -305,9 +305,17 @@ export function matchFeatures(
   ...featureObjs: Partial<Sound>[]
 ) {
   const merged = Object.assign({}, ...featureObjs);
-  return sounds.filter(
-    (feature) => Object.keys(merged).every((key) => feature[key] === merged[key]),
+  return sounds.filter((feature) =>
+    Object.keys(merged).every((key) => feature[key] === merged[key]),
   );
 }
 
 export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
+
+export const SoundContext = createContext<{
+  sounds: Sound[];
+  setSounds: SoundHook;
+}>({
+  sounds: [],
+  setSounds: () => {},
+});

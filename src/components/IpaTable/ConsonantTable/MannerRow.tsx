@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import {
-  allSounds, Manner, matchFeatures, Place, Sound,
+  allSounds, Manner, matchFeatures, Place, Sound, SoundContext,
 } from '../../../assets/ipaData';
 
 type TableCellProps = {
@@ -8,17 +8,14 @@ type TableCellProps = {
   manner: Manner;
   last: boolean;
   lastRow: boolean;
-
-  selectedSounds: Sound[];
-  setSelectedSounds: any;
-  setSoundsToCompare: any;
   editable: boolean;
 };
 
 function TableCell({
-  place, manner, selectedSounds, setSelectedSounds, setSoundsToCompare, last, lastRow, editable,
+  place, manner, last, lastRow, editable,
 }: TableCellProps) {
   const sounds = matchFeatures(allSounds, place.features, manner.features, { syllabic: false });
+  const { sounds: selectedSounds, setSounds } = useContext(SoundContext);
 
   return (
     <td className={`border-gray-300 border-l-2 ${!last && 'border-r-2'} border-t-2 ${!lastRow && 'border-b-2'} px-2 py-0 m-0`}>
@@ -31,12 +28,12 @@ function TableCell({
                 type="button"
                 className={`${selectedSounds.includes(sound) ? 'bg-green-300 hover:bg-red-300' : 'bg-blue-300 hover:bg-blue-500'} px-1 w-8 focus:outline-none`}
                 onClick={() => {
-                  setSelectedSounds((prev: Sound[]) => (
+                  setSounds((prev: Sound[]) => (
                     prev.includes(sound) ? prev.filter((s) => s !== sound) : [...prev, sound]
                   ));
                 }}
                 onAuxClick={() => {
-                  setSoundsToCompare((prev: Sound[]) => (
+                  setSounds((prev: Sound[]) => (
                     prev.includes(sound) ? prev.filter((s) => s !== sound) : [...prev, sound]));
                 }}
               >
@@ -53,15 +50,12 @@ type MannerRowProps = {
   manner: Manner;
   columns: Place[];
   setRows: Dispatch<SetStateAction<Manner[]>>;
-  selectedSounds: Sound[];
-  setSelectedSounds: Dispatch<SetStateAction<Sound[]>>;
-  setSoundsToCompare: Dispatch<SetStateAction<Sound[]>>;
   last: boolean;
   editable: boolean;
 };
 
 export default function MannerRow({
-  manner, columns, setRows, selectedSounds, setSelectedSounds, setSoundsToCompare, last, editable,
+  manner, columns, setRows, last, editable,
 }: MannerRowProps) {
   return (
     <tr key={manner.name} className="p-0 m-0">
@@ -86,9 +80,6 @@ export default function MannerRow({
           lastRow={last}
           place={place}
           manner={manner}
-          selectedSounds={selectedSounds}
-          setSelectedSounds={setSelectedSounds}
-          setSoundsToCompare={setSoundsToCompare}
           editable={editable}
         />
       ))}
