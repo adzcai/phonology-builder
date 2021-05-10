@@ -3,6 +3,7 @@ import {
   Manner, Place, SoundContext,
 } from '../../assets/ipaData';
 import ConsonantTable from './ConsonantTable';
+import VowelTable from './VowelTable';
 
 type Props = {
   rows: Manner[];
@@ -36,6 +37,7 @@ export default function IpaTable({
         setCols={setCols}
         editable={editable}
       />
+      <VowelTable />
     </div>
   );
 }

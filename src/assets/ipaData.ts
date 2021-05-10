@@ -168,7 +168,7 @@ export const places: Place[] = [
     },
   },
   {
-    name: 'palatoalveolar',
+    name: 'palato-alveolar',
     features: {
       coronal: true,
       anterior: false,
@@ -315,7 +315,50 @@ export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
 export const SoundContext = createContext<{
   sounds: Sound[];
   setSounds: SoundHook;
+  neighbor: Sound | null;
+  setNeighbor: Dispatch<SetStateAction<Sound | null>>;
 }>({
   sounds: [],
   setSounds: () => {},
+  neighbor: null,
+  setNeighbor: () => {},
 });
+
+export const allFeatures = [
+  ['name', 'name', 'name'],
+
+  ['syllabic', 'sonority', 'manner'],
+  ['consonantal', 'sonority', 'manner'],
+  ['approximant', 'sonority', 'manner'],
+  ['sonorant', 'sonority', 'manner'],
+  ['continuant', 'obstruents', 'manner'],
+  ['delayed release', 'obstruents', 'manner'],
+  ['nasal', 'nasal', 'manner'],
+
+  ['tap', 'trills and taps', 'manner'],
+  ['trill', 'trills and taps', 'manner'],
+
+  ['voice', 'laryngeal', 'laryngeal'],
+  ['spread gl', 'laryngeal', 'laryngeal'],
+  ['constr gl', 'laryngeal', 'laryngeal'],
+
+  ['labial', 'labial', 'place'],
+  ['round', 'labial', 'place'],
+  ['labiodental', 'labial', 'place'],
+
+  ['coronal', 'coronal', 'place'],
+  ['anterior', 'coronal', 'place'],
+  ['distributed', 'coronal', 'place'],
+  ['strident', 'coronal', 'place'],
+  ['lateral', 'coronal', 'place'],
+
+  ['dorsal', 'dorsal', 'place'],
+  ['high', 'dorsal', 'place'],
+  ['low', 'dorsal', 'place'],
+  ['front', 'dorsal', 'place'],
+  ['back', 'dorsal', 'place'],
+  ['tense', 'dorsal', 'place'],
+
+  ['stress', 'prosody', 'prosody'],
+  ['long', 'prosody', 'prosody'],
+];

@@ -1,14 +1,16 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import {
-  Sound, manners, matchFeatures, places, Manner, Place, SoundContext,
+  Sound, manners, matchFeatures, places, Manner, Place, SoundContext, allFeatures,
 } from '../src/assets/ipaData';
 import IpaTable from '../src/components/IpaTable/IpaTable';
 import FeatureList from '../src/components/FeatureList';
+import NeighborInspector from '../src/components/NeighborInspector';
 
 export default function Home() {
   // e.g. {a: true, b: false, c: false}
   const [selectedSounds, setSelectedSounds] = useState<Sound[]>([]);
+  const [neighbor, setNeighbor] = useState<Sound | null>(null);
 
   const [mainRows, setMainRows] = useState<Manner[]>(manners);
   const [mainCols, setMainCols] = useState<Place[]>(places);
@@ -29,8 +31,11 @@ export default function Home() {
       <Head>
         <title>Phonology Creator</title>
       </Head>
-      <SoundContext.Provider value={{ sounds: selectedSounds, setSounds: setSelectedSounds }}>
-        <div style={{ padding: '2rem 0' }}>
+      <SoundContext.Provider value={{
+        sounds: selectedSounds, setSounds: setSelectedSounds, neighbor, setNeighbor,
+      }}
+      >
+        <section className="my-8">
           <IpaTable
             rows={mainRows}
             setRows={setMainRows}
@@ -38,8 +43,8 @@ export default function Home() {
             setCols={setMainCols}
             editable
           />
-        </div>
-        <div className="mt-4 mb-12">
+        </section>
+        <section className="my-8">
           { selectedSounds.length > 0 ? (
             <IpaTable
               rows={displayRows}
@@ -49,8 +54,13 @@ export default function Home() {
               editable={false}
             />
           ) : <p className="text-center">Begin selecting symbols to view a display chart!</p>}
-        </div>
-        <FeatureList />
+        </section>
+        <section className="my-8">
+          <FeatureList sounds={selectedSounds} />
+        </section>
+        <section className="my-8">
+          <NeighborInspector />
+        </section>
       </SoundContext.Provider>
     </div>
   );

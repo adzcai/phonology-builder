@@ -15,7 +15,9 @@ function TableCell({
   place, manner, last, lastRow, editable,
 }: TableCellProps) {
   const sounds = matchFeatures(allSounds, place.features, manner.features, { syllabic: false });
-  const { sounds: selectedSounds, setSounds } = useContext(SoundContext);
+  const {
+    sounds: selectedSounds, setSounds, neighbor, setNeighbor,
+  } = useContext(SoundContext);
 
   return (
     <td className={`border-gray-300 border-l-2 ${!last && 'border-r-2'} border-t-2 ${!lastRow && 'border-b-2'} px-2 py-0 m-0`}>
@@ -32,9 +34,10 @@ function TableCell({
                     prev.includes(sound) ? prev.filter((s) => s !== sound) : [...prev, sound]
                   ));
                 }}
-                onAuxClick={() => {
-                  setSounds((prev: Sound[]) => (
-                    prev.includes(sound) ? prev.filter((s) => s !== sound) : [...prev, sound]));
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  if (sound === neighbor) setNeighbor(null);
+                  else setNeighbor(sound);
                 }}
               >
                 {sound.name}
