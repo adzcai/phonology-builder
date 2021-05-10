@@ -15,12 +15,12 @@ type TableRowProps = {
 
 // explicitly check if they are two booleans since we don't want a comparison
 // with 0 to show up
-function trueDifference(a, b, feature) {
-  return feature !== 'name' && (a[feature] === true && b[feature] === false) || (a[feature] === false && b[feature] === true);
+function trueDifference(a: Sound, b: Sound, feature: keyof Sound) {
+  return feature !== 'name' && ((a[feature] === true && b[feature] === false) || (a[feature] === false && b[feature] === true));
 }
 
-function countDistinctFeatures(a, b) {
-  return allFeatures.filter(([feature]) => trueDifference(a, b, feature)).length;
+function countDistinctFeatures(a: Sound, b: Sound) {
+  return allFeatures.filter(([feature]) => trueDifference(a, b, feature as keyof Sound)).length;
 }
 
 function TableRow({ sound, contrastWith }: TableRowProps) {
@@ -58,7 +58,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
         <td
           key={feature}
           className={`text-center p-0 m-0 border-gray-300 border-2 ${nDistinct === 0 && 'sticky top-36 bg-white'}
-            ${trueDifference(sound, contrastWith, feature) && 'bg-red-300'}`}
+            ${trueDifference(sound, contrastWith, feature as keyof Sound) && 'bg-red-300'}`}
         >
           {feature === 'name'
             ? sound[feature]
@@ -72,6 +72,12 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
 }
 
 export default function FeatureList({ sounds, contrastWith = null }: Props) {
+  const allSounds = contrastWith === null
+    ? sounds
+    : sounds.slice().sort(
+      (a, b) => countDistinctFeatures(a, contrastWith) - countDistinctFeatures(b, contrastWith),
+    );
+
   return (
     <TableContainer classes="overflow-y-auto max-h-64">
       <thead>
@@ -80,7 +86,15 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
           {Array.from(allFeatures.reduce((map, [_, __, category]) => {
             map.set(category, (map.get(category) || 0) + 1);
             return map;
-          }, new Map())).map(([feature, count], i) => <th colSpan={count} className={`bg-${colors[i]}-300 sticky top-0 h-8`}>{feature}</th>)}
+          }, new Map())).map(([feature, count], i) => (
+            <th
+              colSpan={count}
+              className={`bg-${colors[i]}-300 sticky top-0 h-8`}
+              key={feature}
+            >
+              {feature}
+            </th>
+          ))}
         </tr>
         <tr>
           {contrastWith && <td className="w-8 h-28 p-0 m-0 sticky top-8 border-gray-300 border-2 bg-gradient-to-b from-white to-transparent via-white" />}
@@ -99,12 +113,7 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
         </tr>
       </thead>
       <tbody>
-        {(contrastWith === null
-          ? sounds
-          : sounds.slice()
-            // eslint-disable-next-line max-len
-            .sort((a, b) => countDistinctFeatures(a, contrastWith) - countDistinctFeatures(b, contrastWith))
-        ).map((sound) => (
+        {allSounds.map((sound) => (
           <TableRow key={sound.name} sound={sound} contrastWith={contrastWith} />
         ))}
       </tbody>

@@ -19,7 +19,6 @@ export default function ConsonantTable({
 }: Props) {
   return (
     <TableContainer>
-      {/* ===== HEADER ===== */}
       <thead>
         <tr>
           <td className="border-gray-300 border-b-2 border-r-4 sticky left-0 bg-gradient-to-r from-white to-transparent" />
@@ -49,7 +48,6 @@ export default function ConsonantTable({
           ))}
         </tr>
       </thead>
-      {/* ===== BODY ===== */}
       <tbody>
         {rows.map((manner, i) => (
           <MannerRow

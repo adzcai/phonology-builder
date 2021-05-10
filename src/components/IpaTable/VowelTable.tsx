@@ -1,6 +1,8 @@
+import { Fragment } from 'react';
+import TableCell from '../TableCell';
 import TableContainer from '../TableContainer';
 
-const frontness = [
+const allFrontness = [
   { front: true, back: false },
   { front: false, back: false },
   { front: false, back: true },
@@ -22,7 +24,7 @@ export default function VowelTable() {
       <thead>
         <tr>
           <td />
-          {frontness.map(({ front, back }) => (
+          {allFrontness.map(({ front, back }) => (
             <th colSpan={2} key={`${front} ${back}`}>
               [
               {sign(front)}
@@ -34,21 +36,39 @@ export default function VowelTable() {
         </tr>
         <tr>
           <td />
-          {frontness.map(() => (
-            <>
+          {allFrontness.map((f) => (
+            <Fragment key={JSON.stringify(f)}>
               <td>+round</td>
               <td>-round</td>
-            </>
+            </Fragment>
           ))}
         </tr>
       </thead>
       <tbody>
-        {heights.map((height) => (
-          <tr>
+        {heights.map((height, row) => (
+          <tr key={JSON.stringify(height)}>
             <th>
               {`${sign(height.high)}high, ${sign(height.low)}low${
                 'tense' in height ? `, ${sign(height.tense)}tense` : ''}`}
             </th>
+            {
+              allFrontness.map((f, i) => (
+                <>
+                  <TableCell
+                    features={[f, height, { round: false, syllabic: true }]}
+                    last={i === allFrontness.length - 1}
+                    lastRow={row === heights.length - 1}
+                    editable
+                  />
+                  <TableCell
+                    features={[f, height, { round: true, syllabic: true }]}
+                    last={i === allFrontness.length - 1}
+                    lastRow={row === heights.length - 1}
+                    editable
+                  />
+                </>
+              ))
+            }
           </tr>
         ))}
       </tbody>

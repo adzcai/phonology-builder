@@ -1,7 +1,30 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
-import rawSounds from './rawFeatures.tsv';
+import rawSoundsTsv from './rawFeatures.tsv';
 
-// const exceptions = ['ɫ']
+export type FeatureSet = {
+  name: string;
+  features: Partial<Sound>;
+};
+
+export type Manner = FeatureSet;
+export type Place = FeatureSet;
+export type Diacritic = FeatureSet & {
+  displayName: string;
+  requirements: Partial<Sound>;
+};
+
+export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
+
+export type TableContextType = {
+  allSounds: Sound[];
+  setAllSounds: SoundHook;
+  sounds: Sound[];
+  setSounds: SoundHook;
+  neighbor: Sound | null;
+  setNeighbor: Dispatch<SetStateAction<Sound | null>>;
+  diacritic: Diacritic | null;
+  setDiacritic: Dispatch<SetStateAction<Diacritic | null>>;
+};
 
 export type Sound = {
   name: string;
@@ -37,15 +60,10 @@ export type Sound = {
 
 // the two features missing from the original book are
 // implosive and ATR (equivalent to tense in some languages)
-export const allSounds: Sound[] = rawSounds;
+export const rawSounds: Sound[] = rawSoundsTsv;
 
 // jeqqa
 // xela
-
-export type Manner = {
-  name: string;
-  features: Partial<Sound>;
-};
 
 export const manners: Manner[] = [
   {
@@ -130,11 +148,6 @@ export const manners: Manner[] = [
     },
   },
 ];
-
-export type Place = {
-  name: string;
-  features: Partial<Sound>;
-};
 
 export const places: Place[] = [
   {
@@ -305,23 +318,19 @@ export function matchFeatures(
   ...featureObjs: Partial<Sound>[]
 ) {
   const merged = Object.assign({}, ...featureObjs);
-  return sounds.filter((feature) =>
-    Object.keys(merged).every((key) => feature[key] === merged[key]),
-  );
+  return sounds.filter((feature) => Object.keys(merged)
+    .every((key) => feature[key] === merged[key]));
 }
 
-export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
-
-export const SoundContext = createContext<{
-  sounds: Sound[];
-  setSounds: SoundHook;
-  neighbor: Sound | null;
-  setNeighbor: Dispatch<SetStateAction<Sound | null>>;
-}>({
+export const TableContext = createContext<TableContextType>({
+  allSounds: [],
+  setAllSounds: () => {},
   sounds: [],
   setSounds: () => {},
   neighbor: null,
   setNeighbor: () => {},
+  diacritic: null,
+  setDiacritic: () => {},
 });
 
 export const allFeatures = [
@@ -361,4 +370,211 @@ export const allFeatures = [
 
   ['stress', 'prosody', 'prosody'],
   ['long', 'prosody', 'prosody'],
+];
+
+export const diacritics: Diacritic[] = [
+  {
+    displayName: 'syllabic',
+    name: '̩',
+    features: {
+      syllabic: true,
+    },
+    requirements: {
+      consonantal: true,
+    },
+  },
+  {
+    displayName: 'creaky voice',
+    name: '̰',
+    features: {
+      'spread gl': false,
+      'constr gl': true,
+    },
+    requirements: {
+      voice: true,
+    },
+  },
+  {
+    displayName: 'breathy voice',
+    name: '̤',
+    features: {
+      'spread gl': true,
+      'constr gl': false,
+    },
+    requirements: {
+      voice: true,
+    },
+  },
+  {
+    displayName: 'voiceless',
+    name: '̥',
+    features: {
+      voice: false,
+    },
+    requirements: {
+      voice: true,
+    },
+  },
+  {
+    displayName: 'palato-alveolar',
+    name: '̠',
+    features: {
+      anterior: false,
+      distributed: true,
+    },
+    requirements: {
+      anterior: true,
+      distributed: false,
+    },
+  },
+  {
+    displayName: 'dental',
+    name: '̪',
+    features: {
+      anterior: true,
+      distributed: true,
+    },
+    requirements: {
+      anterior: true,
+      distributed: false,
+    },
+  },
+  {
+    displayName: 'fronted velar',
+    name: '̟',
+    features: {
+      front: true,
+      back: false,
+    },
+    requirements: {
+      high: true,
+      low: false,
+    },
+  },
+  {
+    displayName: 'backed velar',
+    name: '̠',
+    features: {
+      front: false,
+      back: true,
+    },
+    requirements: {
+      high: true,
+      low: false,
+    },
+  },
+  {
+    displayName: 'stressed',
+    name: 'ˈ',
+    features: {
+      stress: true,
+    },
+    requirements: {},
+  },
+  {
+    displayName: 'long',
+    name: 'ː',
+    features: {
+      long: true,
+    },
+    requirements: {},
+  },
+  {
+    displayName: 'aspirated',
+    name: 'ʰ',
+    features: {
+      'spread gl': true,
+      'constr gl': false,
+    },
+    requirements: {
+      consonantal: true,
+    },
+  },
+  {
+    displayName: 'palatalized',
+    name: 'ʲ',
+    features: {
+      dorsal: true,
+      high: true,
+      low: false,
+      front: true,
+      back: false,
+    },
+    requirements: {
+      consonantal: true,
+    },
+  },
+  {
+    displayName: 'labialized',
+    name: 'ʷ',
+    features: {
+      labial: true,
+      round: true,
+    },
+    requirements: {
+      consonantal: true,
+    },
+  },
+  {
+    displayName: 'velarized',
+    name: 'ˠ',
+    features: {
+      dorsal: true,
+      high: true,
+      low: false,
+      front: false,
+      back: true,
+    },
+    requirements: {
+      consonantal: true,
+    },
+  },
+  {
+    displayName: 'pharyngealized',
+    name: 'ˤ',
+    features: {
+      dorsal: true,
+      high: false,
+      low: true,
+      front: false,
+      back: true,
+    },
+    requirements: {
+      consonantal: true,
+    },
+  },
+  {
+    displayName: 'nasalized',
+    name: '̃',
+    features: {
+      nasal: true,
+    },
+    requirements: {
+      sonorant: true,
+    },
+  },
+  {
+    displayName: 'rhotic',
+    name: '˞',
+    features: {
+      coronal: true,
+      anterior: true,
+      distributed: true,
+      strident: false,
+    },
+    requirements: {
+      syllabic: true,
+    },
+  },
+  {
+    displayName: 'ejective',
+    name: 'ʼ',
+    features: {
+      'spread gl': false,
+      'constr gl': true,
+    },
+    requirements: {
+      sonorant: false,
+    },
+  },
 ];

@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import {
-  Sound, manners, matchFeatures, places, Manner, Place, SoundContext, allFeatures,
+  Sound, manners, matchFeatures, places, Manner, Place, TableContext, Diacritic, rawSounds,
 } from '../src/assets/ipaData';
 import IpaTable from '../src/components/IpaTable/IpaTable';
 import FeatureList from '../src/components/FeatureList';
@@ -9,8 +9,10 @@ import NeighborInspector from '../src/components/NeighborInspector';
 
 export default function Home() {
   // e.g. {a: true, b: false, c: false}
+  const [allSounds, setAllSounds] = useState<Sound[]>(rawSounds);
   const [selectedSounds, setSelectedSounds] = useState<Sound[]>([]);
   const [neighbor, setNeighbor] = useState<Sound | null>(null);
+  const [diacritic, setDiacritic] = useState<Diacritic | null>(null);
 
   const [mainRows, setMainRows] = useState<Manner[]>(manners);
   const [mainCols, setMainCols] = useState<Place[]>(places);
@@ -27,12 +29,19 @@ export default function Home() {
   }, [selectedSounds]);
 
   return (
-    <div>
+    <div className="px-4">
       <Head>
         <title>Phonology Creator</title>
       </Head>
-      <SoundContext.Provider value={{
-        sounds: selectedSounds, setSounds: setSelectedSounds, neighbor, setNeighbor,
+      <TableContext.Provider value={{
+        allSounds,
+        setAllSounds,
+        sounds: selectedSounds,
+        setSounds: setSelectedSounds,
+        neighbor,
+        setNeighbor,
+        diacritic,
+        setDiacritic,
       }}
       >
         <section className="my-8">
@@ -61,7 +70,7 @@ export default function Home() {
         <section className="my-8">
           <NeighborInspector />
         </section>
-      </SoundContext.Provider>
+      </TableContext.Provider>
     </div>
   );
 }
