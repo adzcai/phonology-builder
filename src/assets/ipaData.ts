@@ -305,11 +305,9 @@ export function matchFeatures(
   ...featureObjs: Partial<Sound>[]
 ) {
   const merged = Object.assign({}, ...featureObjs);
-  return sounds.filter((feature) => Object.keys(merged).every((key) => feature[key] === merged[key]));
+  return sounds.filter(
+    (feature) => Object.keys(merged).every((key) => feature[key] === merged[key]),
+  );
 }
-
-export type Column = Place & { colSpan: number };
-
-export type Row = Manner & { rowSpan: number };
 
 export type SoundHook = Dispatch<SetStateAction<Sound[]>>;

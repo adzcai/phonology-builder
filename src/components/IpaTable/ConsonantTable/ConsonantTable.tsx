@@ -1,58 +1,75 @@
-import { FC, useState } from 'react';
-import styles from './ConsonantTable.module.css';
+import { Dispatch, SetStateAction } from 'react';
 import {
-  places, manners, Column, Row, Sound, SoundHook,
+  SoundHook, Sound, Manner, Place,
 } from '../../../assets/ipaData';
 import MannerRow from './MannerRow';
 
 type Props = {
+  selectedSounds: Sound[];
   setSelectedSounds: SoundHook,
   setSoundsToCompare: SoundHook
-}
 
-const ConsonantTable: FC<Props> = ({ setSelectedSounds, setSoundsToCompare }) => {
-  const [columns, setColumns] = useState<Column[]>(places.map((place) => ({ ...place, colSpan: 1 })));
-  const [rows, setRows] = useState<Row[]>(manners.map((manner) => ({ ...manner, rowSpan: 1 })));
+  rows: Manner[];
+  setRows: Dispatch<SetStateAction<Manner[]>>;
+  cols: Place[];
+  setCols: Dispatch<SetStateAction<Place[]>>;
 
-  return (
-    <table className={styles['ipa-chart']}>
-      {/* ===== HEADER ===== */}
-      <thead>
-        <tr>
-          <th />
-          {/* only show a column if there is a selected sound in that column */}
-          {columns.map((col) => (
-            <th
-              key={col.name}
-              colSpan={col.colSpan}
-            >
-              {col.name}
-              {/* Button to remove a column */}
-              <button
-                type="button"
-                onClick={() => setColumns((prev) => prev.filter((c) => c.name !== col.name))}
-              >
-                -
-              </button>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      {/* ===== BODY ===== */}
-      <tbody>
-        {rows.map((manner) => (
-          <MannerRow
-            key={manner.name}
-            manner={manner}
-            columns={columns}
-            setRows={setRows}
-            setSelectedSounds={setSelectedSounds}
-            setSoundsToCompare={setSoundsToCompare}
-          />
-        ))}
-      </tbody>
-    </table>
-  );
+  editable: boolean;
 };
 
-export default ConsonantTable;
+export default function ConsonantTable({
+  selectedSounds, setSelectedSounds, setSoundsToCompare, rows, setRows, cols, setCols, editable,
+}: Props) {
+  return (
+    <div className="max-w-2xl overflow-x-auto mx-auto border-black border-4 border-dashed rounded-xl">
+      <table className="w-full whitespace-nowrap border-separate" style={{ borderSpacing: 0 }}>
+        {/* ===== HEADER ===== */}
+        <thead>
+          <tr>
+            <td className="border-gray-300 border-b-2 border-r-4 sticky left-0 bg-gradient-to-r from-white to-transparent" />
+            {editable && (
+            <td className="border-gray-300 border-b-2 border-r-2" />
+            )}
+            {/* only show a column if there is a selected sound in that column */}
+            {cols.map((col, i) => (
+              <th
+                key={col.name}
+                className={`border-gray-300 border-l-2 ${i < cols.length - 1 && 'border-r-2'} border-b-2 px-2`}
+              >
+                <div className="flex items-center justify-center">
+                  {col.name}
+                  {/* Button to remove a column */}
+                  {editable && (
+                  <button
+                    type="button"
+                    onClick={() => setCols((prev) => prev.filter((c) => c.name !== col.name))}
+                    className="text-xs rounded bg-blue-300 hover:bg-blue-500 px-1 ml-2"
+                  >
+                    -
+                  </button>
+                  )}
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        {/* ===== BODY ===== */}
+        <tbody>
+          {rows.map((manner, i) => (
+            <MannerRow
+              key={manner.name}
+              manner={manner}
+              columns={cols}
+              setRows={setRows}
+              selectedSounds={selectedSounds}
+              setSelectedSounds={setSelectedSounds}
+              setSoundsToCompare={setSoundsToCompare}
+              last={i === rows.length - 1}
+              editable={editable}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}

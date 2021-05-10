@@ -2,7 +2,7 @@ import { allSounds, Sound } from '../assets/ipaData';
 
 const colHeaders = Object.keys(allSounds[0]);
 
-export default function FeatureList({ sounds }: { sounds: Sound[]}) {
+export default function FeatureList({ sounds }: { sounds: Sound[] }) {
   return (
     <div style={{ maxWidth: '80%', margin: '0px auto', overflowX: 'auto' }}>
       <table>
