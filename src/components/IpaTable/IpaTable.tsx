@@ -51,7 +51,7 @@ export default function IpaTable({
       </div>
       )}
       {heights.length > 0 && (
-      <div className="w-full">
+      <div className="w-full mt-8">
         <VowelTable
           heights={heights}
           setHeights={setHeights}

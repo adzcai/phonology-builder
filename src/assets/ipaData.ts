@@ -10,6 +10,7 @@ export type Manner = FeatureSet;
 export type Place = FeatureSet;
 export type Diacritic = FeatureSet & {
   displayName: string;
+  category: 'place' | 'manner';
   requirements: Partial<Sound>;
 };
 export type Frontness = {
@@ -337,6 +338,18 @@ export function matchFeatures(
   );
 }
 
+export function inverseMatchFeatures(
+  sounds: Sound[],
+  ...featureObjs: Partial<Sound>[]
+) {
+  const merged = Object.assign({}, ...featureObjs);
+  return sounds.filter((feature) =>
+    Object.keys(merged).every(
+      (key) => key === 'name' || feature[key] !== merged[key],
+    ),
+  );
+}
+
 export const TableContext = createContext<TableContextType>({
   allSounds: [],
   setAllSounds: () => {},
@@ -397,6 +410,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
+    category: 'manner',
   },
   {
     displayName: 'creaky voice',
@@ -408,6 +422,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       voice: true,
     },
+    category: 'manner',
   },
   {
     displayName: 'breathy voice',
@@ -419,6 +434,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       voice: true,
     },
+    category: 'manner',
   },
   {
     displayName: 'voiceless',
@@ -429,6 +445,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       voice: true,
     },
+    category: 'manner',
   },
   {
     displayName: 'palato-alveolar',
@@ -441,6 +458,7 @@ export const diacritics: Diacritic[] = [
       anterior: true,
       distributed: false,
     },
+    category: 'place',
   },
   {
     displayName: 'dental',
@@ -453,6 +471,7 @@ export const diacritics: Diacritic[] = [
       anterior: true,
       distributed: false,
     },
+    category: 'place',
   },
   {
     displayName: 'fronted velar',
@@ -465,6 +484,7 @@ export const diacritics: Diacritic[] = [
       high: true,
       low: false,
     },
+    category: 'place',
   },
   {
     displayName: 'backed velar',
@@ -477,6 +497,7 @@ export const diacritics: Diacritic[] = [
       high: true,
       low: false,
     },
+    category: 'place',
   },
   {
     displayName: 'stressed',
@@ -485,6 +506,7 @@ export const diacritics: Diacritic[] = [
       stress: true,
     },
     requirements: {},
+    category: 'manner',
   },
   {
     displayName: 'long',
@@ -493,6 +515,7 @@ export const diacritics: Diacritic[] = [
       long: true,
     },
     requirements: {},
+    category: 'manner',
   },
   {
     displayName: 'aspirated',
@@ -504,6 +527,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
+    category: 'manner',
   },
   {
     displayName: 'palatalized',
@@ -518,6 +542,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
+    category: 'place',
   },
   {
     displayName: 'labialized',
@@ -529,6 +554,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
+    category: 'place',
   },
   {
     displayName: 'velarized',
@@ -543,6 +569,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
+    category: 'place',
   },
   {
     displayName: 'pharyngealized',
@@ -557,6 +584,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
+    category: 'place',
   },
   {
     displayName: 'nasalized',
@@ -567,6 +595,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       sonorant: true,
     },
+    category: 'manner',
   },
   {
     displayName: 'rhotic',
@@ -580,6 +609,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       syllabic: true,
     },
+    category: 'place',
   },
   {
     displayName: 'ejective',
@@ -591,6 +621,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       sonorant: false,
     },
+    category: 'manner',
   },
 ];
 

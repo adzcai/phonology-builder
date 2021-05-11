@@ -47,7 +47,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
 
   return (
     <tr>
-      <td className={`text-center p-0 m-0 border-gray-300 border-2
+      <td className={`text-center border-gray-300 border-2
         ${nDistinct === 0 ? 'sticky top-36 bg-white' : `bg-red-${Math.min(Math.max(nDistinct, 1), 9)}00`}`}
       >
         {nDistinct}
@@ -55,7 +55,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
       {allFeatures.map(([feature]) => (
         <td
           key={feature}
-          className={`text-center p-0 m-0 border-gray-300 border-2 ${nDistinct === 0 && 'sticky top-36 bg-white'}
+          className={`text-center border-gray-300 border-2 ${nDistinct === 0 && 'sticky top-36 bg-white'}
             ${trueDifference(sound, contrastWith, feature as keyof Sound) && 'bg-red-300'}`}
         >
           {feature === 'name'

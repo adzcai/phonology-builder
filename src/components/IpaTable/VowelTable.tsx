@@ -9,23 +9,20 @@ export default function VowelTable({
   heights, setHeights, frontnesses, setFrontnesses, editable,
 }: VowelTableProps) {
   return (
-    <TableContainer borderCollapse>
+    <TableContainer tableClasses="table-fixed" borderCollapse>
+      <colgroup>
+        <col className="w-24" />
+        {editable && <col className="w-6" />}
+        {frontnesses.map(() => <col />)}
+      </colgroup>
       <thead>
-        {/* <tr>
-          <td />
-          {frontnesses.map(({ name }) => (
-            <th colSpan={2} key={name}>
-              {name}
-            </th>
-          ))}
-        </tr> */}
         <tr>
           <td className="border-gray-300 border-r-4 border-b-4" />
           {editable && <td className="border-gray-300 border-r-4 border-b-4" />}
           {frontnesses.map(({ name }) => (
             <th key={name} className="border-gray-300 border-l-4 border-b-4 h-24 whitespace-normal">
               <div
-                className="flex items-center justify-end mx-auto leading-4"
+                className="flex items-center justify-end mx-auto w-full leading-4"
                 style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
               >
                 {name}
@@ -36,7 +33,7 @@ export default function VowelTable({
         {editable && (
         <tr>
           <td className={brBorder} />
-          <td className={brBorder} />
+          <td className={`${brBorder} px-2`} />
           {frontnesses.map((frontness) => (
             <th
               key={frontness.name}
@@ -53,13 +50,14 @@ export default function VowelTable({
       <tbody>
         {heights.map((height, row) => (
           <tr key={height.name}>
-            <th className="border-gray-300 border-t-4 border-r-4 px-2">
+            <th className="border-gray-300 border-t-4 border-r-4 px-2" scope="row">
               {height.name}
             </th>
             {editable && (
             <th
               role="button"
-              className="border-gray-300 border-t-4 border-r-4 bg-blue-300 hover:bg-blue-500 w-4"
+              scope="row"
+              className="border-gray-300 border-t-4 border-r-4 bg-blue-300 hover:bg-blue-500"
               onClick={() => setHeights((prev) => prev.filter((f) => f !== height))}
             >
               -

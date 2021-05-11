@@ -18,6 +18,7 @@ export default function ConsonantTable({
             <th
               key={col.name}
               className={`border-gray-300 border-l-2 ${i < places.length - 1 && 'border-r-2'} border-b-2 px-2`}
+              title={JSON.stringify(col.features)}
             >
               <div className="flex items-center justify-center">
                 {col.name}
@@ -40,9 +41,10 @@ export default function ConsonantTable({
         {manners.map((manner, i) => (
           <MannerRow
             key={manner.name}
+            manners={manners}
             manner={manner}
             columns={places}
-            setRows={setManners}
+            setManners={setManners}
             last={i === manners.length - 1}
             editable={editable}
           />

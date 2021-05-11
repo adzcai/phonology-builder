@@ -1,5 +1,6 @@
-import { useContext } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import {
+  Manner,
   matchFeatures, Sound, TableContext,
 } from '../assets/ipaData';
 
@@ -9,10 +10,11 @@ type TableCellProps = {
   lastRow: boolean;
   editable: boolean;
   areBordersCollapsed?: boolean;
+  insertBelow: (toAdd: Manner) => void;
 };
 
 export default function TableCell({
-  features, last, lastRow, editable, areBordersCollapsed = false,
+  features, last, lastRow, editable, areBordersCollapsed = false, insertBelow,
 }: TableCellProps) {
   const {
     allSounds, setAllSounds,
@@ -27,9 +29,11 @@ export default function TableCell({
   let className; let
     handleClick;
   if (diacritic !== null) {
-    className = (sound) => (matchFeatures([sound], diacritic.requirements).length > 0
-      ? 'bg-blue-300 hover:bg-green-300' : 'bg-yellow-300 hover:bg-yellow-500');
-    handleClick = (e: MouseEvent, sound) => {
+    className = (sound) => (
+      matchFeatures([sound], diacritic.requirements).length > 0
+      && matchFeatures([sound], diacritic.features).length === 0
+        ? 'bg-blue-300 hover:bg-green-300' : 'bg-yellow-300 hover:bg-yellow-500');
+    handleClick = (e: MouseEvent, sound: Sound) => {
       const newSound: Sound = { ...sound };
       newSound.name += diacritic.name;
       Object.keys(diacritic.features).forEach((feature) => {
@@ -37,6 +41,7 @@ export default function TableCell({
       });
 
       setAllSounds((prev) => [...prev, newSound]);
+      insertBelow(diacritic);
       setDiacritic(null);
     };
   } else {
@@ -46,6 +51,8 @@ export default function TableCell({
       if (e.shiftKey) {
         if (sound === neighbor) setNeighbor(null);
         else setNeighbor(sound);
+      } else if (e.altKey) {
+        setAllSounds((prev) => prev.filter((s) => s !== sound));
       } else {
         setSounds((prev: Sound[]) => (
           prev.includes(sound) ? prev.filter((s) => s !== sound) : [...prev, sound]
@@ -60,7 +67,7 @@ export default function TableCell({
 
   return (
     <td
-      className={`border-gray-300 px-2 py-0 m-0 ${borderClassName}`}
+      className={`border-gray-300 ${borderClassName}`}
     >
       <div className="flex items-center justify-around">
         {/* unvoiced on left, voiced on right */}
