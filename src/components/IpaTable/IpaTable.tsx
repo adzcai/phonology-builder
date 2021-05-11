@@ -1,36 +1,19 @@
-import { IpaTableProps } from '../../assets/props';
 import ConsonantTable from './ConsonantTable';
 import DiacriticTable from './DiacriticTable';
 import VowelTable from './VowelTable';
 
-export default function IpaTable({
-  manners, setManners, places, setPlaces,
-  heights, setHeights, frontnesses, setFrontnesses, editable,
-}: IpaTableProps) {
+export default function IpaTable({ editable }: { editable: boolean }) {
   if (editable) {
     return (
       <div className="grid w-full grid-cols-1 lg:grid-cols-4 gap-8">
-
         <div className="lg:col-span-3">
-          <ConsonantTable
-            manners={manners}
-            setManners={setManners}
-            places={places}
-            setPlaces={setPlaces}
-            editable
-          />
+          <ConsonantTable editable />
         </div>
         <div className="lg:row-span-2">
           <DiacriticTable />
         </div>
         <div className="lg:col-span-3">
-          <VowelTable
-            heights={heights}
-            setHeights={setHeights}
-            frontnesses={frontnesses}
-            setFrontnesses={setFrontnesses}
-            editable
-          />
+          <VowelTable editable />
         </div>
       </div>
     );
@@ -39,28 +22,12 @@ export default function IpaTable({
   // not editable, i.e. display
   return (
     <div>
-      {manners.length > 0 && (
-      <div className="w-full">
-        <ConsonantTable
-          manners={manners}
-          setManners={setManners}
-          places={places}
-          setPlaces={setPlaces}
-          editable={editable}
-        />
+      <div>
+        <ConsonantTable editable={false} />
       </div>
-      )}
-      {heights.length > 0 && (
-      <div className="w-full mt-8">
-        <VowelTable
-          heights={heights}
-          setHeights={setHeights}
-          frontnesses={frontnesses}
-          setFrontnesses={setFrontnesses}
-          editable={editable}
-        />
+      <div className="mt-8">
+        <VowelTable editable={false} />
       </div>
-      )}
     </div>
   );
 }

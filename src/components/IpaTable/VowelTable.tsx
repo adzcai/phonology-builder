@@ -1,20 +1,51 @@
-import { PropsWithChildren, useCallback, useMemo } from 'react';
-import { Diacritic } from '../../assets/ipaData';
-import { VowelTableProps } from '../../assets/props';
-import TableCell from '../TableCell';
+import {
+  useCallback, useContext, useState,
+} from 'react';
+import {
+  allHeights as rawHeights, Diacritic, filterNonEmpty, TableContext,
+  allFrontnesses, Height, matchFeatures,
+} from '../../assets/ipaData';
+import TableCell from './TableCell';
 import TableContainer from '../TableContainer';
 
 const blBorder = 'border-gray-300 border-l-4 border-b-4';
 const brBorder = 'border-gray-300 border-r-4 border-b-4';
 
-export default function VowelTable({
-  heights, setHeights, frontnesses, setFrontnesses, editable,
-}: VowelTableProps) {
+const HeaderContainer = ({ name, nCols } : { name: string, nCols: number }) => (
+  nCols > 4
+    ? (
+      <div
+        className="flex items-center justify-end mx-auto w-full leading-4 h-24"
+        style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
+      >
+        {name}
+      </div>
+    )
+    : (
+      <div
+        className="text-center w-full"
+      >
+        {name}
+      </div>
+    )
+);
+
+export default function VowelTable({ editable }: { editable: boolean }) {
+  const { allSounds, selectedSounds, deleteFeatureSet } = useContext(TableContext);
+
+  const sounds = editable ? allSounds : selectedSounds;
+
+  const [allHeights, setAllHeights] = useState<Height[]>(rawHeights);
+
+  const heights = filterNonEmpty(sounds, allHeights, { syllabic: true });
+  const frontnesses = filterNonEmpty(sounds, allFrontnesses, { syllabic: true });
+
+  // will only render if editable
   const insertBelow = useCallback((row: number, diacritic: Diacritic) => {
     const height = heights[row];
     if (!diacritic.createNewRow || heights.some((m) => m.name === `${diacritic.displayName} ${height.name}`)) return;
 
-    setHeights([
+    setAllHeights([
       ...heights.slice(0, row),
       {
         name: height.name,
@@ -28,24 +59,7 @@ export default function VowelTable({
       ...heights.slice(row + 1)]);
   }, [heights]);
 
-  const HeaderContainer = ({ name } : { name: string }) => (
-    frontnesses.length > 4
-      ? (
-        <div
-          className="flex items-center justify-end mx-auto w-full leading-4 h-24"
-          style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
-        >
-          {name}
-        </div>
-      )
-      : (
-        <div
-          className="text-center w-full"
-        >
-          {name}
-        </div>
-      )
-  );
+  if (heights.length === 0) return <p className="rounded bg-red-200 py-2 px-4 mx-auto w-max">No vowel sounds selected!</p>;
 
   return (
     <TableContainer tableClasses="table-fixed" borderCollapse>
@@ -64,7 +78,7 @@ export default function VowelTable({
               className="border-gray-300 border-l-4 border-b-4 whitespace-normal"
               title={JSON.stringify(features)}
             >
-              <HeaderContainer name={name} />
+              <HeaderContainer name={name} nCols={frontnesses.length} />
             </th>
           ))}
         </tr>
@@ -77,7 +91,7 @@ export default function VowelTable({
               key={frontness.name}
               role="button"
               className={`${blBorder} bg-blue-300 hover:bg-blue-500 w-full leading-none`}
-              onClick={() => setFrontnesses((prev) => prev.filter((f) => f !== frontness))}
+              onClick={() => deleteFeatureSet(frontness)}
             >
               -
             </th>
@@ -91,12 +105,13 @@ export default function VowelTable({
             <th className="border-gray-300 border-t-4 border-r-4 px-2" scope="row">
               {height.name}
             </th>
+            {/* remove row/height button */}
             {editable && (
             <th
               role="button"
               scope="row"
               className="border-gray-300 border-t-4 border-r-4 bg-blue-300 hover:bg-blue-500"
-              onClick={() => setHeights((prev) => prev.filter((f) => f !== height))}
+              onClick={() => deleteFeatureSet(height)}
             >
               -
             </th>
@@ -104,12 +119,16 @@ export default function VowelTable({
             {frontnesses.map((frontness, i) => (
               <TableCell
                 key={frontness.name}
-                features={[frontness.features, height.features, { syllabic: true }]}
-                last={i === frontnesses.length}
+                sounds={matchFeatures(
+                  sounds,
+                  frontness.features, height.features,
+                  { syllabic: true },
+                )}
+                last={i === frontnesses.length - 1}
                 lastRow={row === heights.length - 1}
-                editable={editable}
                 insertBelow={(diacritic) => insertBelow(row, diacritic)}
-                areBordersCollapsed
+                collapseBorders
+                editable={editable}
               />
             ))}
           </tr>

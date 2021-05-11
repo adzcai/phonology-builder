@@ -1,9 +1,10 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
+import { diacritics as rawDiacritics, manners as rawManners, places as rawPlaces } from './featureData.json';
 import rawSoundsTsv from './rawFeatures.tsv';
 
 export type Condition = Partial<Sound> | ((_: Sound) => boolean) | Condition[];
 
-type FeatureSet = {
+export type FeatureSet = {
   name: string;
   features: Condition;
 };
@@ -19,17 +20,6 @@ export type Frontness = FeatureSet;
 export type Height = FeatureSet;
 
 export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
-
-export type TableContextType = {
-  allSounds: Sound[];
-  setAllSounds: SoundHook;
-  sounds: Sound[];
-  setSounds: SoundHook;
-  neighbor: Sound | null;
-  setNeighbor: Dispatch<SetStateAction<Sound | null>>;
-  diacritic: Diacritic | null;
-  setDiacritic: Dispatch<SetStateAction<Diacritic | null>>;
-};
 
 export type Sound = {
   name: string;
@@ -65,258 +55,9 @@ export type Sound = {
 
 // the two features missing from the original book are
 // implosive and ATR (equivalent to tense in some languages)
-export const rawSounds: Sound[] = rawSoundsTsv;
-
-// jeqqa
-// xela
-
-export const allManners: Manner[] = [
-  {
-    name: 'plosive',
-    features: {
-      'delayed release': false,
-    },
-  },
-  {
-    name: 'affricate',
-    features: {
-      'delayed release': true,
-      continuant: false,
-      lateral: false,
-    },
-  },
-  {
-    name: 'lateral affricate',
-    features: {
-      'delayed release': true,
-      continuant: false,
-      lateral: true,
-    },
-  },
-  {
-    name: 'fricative',
-    features: {
-      continuant: true,
-      sonorant: false,
-      lateral: false,
-    },
-  },
-  {
-    name: 'lateral fricative',
-    features: {
-      continuant: true,
-      sonorant: false,
-      lateral: true,
-    },
-  },
-  {
-    name: 'nasal',
-    features: {
-      nasal: true,
-    },
-  },
-  {
-    name: 'trill',
-    features: {
-      trill: true,
-    },
-  },
-  {
-    name: 'tap/flap',
-    features: {
-      tap: true,
-      lateral: false,
-    },
-  },
-  {
-    name: 'lateral flap',
-    features: {
-      tap: true,
-      lateral: true,
-    },
-  },
-  {
-    name: 'approximant',
-    features: {
-      approximant: true,
-      trill: false,
-      tap: false,
-      lateral: false,
-    },
-  },
-  {
-    name: 'lateral approximant',
-    features: {
-      approximant: true,
-      lateral: true,
-      tap: false,
-    },
-  },
-];
-
-export const allPlaces: Place[] = [
-  {
-    name: 'bilabial',
-    features: {
-      labial: true,
-      labiodental: false,
-      dorsal: false,
-      coronal: false,
-    },
-  },
-  {
-    name: 'labiodental',
-    features: {
-      labiodental: true,
-    },
-  },
-  {
-    name: 'dental',
-    features: {
-      anterior: true,
-      distributed: true,
-      strident: false,
-    },
-  },
-  {
-    name: 'alveolar',
-    features: {
-      anterior: true,
-      distributed: false,
-    },
-  },
-  {
-    name: 'palato-alveolar',
-    features: {
-      coronal: true,
-      anterior: false,
-      distributed: true,
-      dorsal: false,
-    },
-  },
-  {
-    name: 'retroflex',
-    features: {
-      coronal: true,
-      anterior: false,
-      distributed: false,
-    },
-  },
-  {
-    name: 'fronted velar',
-    features: {
-      labial: false,
-      coronal: false,
-      high: true,
-      low: false,
-      front: true,
-      back: false,
-    },
-  },
-  {
-    name: 'velar',
-    features: {
-      labial: false,
-      high: true,
-      low: false,
-      front: 0, // false
-      back: 0, // false
-    },
-  },
-  {
-    name: 'back velar',
-    features: {
-      labial: false,
-      high: true,
-      low: false,
-      front: false,
-      back: true,
-    },
-  },
-  {
-    name: 'uvular',
-    features: {
-      coronal: false,
-      high: false,
-      low: false,
-      front: false,
-      back: true,
-    },
-  },
-  {
-    name: 'pharyngeal',
-    features: {
-      high: false,
-      low: true,
-      front: false,
-      back: true,
-    },
-  },
-  {
-    name: 'glottal',
-    features: {
-      labial: false,
-      coronal: false,
-      dorsal: false,
-    },
-  },
-  {
-    name: 'labial-front velar',
-    features: {
-      labial: true,
-      coronal: false,
-      lateral: false,
-      dorsal: true,
-      high: true,
-      low: false,
-      front: true,
-      back: false,
-    },
-  },
-  {
-    name: 'labial-velar',
-    features: {
-      labial: true,
-      high: true,
-      low: false,
-      front: 0, // false
-      back: 0, // false
-    },
-  },
-  {
-    name: 'labial-back velar',
-    features: {
-      labial: true,
-      high: true,
-      low: false,
-      front: false,
-      back: true,
-    },
-  },
-  {
-    name: 'alveolo-palatal',
-    features: {
-      anterior: true,
-      distributed: true,
-      strident: true,
-      high: true,
-      front: true,
-    },
-  },
-  {
-    name: 'palatal',
-    features: {
-      coronal: true,
-      anterior: false,
-      distributed: true,
-      dorsal: true,
-      high: true,
-      low: false,
-      front: true,
-      back: false,
-    },
-  },
-];
+export const rawSounds = rawSoundsTsv as Sound[];
+export const allManners = rawManners as Manner[];
+export const allPlaces = rawPlaces as Place[];
 
 function matchCondition(sound, condition: Condition) {
   if (Array.isArray(condition)) return condition.every((c) => matchCondition(sound, c));
@@ -336,7 +77,9 @@ function matchCondition(sound, condition: Condition) {
 }
 
 export function matchFeatures(sounds: Sound[], ...conditions: Condition[]) {
-  return sounds.filter((sound) => conditions.every((condition) => matchCondition(sound, condition)));
+  return sounds.filter(
+    (sound) => conditions.every((condition) => matchCondition(sound, condition)),
+  );
 }
 
 const featureInverseMap = new Map<boolean | 0, [boolean | 0, boolean | 0]>([
@@ -355,15 +98,40 @@ export function invertFeatures(features: Partial<Sound>) {
   );
 }
 
+export type TableContextType = {
+  allSounds: Sound[];
+  setAllSounds: SoundHook;
+  selectedSounds: Sound[];
+  setSelectedSounds: SoundHook;
+  neighbor: Sound | null;
+  setNeighbor: Dispatch<SetStateAction<Sound | null>>;
+  selectedDiacritics: Diacritic[] | null;
+  setSelectedDiacritics: Dispatch<SetStateAction<Diacritic[]>>;
+  handleDiacriticClick: (diacritic: Diacritic) => void;
+  deleteFeatureSet: (featureSet: FeatureSet) => void;
+};
+
 export const TableContext = createContext<TableContextType>({
   allSounds: [],
   setAllSounds: () => {},
-  sounds: [],
-  setSounds: () => {},
+  selectedSounds: [],
+  setSelectedSounds: () => {},
   neighbor: null,
   setNeighbor: () => {},
-  diacritic: null,
-  setDiacritic: () => {},
+  selectedDiacritics: null,
+  setSelectedDiacritics: () => {},
+  handleDiacriticClick: () => {},
+  deleteFeatureSet: () => {},
+});
+
+type FilterContextType = {
+  selectedSounds: Sound[];
+  selectedDiacritics: Diacritic[];
+};
+
+export const FilterContext = createContext<FilterContextType>({
+  selectedSounds: [],
+  selectedDiacritics: [],
 });
 
 export const allFeatures = [
@@ -405,230 +173,7 @@ export const allFeatures = [
   ['long', 'prosody', 'prosody'],
 ];
 
-export const diacritics: Diacritic[] = [
-  {
-    displayName: 'syllabic',
-    name: '̩',
-    features: {
-      syllabic: true,
-    },
-    requirements: {
-      consonantal: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'creaky voice',
-    name: '̰',
-    features: {
-      'spread gl': false,
-      'constr gl': true,
-    },
-    requirements: {
-      voice: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'breathy voice',
-    name: '̤',
-    features: {
-      'spread gl': true,
-      'constr gl': false,
-    },
-    requirements: {
-      voice: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'voiceless',
-    name: '̥',
-    features: {
-      voice: false,
-    },
-    requirements: {
-      voice: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'palato-alveolar',
-    name: '̠',
-    features: {
-      anterior: false,
-      distributed: true,
-    },
-    requirements: {
-      anterior: true,
-      distributed: false,
-    },
-    createNewRow: false,
-  },
-  {
-    displayName: 'dental',
-    name: '̪',
-    features: {
-      anterior: true,
-      distributed: true,
-    },
-    requirements: {
-      anterior: true,
-      distributed: false,
-    },
-    createNewRow: false,
-  },
-  {
-    displayName: 'fronted velar',
-    name: '̟',
-    features: {
-      front: true,
-      back: false,
-    },
-    requirements: {
-      high: true,
-      low: false,
-    },
-    createNewRow: false,
-  },
-  {
-    displayName: 'backed velar',
-    name: '̠',
-    features: {
-      front: false,
-      back: true,
-    },
-    requirements: {
-      high: true,
-      low: false,
-    },
-    createNewRow: false,
-  },
-  {
-    displayName: 'stressed',
-    name: 'ˈ',
-    features: {
-      stress: true,
-    },
-    requirements: {},
-    createNewRow: true,
-  },
-  {
-    displayName: 'long',
-    name: 'ː',
-    features: {
-      long: true,
-    },
-    requirements: {},
-    createNewRow: true,
-  },
-  {
-    displayName: 'aspirated',
-    name: 'ʰ',
-    features: {
-      'spread gl': true,
-      'constr gl': false,
-    },
-    requirements: {
-      consonantal: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'palatalized',
-    name: 'ʲ',
-    features: {
-      dorsal: true,
-      high: true,
-      low: false,
-      front: true,
-      back: false,
-    },
-    requirements: {
-      consonantal: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'labialized',
-    name: 'ʷ',
-    features: {
-      labial: true,
-      round: true,
-    },
-    requirements: {
-      consonantal: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'velarized',
-    name: 'ˠ',
-    features: {
-      dorsal: true,
-      high: true,
-      low: false,
-      front: false,
-      back: true,
-    },
-    requirements: {
-      consonantal: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'pharyngealized',
-    name: 'ˤ',
-    features: {
-      dorsal: true,
-      high: false,
-      low: true,
-      front: false,
-      back: true,
-    },
-    requirements: {
-      consonantal: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'nasalized',
-    name: '̃',
-    features: {
-      nasal: true,
-    },
-    requirements: {
-      sonorant: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'rhotic',
-    name: '˞',
-    features: {
-      coronal: true,
-      anterior: true,
-      distributed: true,
-      strident: false,
-    },
-    requirements: {
-      syllabic: true,
-    },
-    createNewRow: true,
-  },
-  {
-    displayName: 'ejective',
-    name: 'ʼ',
-    features: {
-      'spread gl': false,
-      'constr gl': true,
-    },
-    requirements: {
-      sonorant: false,
-    },
-    createNewRow: true,
-  },
-];
+export const allDiacritics: Diacritic[] = rawDiacritics;
 
 /* eslint-disable object-curly-newline */
 export const allFrontnesses = [
@@ -648,3 +193,32 @@ export const allHeights: Height[] = [
   { name: 'open', features: { high: false, low: true } },
 ];
 /* eslint-enable object-curly-newline */
+
+// arr is a list of all e.g. places, manners, heights, frontnesses
+// get all elements of arr which contain sounds
+export function filterNonEmpty(sounds: Sound[], arr: FeatureSet[], ...conditions: Condition[]) {
+  return arr.filter(
+    ({ features }) => matchFeatures(sounds, features, ...conditions).length,
+  );
+}
+
+export function toggleInArray<T>(array: T[], element: T) {
+  return array.includes(element) ? array.filter((e) => e !== element) : [...array, element];
+}
+
+export function canApplyDiacriticsToSound(diacritics: Diacritic[], sound: Sound) {
+  // can't apply diacritics if they have no effect
+  return diacritics.every((diacritic) => matchFeatures([sound], diacritic.requirements).length > 0
+          && matchFeatures([sound], diacritic.features).length === 0);
+}
+
+export function applyDiacriticsToSound(sound: Sound, ...diacritics: Diacritic[]) {
+  const newSound: Sound = { ...sound };
+  diacritics.forEach((diacritic) => {
+    newSound.name += diacritic.name;
+    Object.keys(diacritic.features).forEach((feature) => {
+      newSound[feature] = diacritic.features[feature];
+    });
+  });
+  return newSound;
+}

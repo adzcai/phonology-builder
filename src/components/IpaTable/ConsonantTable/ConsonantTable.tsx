@@ -1,10 +1,41 @@
-import { ConsonantTableProps } from '../../../assets/props';
+import React, { useCallback, useContext, useState } from 'react';
+import {
+  allManners as rawManners,
+  allPlaces, Diacritic, filterNonEmpty, matchFeatures, TableContext,
+} from '../../../assets/ipaData';
 import TableContainer from '../../TableContainer';
-import MannerRow from './MannerRow';
+import TableCell from '../TableCell';
 
-export default function ConsonantTable({
-  manners, setManners, places, setPlaces, editable,
-}: ConsonantTableProps) {
+export default function ConsonantTable({ editable }: { editable: boolean }) {
+  const { allSounds, selectedSounds, deleteFeatureSet } = useContext(TableContext);
+  const [allManners, setAllManners] = useState(rawManners);
+
+  const sounds = editable ? allSounds : selectedSounds;
+
+  const places = filterNonEmpty(sounds, allPlaces, { syllabic: false });
+  const manners = filterNonEmpty(sounds, allManners, { syllabic: false });
+
+  const insertBelow = useCallback((row: number, diacritic: Diacritic) => {
+    const manner = manners[row];
+    if (!diacritic.createNewRow || manners.some((m) => m.name === `${diacritic.displayName} ${manner.name}`)) return;
+    const index = manners.findIndex((a) => a === manner);
+
+    setAllManners([
+      ...manners.slice(0, index),
+      {
+        name: manner.name,
+        features: [
+          manner.features,
+          (sound) => !Object.keys(diacritic.features)
+            .every((key) => sound[key] === diacritic.features[key]),
+        ],
+      },
+      { name: `${diacritic.displayName} ${manner.name}`, features: [manner.features, diacritic.features] },
+      ...manners.slice(index + 1)]);
+  }, [manners]);
+
+  if (manners.length === 0) return <p className="rounded bg-red-200 py-2 px-4 mx-auto w-max">No sounds selected!</p>;
+
   return (
     <TableContainer>
       <thead>
@@ -26,7 +57,7 @@ export default function ConsonantTable({
                 {editable && (
                   <button
                     type="button"
-                    onClick={() => setPlaces((prev) => prev.filter((c) => c.name !== col.name))}
+                    onClick={() => deleteFeatureSet(col)}
                     className="text-xs rounded bg-blue-300 hover:bg-blue-500 px-1 ml-2"
                   >
                     -
@@ -38,16 +69,41 @@ export default function ConsonantTable({
         </tr>
       </thead>
       <tbody>
-        {manners.map((manner, i) => (
-          <MannerRow
-            key={manner.name}
-            manners={manners}
-            manner={manner}
-            columns={places}
-            setManners={setManners}
-            last={i === manners.length - 1}
-            editable={editable}
-          />
+        {manners.map((manner, row) => (
+          <tr key={manner.name}>
+            {/* head of row */}
+            <th
+              className={`border-gray-300 border-t-2 ${row !== manners.length && 'border-b-2'} border-r-4 sticky left-0
+        bg-gradient-to-r from-white via-white to-transparent px-2`}
+              title={JSON.stringify(manner.features)}
+            >
+              {manner.name.replace('lateral', 'lat.').replace('approximant', 'approx.')}
+            </th>
+            {editable && (
+            <th
+              className={`border-gray-300 border-t-2 ${row !== manners.length && 'border-b-2'} border-r-2 px-1 bg-blue-300 hover:bg-blue-500 cursor-pointer`}
+              onClick={() => deleteFeatureSet(manner)}
+              role="button"
+            >
+              -
+            </th>
+            )}
+            {/* elements / sounds */}
+            {places.map((place, i) => (
+              <TableCell
+                key={place.name}
+                last={i === places.length - 1}
+                lastRow={row === manners.length - 1}
+                sounds={matchFeatures(
+                  editable ? allSounds : sounds,
+                  place.features, manner.features,
+                  { syllabic: false },
+                )}
+                insertBelow={(diacritic) => insertBelow(row, diacritic)}
+                editable={editable}
+              />
+            ))}
+          </tr>
         ))}
       </tbody>
     </TableContainer>

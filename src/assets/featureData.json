@@ -1,0 +1,472 @@
+{
+  "diacritics": [
+    {
+      "displayName": "syllabic",
+      "name": "̩",
+      "features": {
+        "syllabic": true
+      },
+      "requirements": {
+        "consonantal": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "creaky voice",
+      "name": "̰",
+      "features": {
+        "spread gl": false,
+        "constr gl": true
+      },
+      "requirements": {
+        "voice": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "breathy voice",
+      "name": "̤",
+      "features": {
+        "spread gl": true,
+        "constr gl": false
+      },
+      "requirements": {
+        "voice": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "voiceless",
+      "name": "̥",
+      "features": {
+        "voice": false
+      },
+      "requirements": {
+        "voice": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "palato-alveolar",
+      "name": "̠",
+      "features": {
+        "anterior": false,
+        "distributed": true
+      },
+      "requirements": {
+        "anterior": true,
+        "distributed": false
+      },
+      "createNewRow": false
+    },
+    {
+      "displayName": "dental",
+      "name": "̪",
+      "features": {
+        "anterior": true,
+        "distributed": true
+      },
+      "requirements": {
+        "anterior": true,
+        "distributed": false
+      },
+      "createNewRow": false
+    },
+    {
+      "displayName": "fronted velar",
+      "name": "̟",
+      "features": {
+        "front": true,
+        "back": false
+      },
+      "requirements": {
+        "high": true,
+        "low": false
+      },
+      "createNewRow": false
+    },
+    {
+      "displayName": "backed velar",
+      "name": "̠",
+      "features": {
+        "front": false,
+        "back": true
+      },
+      "requirements": {
+        "high": true,
+        "low": false
+      },
+      "createNewRow": false
+    },
+    {
+      "displayName": "stressed",
+      "name": "ˈ",
+      "features": {
+        "stress": true
+      },
+      "requirements": {},
+      "createNewRow": true
+    },
+    {
+      "displayName": "long",
+      "name": "ː",
+      "features": {
+        "long": true
+      },
+      "requirements": {},
+      "createNewRow": true
+    },
+    {
+      "displayName": "aspirated",
+      "name": "ʰ",
+      "features": {
+        "spread gl": true,
+        "constr gl": false
+      },
+      "requirements": {
+        "consonantal": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "palatalized",
+      "name": "ʲ",
+      "features": {
+        "dorsal": true,
+        "high": true,
+        "low": false,
+        "front": true,
+        "back": false
+      },
+      "requirements": {
+        "consonantal": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "labialized",
+      "name": "ʷ",
+      "features": {
+        "labial": true,
+        "round": true
+      },
+      "requirements": {
+        "consonantal": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "velarized",
+      "name": "ˠ",
+      "features": {
+        "dorsal": true,
+        "high": true,
+        "low": false,
+        "front": false,
+        "back": true
+      },
+      "requirements": {
+        "consonantal": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "pharyngealized",
+      "name": "ˤ",
+      "features": {
+        "dorsal": true,
+        "high": false,
+        "low": true,
+        "front": false,
+        "back": true
+      },
+      "requirements": {
+        "consonantal": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "nasalized",
+      "name": "̃",
+      "features": {
+        "nasal": true
+      },
+      "requirements": {
+        "sonorant": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "rhotic",
+      "name": "˞",
+      "features": {
+        "coronal": true,
+        "anterior": true,
+        "distributed": true,
+        "strident": false
+      },
+      "requirements": {
+        "syllabic": true
+      },
+      "createNewRow": true
+    },
+    {
+      "displayName": "ejective",
+      "name": "ʼ",
+      "features": {
+        "spread gl": false,
+        "constr gl": true
+      },
+      "requirements": {
+        "sonorant": false
+      },
+      "createNewRow": true
+    }
+  ],
+  "manners": [
+    {
+      "name": "plosive",
+      "features": {
+        "delayed release": false
+      }
+    },
+    {
+      "name": "affricate",
+      "features": {
+        "delayed release": true,
+        "continuant": false,
+        "lateral": false
+      }
+    },
+    {
+      "name": "lateral affricate",
+      "features": {
+        "delayed release": true,
+        "continuant": false,
+        "lateral": true
+      }
+    },
+    {
+      "name": "fricative",
+      "features": {
+        "continuant": true,
+        "sonorant": false,
+        "lateral": false
+      }
+    },
+    {
+      "name": "lateral fricative",
+      "features": {
+        "continuant": true,
+        "sonorant": false,
+        "lateral": true
+      }
+    },
+    {
+      "name": "nasal",
+      "features": {
+        "nasal": true
+      }
+    },
+    {
+      "name": "trill",
+      "features": {
+        "trill": true
+      }
+    },
+    {
+      "name": "tap/flap",
+      "features": {
+        "tap": true,
+        "lateral": false
+      }
+    },
+    {
+      "name": "lateral flap",
+      "features": {
+        "tap": true,
+        "lateral": true
+      }
+    },
+    {
+      "name": "approximant",
+      "features": {
+        "approximant": true,
+        "trill": false,
+        "tap": false,
+        "lateral": false
+      }
+    },
+    {
+      "name": "lateral approximant",
+      "features": {
+        "approximant": true,
+        "lateral": true,
+        "tap": false
+      }
+    }
+  ],
+  "places": [
+    {
+      "name": "bilabial",
+      "features": {
+        "labial": true,
+        "labiodental": false,
+        "dorsal": false,
+        "coronal": false
+      }
+    },
+    {
+      "name": "labiodental",
+      "features": {
+        "labiodental": true
+      }
+    },
+    {
+      "name": "dental",
+      "features": {
+        "anterior": true,
+        "distributed": true,
+        "strident": false
+      }
+    },
+    {
+      "name": "alveolar",
+      "features": {
+        "anterior": true,
+        "distributed": false
+      }
+    },
+    {
+      "name": "palato-alveolar",
+      "features": {
+        "coronal": true,
+        "anterior": false,
+        "distributed": true,
+        "dorsal": false
+      }
+    },
+    {
+      "name": "retroflex",
+      "features": {
+        "coronal": true,
+        "anterior": false,
+        "distributed": false
+      }
+    },
+    {
+      "name": "fronted velar",
+      "features": {
+        "labial": false,
+        "coronal": false,
+        "high": true,
+        "low": false,
+        "front": true,
+        "back": false
+      }
+    },
+    {
+      "name": "velar",
+      "features": {
+        "labial": false,
+        "high": true,
+        "low": false,
+        "front": 0,
+        "back": 0
+      }
+    },
+    {
+      "name": "back velar",
+      "features": {
+        "labial": false,
+        "high": true,
+        "low": false,
+        "front": false,
+        "back": true
+      }
+    },
+    {
+      "name": "uvular",
+      "features": {
+        "coronal": false,
+        "high": false,
+        "low": false,
+        "front": false,
+        "back": true
+      }
+    },
+    {
+      "name": "pharyngeal",
+      "features": {
+        "high": false,
+        "low": true,
+        "front": false,
+        "back": true
+      }
+    },
+    {
+      "name": "glottal",
+      "features": {
+        "labial": false,
+        "coronal": false,
+        "dorsal": false
+      }
+    },
+    {
+      "name": "labial-front velar",
+      "features": {
+        "labial": true,
+        "coronal": false,
+        "lateral": false,
+        "dorsal": true,
+        "high": true,
+        "low": false,
+        "front": true,
+        "back": false
+      }
+    },
+    {
+      "name": "labial-velar",
+      "features": {
+        "labial": true,
+        "high": true,
+        "low": false,
+        "front": 0,
+        "back": 0
+      }
+    },
+    {
+      "name": "labial-back velar",
+      "features": {
+        "labial": true,
+        "high": true,
+        "low": false,
+        "front": false,
+        "back": true
+      }
+    },
+    {
+      "name": "alveolo-palatal",
+      "features": {
+        "anterior": true,
+        "distributed": true,
+        "strident": true,
+        "high": true,
+        "front": true
+      }
+    },
+    {
+      "name": "palatal",
+      "features": {
+        "coronal": true,
+        "anterior": false,
+        "distributed": true,
+        "dorsal": true,
+        "high": true,
+        "low": false,
+        "front": true,
+        "back": false
+      }
+    }
+  ]
+}
