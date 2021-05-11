@@ -1,17 +1,22 @@
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useContext } from 'react';
 import {
-  Manner,
-  matchFeatures, Sound, TableContext,
+  Condition, matchFeatures, Sound, TableContext, Diacritic,
 } from '../assets/ipaData';
 
 type TableCellProps = {
-  features: Partial<Sound>[];
+  features: Condition;
   last: boolean;
   lastRow: boolean;
   editable: boolean;
   areBordersCollapsed?: boolean;
-  insertBelow: (toAdd: Manner) => void;
+  insertBelow: (toAdd: Diacritic) => void;
 };
+
+function canApplyDiacriticToSound(diacritic, sound) {
+  // can't apply diacritics if they have no effect
+  return matchFeatures([sound], diacritic.requirements).length > 0
+          && matchFeatures([sound], diacritic.features).length === 0;
+}
 
 export default function TableCell({
   features, last, lastRow, editable, areBordersCollapsed = false, insertBelow,
@@ -23,17 +28,21 @@ export default function TableCell({
     diacritic, setDiacritic,
   } = useContext(TableContext);
 
-  let sounds = matchFeatures(allSounds, ...features);
+  let sounds = matchFeatures(allSounds, features);
   if (!editable) sounds = sounds.filter((sound) => selectedSounds.includes(sound));
 
-  let className; let
-    handleClick;
+  let className: (s: Sound) => string;
+  let handleClick: (e: MouseEvent, s: Sound) => void;
   if (diacritic !== null) {
     className = (sound) => (
-      matchFeatures([sound], diacritic.requirements).length > 0
-      && matchFeatures([sound], diacritic.features).length === 0
-        ? 'bg-blue-300 hover:bg-green-300' : 'bg-yellow-300 hover:bg-yellow-500');
-    handleClick = (e: MouseEvent, sound: Sound) => {
+      canApplyDiacriticToSound(diacritic, sound) ? 'bg-blue-300 hover:bg-green-300' : 'bg-yellow-300 hover:bg-yellow-500');
+
+    handleClick = (e, sound) => {
+      if (!canApplyDiacriticToSound(diacritic, sound)) {
+        setDiacritic(null);
+        return;
+      }
+
       const newSound: Sound = { ...sound };
       newSound.name += diacritic.name;
       Object.keys(diacritic.features).forEach((feature) => {
@@ -45,9 +54,14 @@ export default function TableCell({
       setDiacritic(null);
     };
   } else {
+    // no diacritic is selected, plain click
     className = (sound) => (selectedSounds.includes(sound)
-      ? 'bg-green-300 hover:bg-red-300' : 'bg-blue-300 hover:bg-blue-500');
-    handleClick = (e: MouseEvent, sound) => {
+      ? 'bg-green-300 hover:bg-red-500' : 'bg-blue-300 hover:bg-blue-500');
+
+    handleClick = (e, sound) => {
+      // shift key: toggle neighbor
+      // alt key: remove from all sounds
+      // regular click: toggle sound selected
       if (e.shiftKey) {
         if (sound === neighbor) setNeighbor(null);
         else setNeighbor(sound);
@@ -76,7 +90,7 @@ export default function TableCell({
             key={sound.name}
             type="button"
             className={`${className(sound)} px-1 w-8 focus:outline-none font-serif`}
-            onClick={(e) => handleClick(e, sound)}
+            onClick={(e) => handleClick(e as unknown as MouseEvent, sound)}
           >
             {sound.name}
           </button>

@@ -17,11 +17,22 @@ type MannerRowProps = {
 export default function MannerRow({
   manner, manners, columns, setManners, last, editable,
 }: MannerRowProps) {
+  // triggered when a diacritic applied to this row
   const insertBelow = useCallback((diacritic: Diacritic) => {
+    if (!diacritic.createNewRow || manners.some((m) => m.name === `${diacritic.displayName} ${manner.name}`)) return;
     const index = manners.findIndex((a) => a === manner);
+
     setManners([
-      ...manners.slice(0, index + 1),
-      { name: `${diacritic.displayName} ${manner.name}`, features: { ...manner.features, ...diacritic.features } },
+      ...manners.slice(0, index),
+      {
+        name: manner.name,
+        features: [
+          manner.features,
+          (sound) => !Object.keys(diacritic.features)
+            .every((key) => sound[key] === diacritic.features[key]),
+        ],
+      },
+      { name: `${diacritic.displayName} ${manner.name}`, features: [manner.features, diacritic.features] },
       ...manners.slice(index + 1)]);
   }, [manner, manners]);
 

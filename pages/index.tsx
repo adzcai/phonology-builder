@@ -51,6 +51,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    console.log(selectedSounds);
     setDisplayManners(manners.filter(
       (manner) => matchFeatures(selectedSounds, manner.features, { syllabic: false }).length,
     ));
@@ -58,12 +59,12 @@ export default function Home() {
       (place) => matchFeatures(selectedSounds, place.features, { syllabic: false }).length,
     ));
     setDisplayHeights(heights.filter(
-      (height) => matchFeatures(selectedSounds, height, { syllabic: true }).length,
+      (height) => matchFeatures(selectedSounds, height.features, { syllabic: true }).length,
     ));
     setDisplayFrontnesses(frontnesses.filter(
-      (frontness) => matchFeatures(selectedSounds, frontness, { syllabic: true }).length,
+      (frontness) => matchFeatures(selectedSounds, frontness.features, { syllabic: true }).length,
     ));
-  }, [selectedSounds]);
+  }, [manners, places, heights, frontnesses, selectedSounds]);
 
   return (
     <div>

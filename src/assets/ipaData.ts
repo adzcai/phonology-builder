@@ -1,30 +1,22 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import rawSoundsTsv from './rawFeatures.tsv';
 
-export type FeatureSet = {
+export type Condition = Partial<Sound> | ((_: Sound) => boolean) | Condition[];
+
+type FeatureSet = {
   name: string;
-  features: Partial<Sound>;
+  features: Condition;
 };
 
 export type Manner = FeatureSet;
 export type Place = FeatureSet;
 export type Diacritic = FeatureSet & {
   displayName: string;
-  category: 'place' | 'manner';
   requirements: Partial<Sound>;
+  createNewRow: boolean;
 };
-export type Frontness = {
-  name: string;
-  round: boolean;
-  front: boolean;
-  back: boolean;
-};
-export type Height = {
-  name: string;
-  high: boolean;
-  low: boolean;
-  tense?: boolean;
-};
+export type Frontness = FeatureSet;
+export type Height = FeatureSet;
 
 export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
 
@@ -326,27 +318,40 @@ export const allPlaces: Place[] = [
   },
 ];
 
-export function matchFeatures(
-  sounds: Sound[],
-  ...featureObjs: Partial<Sound>[]
-) {
-  const merged = Object.assign({}, ...featureObjs);
-  return sounds.filter((feature) =>
-    Object.keys(merged).every(
-      (key) => key === 'name' || feature[key] === merged[key],
-    ),
-  );
+function matchCondition(sound, condition: Condition) {
+  if (Array.isArray(condition)) return condition.every((c) => matchCondition(sound, c));
+
+  if (typeof condition === 'object') {
+    // check for array
+    return Object.keys(condition)
+      .filter((key) => key !== 'name')
+      .every((key) => (Array.isArray(condition[key])
+        ? condition[key].includes(sound[key])
+        : sound[key] === condition[key]));
+  }
+
+  if (typeof condition === 'function') return condition(sound);
+
+  return true;
 }
 
-export function inverseMatchFeatures(
-  sounds: Sound[],
-  ...featureObjs: Partial<Sound>[]
-) {
-  const merged = Object.assign({}, ...featureObjs);
-  return sounds.filter((feature) =>
-    Object.keys(merged).every(
-      (key) => key === 'name' || feature[key] !== merged[key],
-    ),
+export function matchFeatures(sounds: Sound[], ...conditions: Condition[]) {
+  return sounds.filter((sound) => conditions.every((condition) => matchCondition(sound, condition)));
+}
+
+const featureInverseMap = new Map<boolean | 0, [boolean | 0, boolean | 0]>([
+  [0, [true, false]],
+  [true, [false, 0]],
+  [false, [0, true]],
+]);
+
+export function invertFeatures(features: Partial<Sound>) {
+  return Object.keys(features).reduce(
+    (prev, key) => ({
+      ...prev,
+      [key]: featureInverseMap.get(features[key]),
+    }),
+    {},
   );
 }
 
@@ -410,7 +415,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
-    category: 'manner',
+    createNewRow: true,
   },
   {
     displayName: 'creaky voice',
@@ -422,7 +427,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       voice: true,
     },
-    category: 'manner',
+    createNewRow: true,
   },
   {
     displayName: 'breathy voice',
@@ -434,7 +439,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       voice: true,
     },
-    category: 'manner',
+    createNewRow: true,
   },
   {
     displayName: 'voiceless',
@@ -445,7 +450,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       voice: true,
     },
-    category: 'manner',
+    createNewRow: true,
   },
   {
     displayName: 'palato-alveolar',
@@ -458,7 +463,7 @@ export const diacritics: Diacritic[] = [
       anterior: true,
       distributed: false,
     },
-    category: 'place',
+    createNewRow: false,
   },
   {
     displayName: 'dental',
@@ -471,7 +476,7 @@ export const diacritics: Diacritic[] = [
       anterior: true,
       distributed: false,
     },
-    category: 'place',
+    createNewRow: false,
   },
   {
     displayName: 'fronted velar',
@@ -484,7 +489,7 @@ export const diacritics: Diacritic[] = [
       high: true,
       low: false,
     },
-    category: 'place',
+    createNewRow: false,
   },
   {
     displayName: 'backed velar',
@@ -497,7 +502,7 @@ export const diacritics: Diacritic[] = [
       high: true,
       low: false,
     },
-    category: 'place',
+    createNewRow: false,
   },
   {
     displayName: 'stressed',
@@ -506,7 +511,7 @@ export const diacritics: Diacritic[] = [
       stress: true,
     },
     requirements: {},
-    category: 'manner',
+    createNewRow: true,
   },
   {
     displayName: 'long',
@@ -515,7 +520,7 @@ export const diacritics: Diacritic[] = [
       long: true,
     },
     requirements: {},
-    category: 'manner',
+    createNewRow: true,
   },
   {
     displayName: 'aspirated',
@@ -527,7 +532,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
-    category: 'manner',
+    createNewRow: true,
   },
   {
     displayName: 'palatalized',
@@ -542,7 +547,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
-    category: 'place',
+    createNewRow: true,
   },
   {
     displayName: 'labialized',
@@ -554,7 +559,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
-    category: 'place',
+    createNewRow: true,
   },
   {
     displayName: 'velarized',
@@ -569,7 +574,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
-    category: 'place',
+    createNewRow: true,
   },
   {
     displayName: 'pharyngealized',
@@ -584,7 +589,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       consonantal: true,
     },
-    category: 'place',
+    createNewRow: true,
   },
   {
     displayName: 'nasalized',
@@ -595,7 +600,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       sonorant: true,
     },
-    category: 'manner',
+    createNewRow: true,
   },
   {
     displayName: 'rhotic',
@@ -609,7 +614,7 @@ export const diacritics: Diacritic[] = [
     requirements: {
       syllabic: true,
     },
-    category: 'place',
+    createNewRow: true,
   },
   {
     displayName: 'ejective',
@@ -621,25 +626,25 @@ export const diacritics: Diacritic[] = [
     requirements: {
       sonorant: false,
     },
-    category: 'manner',
+    createNewRow: true,
   },
 ];
 
 /* eslint-disable object-curly-newline */
 export const allFrontnesses = [
-  { name: 'front unrounded', round: false, front: true, back: false },
-  { name: 'front rounded', round: true, front: true, back: false },
-  { name: 'central unrounded', round: false, front: false, back: false },
-  { name: 'central rounded', round: true, front: false, back: false },
-  { name: 'back unrounded', round: false, front: false, back: true },
-  { name: 'back rounded', round: true, front: false, back: true },
+  { name: 'front unrounded', features: { round: false, front: true, back: false } },
+  { name: 'front rounded', features: { round: true, front: true, back: false } },
+  { name: 'central unrounded', features: { round: false, front: false, back: false } },
+  { name: 'central rounded', features: { round: true, front: false, back: false } },
+  { name: 'back unrounded', features: { round: false, front: false, back: true } },
+  { name: 'back rounded', features: { round: true, front: false, back: true } },
 ];
 
-export const allHeights = [
-  { name: 'close', high: true, low: false, tense: true },
-  { name: 'near-close', high: true, low: false, tense: false },
-  { name: 'mid', high: false, low: false, tense: true },
-  { name: 'near-open', high: false, low: false, tense: false },
-  { name: 'open', high: false, low: true },
+export const allHeights: Height[] = [
+  { name: 'close', features: { high: true, low: false, tense: true } },
+  { name: 'near-close', features: { high: true, low: false, tense: false } },
+  { name: 'mid', features: { high: false, low: false, tense: true } },
+  { name: 'near-open', features: { high: false, low: false, tense: false } },
+  { name: 'open', features: { high: false, low: true } },
 ];
 /* eslint-enable object-curly-newline */
