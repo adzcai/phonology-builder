@@ -3,9 +3,9 @@ import React, {
   PropsWithChildren, useCallback, useState,
 } from 'react';
 import {
-  Sound, TableContext, Diacritic, rawSounds, FeatureSet, matchFeatures,
+  Sound, TableContext, Diacritic, FeatureSet, matchFeatures,
   toggleInArray,
-  Height, allHeights as rawHeights,
+  Height, allHeights as rawHeights, allSounds as rawSounds,
 } from '../src/assets/ipaData';
 import FeatureList from '../src/components/FeatureList';
 import NeighborInspector from '../src/components/NeighborInspector';

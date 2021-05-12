@@ -2,7 +2,7 @@ import React, {
   ChangeEventHandler, useState,
 } from 'react';
 import {
-  allFeatures, matchFeatures, rawSounds, toggleInArray, Diacritic, TableContext,
+  allFeatures, matchFeatures, allSounds, toggleInArray, Diacritic, TableContext,
   canApplyDiacriticsToSound, applyDiacriticsToSound, allHeights as rawHeights, Height,
 } from '../assets/ipaData';
 import ConsonantTable from './IpaTable/ConsonantTable';
@@ -69,9 +69,9 @@ export default function FilterFeatures() {
 
   const selectedSounds = validFeatures.length === 0 ? [] : matchFeatures(
     [
-      ...rawSounds,
+      ...allSounds,
       ...selectedDiacritics
-        .flatMap((diacritic) => rawSounds
+        .flatMap((diacritic) => allSounds
           .filter((sound) => canApplyDiacriticsToSound([diacritic], sound))
           .map((sound) => applyDiacriticsToSound(sound, diacritic))),
     ], validFeatures.map(([name, val]) => ({ [name]: JSON.parse(val) })),

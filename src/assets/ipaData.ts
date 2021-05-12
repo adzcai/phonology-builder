@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
-import { diacritics as rawDiacritics, manners as rawManners, places as rawPlaces } from './featureData.json';
-import rawSoundsTsv from './rawFeatures.tsv';
+import featureData from './featureData.json';
+import rawSounds from './rawFeatures.json';
 
 export type Condition = Partial<Sound> | ((_: Sound) => boolean) | Condition[];
 
@@ -8,18 +8,15 @@ export type FeatureSet = {
   name: string;
   features: Condition;
 };
-
 export type Manner = FeatureSet;
 export type Place = FeatureSet;
+export type Frontness = FeatureSet;
+export type Height = FeatureSet;
 export type Diacritic = FeatureSet & {
   displayName: string;
   requirements: Partial<Sound>;
   createNewRow: boolean;
 };
-export type Frontness = FeatureSet;
-export type Height = FeatureSet;
-
-export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
 
 export type Sound = {
   name: string;
@@ -53,14 +50,16 @@ export type Sound = {
   tense: boolean | 0;
 };
 
+export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
+
 // the two features missing from the original book are
 // implosive and ATR (equivalent to tense in some languages)
-export const rawSounds = rawSoundsTsv as Sound[];
-export const allManners = rawManners as Manner[];
-export const allPlaces = rawPlaces as Place[];
+export const allSounds = rawSounds as Sound[];
+export const allManners = featureData.manners as Manner[];
+export const allPlaces = featureData.places as Place[];
 
-function matchCondition(sound, condition: Condition) {
-  if (Array.isArray(condition)) return condition.every((c) => matchCondition(sound, c));
+function matchConditions(sound: Sound, condition: Condition) {
+  if (Array.isArray(condition)) return condition.every((c) => matchConditions(sound, c));
 
   if (typeof condition === 'object') {
     // check for array
@@ -78,7 +77,7 @@ function matchCondition(sound, condition: Condition) {
 
 export function matchFeatures(sounds: Sound[], ...conditions: Condition[]) {
   return sounds.filter(
-    (sound) => conditions.every((condition) => matchCondition(sound, condition)),
+    (sound) => matchConditions(sound, conditions),
   );
 }
 
@@ -98,17 +97,18 @@ export function invertFeatures(features: Partial<Sound>) {
   );
 }
 
+// all of the optional fields are for the FilterFeature component to work properly
 export type TableContextType = {
-  allSounds: Sound[];
-  setAllSounds: SoundHook;
+  allSounds?: Sound[];
+  setAllSounds?: SoundHook;
   selectedSounds: Sound[];
-  setSelectedSounds: SoundHook;
-  neighbor: Sound | null;
-  setNeighbor: Dispatch<SetStateAction<Sound | null>>;
+  setSelectedSounds?: SoundHook;
+  neighbor?: Sound | null;
+  setNeighbor?: Dispatch<SetStateAction<Sound | null>>;
   selectedDiacritics: Diacritic[] | null;
   setSelectedDiacritics: Dispatch<SetStateAction<Diacritic[]>>;
   handleDiacriticClick: (diacritic: Diacritic) => void;
-  deleteFeatureSet: (featureSet: FeatureSet) => void;
+  deleteFeatureSet?: (featureSet: FeatureSet) => void;
 };
 
 export const TableContext = createContext<TableContextType>({
@@ -173,7 +173,7 @@ export const allFeatures = [
   ['long', 'prosody', 'prosody'],
 ];
 
-export const allDiacritics: Diacritic[] = rawDiacritics;
+export const allDiacritics: Diacritic[] = featureData.diacritics;
 
 /* eslint-disable object-curly-newline */
 export const allFrontnesses = [

@@ -111,7 +111,11 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
       <tbody>
         {heights.map((height, row) => (
           <tr key={height.name}>
-            <th className="border-gray-300 border-t-4 border-r-4 px-2" scope="row">
+            <th
+              className="border-gray-300 border-t-4 border-r-4 px-2"
+              scope="row"
+              title={JSON.stringify(height.features)}
+            >
               {height.name}
             </th>
             {/* remove row/height button */}

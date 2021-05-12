@@ -34,7 +34,7 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
       ...manners.slice(index + 1)]);
   }, [manners]);
 
-  if (manners.length === 0) return <p className="rounded bg-red-200 py-2 px-4 mx-auto w-max">No sounds selected!</p>;
+  if (manners.length === 0) return <p className="rounded bg-red-200 py-2 px-4 mx-auto w-max">No consonant sounds selected!</p>;
 
   return (
     <TableContainer>
