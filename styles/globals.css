@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
+/* @font-face {
   font-family: 'Charis SIL';
   src: url('/fonts/CharisSIL-R.ttf');
   font-weight: normal;
@@ -28,9 +28,14 @@
   src: url('/fonts/CharisSIL-BI.ttf');
   font-weight: bold;
   font-style: italic;
-}
+} */
 
-td, th {
+td,
+th {
   padding: 0px;
   margin: 0px;
+}
+
+.hover-blue {
+  @apply bg-blue-300 hover:bg-blue-500 focus:outline-none transition-colors;
 }

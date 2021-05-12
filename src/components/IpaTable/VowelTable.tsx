@@ -1,8 +1,10 @@
 import {
-  useCallback, useContext, useState,
+  Dispatch,
+  SetStateAction,
+  useCallback, useContext,
 } from 'react';
 import {
-  allHeights as rawHeights, Diacritic, filterNonEmpty, TableContext,
+  Diacritic, filterNonEmpty, TableContext,
   allFrontnesses, Height, matchFeatures,
 } from '../../assets/ipaData';
 import TableCell from './TableCell';
@@ -30,12 +32,16 @@ const HeaderContainer = ({ name, nCols } : { name: string, nCols: number }) => (
     )
 );
 
-export default function VowelTable({ editable }: { editable: boolean }) {
+type Props = {
+  editable: boolean,
+  allHeights: Height[],
+  setAllHeights: Dispatch<SetStateAction<Height[]>>
+};
+
+export default function VowelTable({ editable, allHeights, setAllHeights }: Props) {
   const { allSounds, selectedSounds, deleteFeatureSet } = useContext(TableContext);
 
   const sounds = editable ? allSounds : selectedSounds;
-
-  const [allHeights, setAllHeights] = useState<Height[]>(rawHeights);
 
   const heights = filterNonEmpty(sounds, allHeights, { syllabic: true });
   const frontnesses = filterNonEmpty(sounds, allFrontnesses, { syllabic: true });
@@ -90,8 +96,11 @@ export default function VowelTable({ editable }: { editable: boolean }) {
             <th
               key={frontness.name}
               role="button"
-              className={`${blBorder} bg-blue-300 hover:bg-blue-500 w-full leading-none`}
-              onClick={() => deleteFeatureSet(frontness)}
+              className={`${blBorder} bg-red-200 hover:bg-red-500 w-full leading-none`}
+              onClick={() => deleteFeatureSet({
+                name: frontness.name,
+                features: { ...frontness.features, syllabic: true },
+              })}
             >
               -
             </th>
@@ -110,8 +119,11 @@ export default function VowelTable({ editable }: { editable: boolean }) {
             <th
               role="button"
               scope="row"
-              className="border-gray-300 border-t-4 border-r-4 bg-blue-300 hover:bg-blue-500"
-              onClick={() => deleteFeatureSet(height)}
+              className="border-gray-300 border-t-4 border-r-4 bg-red-200 hover:bg-red-500"
+              onClick={() => deleteFeatureSet({
+                name: height.name,
+                features: { ...height.features, syllabic: true },
+              })}
             >
               -
             </th>

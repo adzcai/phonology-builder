@@ -2,9 +2,9 @@ import React, { useCallback, useContext, useState } from 'react';
 import {
   allManners as rawManners,
   allPlaces, Diacritic, filterNonEmpty, matchFeatures, TableContext,
-} from '../../../assets/ipaData';
-import TableContainer from '../../TableContainer';
-import TableCell from '../TableCell';
+} from '../../assets/ipaData';
+import TableContainer from '../TableContainer';
+import TableCell from './TableCell';
 
 export default function ConsonantTable({ editable }: { editable: boolean }) {
   const { allSounds, selectedSounds, deleteFeatureSet } = useContext(TableContext);
@@ -57,8 +57,11 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
                 {editable && (
                   <button
                     type="button"
-                    onClick={() => deleteFeatureSet(col)}
-                    className="text-xs rounded bg-blue-300 hover:bg-blue-500 px-1 ml-2"
+                    onClick={() => deleteFeatureSet({
+                      name: col.name,
+                      features: { ...col.features, syllabic: false },
+                    })}
+                    className="text-xs rounded bg-red-200 hover:bg-red-500 px-1 ml-2"
                   >
                     -
                   </button>
@@ -81,8 +84,11 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
             </th>
             {editable && (
             <th
-              className={`border-gray-300 border-t-2 ${row !== manners.length && 'border-b-2'} border-r-2 px-1 bg-blue-300 hover:bg-blue-500 cursor-pointer`}
-              onClick={() => deleteFeatureSet(manner)}
+              className={`border-gray-300 border-t-2 ${row !== manners.length && 'border-b-2'} border-r-2 px-1 bg-red-200 hover:bg-red-500 cursor-pointer`}
+              onClick={() => deleteFeatureSet({
+                name: manner.name,
+                features: { ...manner.features, syllabic: false },
+              })}
               role="button"
             >
               -

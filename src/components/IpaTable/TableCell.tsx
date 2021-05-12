@@ -35,13 +35,12 @@ export default function TableCell({
         type="button"
         className={`${baseStyles} ${canApplyDiacriticsToSound(selectedDiacritics, sound) ? 'bg-blue-300 hover:bg-green-300' : 'bg-yellow-300 hover:bg-yellow-500'}`}
         onClick={() => {
-          if (!canApplyDiacriticsToSound(selectedDiacritics, sound)) {
-            return;
-          }
-
-          setAllSounds((prev) => [...prev, applyDiacriticsToSound(sound, ...selectedDiacritics)]);
-          insertBelow(selectedDiacritics[0]);
           setSelectedDiacritics([]);
+
+          if (canApplyDiacriticsToSound(selectedDiacritics, sound)) {
+            setAllSounds((prev) => [...prev, applyDiacriticsToSound(sound, ...selectedDiacritics)]);
+            insertBelow(selectedDiacritics[0]);
+          }
         }}
       >
         {sound.name}
@@ -52,7 +51,7 @@ export default function TableCell({
       <button
         type="button"
         className={`${baseStyles} ${selectedSounds.includes(sound)
-          ? 'bg-green-300 hover:bg-red-500' : 'bg-blue-300 hover:bg-blue-500'}`}
+          ? 'bg-green-300 hover:bg-red-500' : 'hover-blue'}`}
         onClick={(e) => {
           // shift key: toggle neighbor
           // alt key: remove from all sounds
@@ -85,7 +84,7 @@ export default function TableCell({
       <div className="flex items-center justify-around">
         {/* unvoiced on left, voiced on right */}
         {[...sounds].sort((a) => (a.voice ? 1 : -1)).map((sound) => (
-          <SoundContainer sound={sound} />
+          <SoundContainer key={sound.name} sound={sound} />
         ))}
       </div>
     </td>

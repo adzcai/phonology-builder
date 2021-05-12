@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import {
   allFeatures, matchFeatures, rawSounds, toggleInArray, Diacritic, TableContext,
-  canApplyDiacriticsToSound, applyDiacriticsToSound,
+  canApplyDiacriticsToSound, applyDiacriticsToSound, allHeights as rawHeights, Height,
 } from '../assets/ipaData';
 import ConsonantTable from './IpaTable/ConsonantTable';
 import VowelTable from './IpaTable/VowelTable';
@@ -20,14 +20,19 @@ type SelectorRowProps = {
   features: string[][];
 };
 
+function getNextAvailableFeature(features) {
+  return allFeatures.find(([f]) => f !== 'name' && !features.some(([name]) => f === name))[0];
+}
+
 function SelectorRow({
   selected, setSelected, val, setVal, removeFeature, features,
 }: SelectorRowProps) {
   return (
-    <li className="border-gray-300 border-4 w-max ">
+    <li className="border-gray-300 border-4 w-max bg-white rounded-xl p-2">
       <select value={selected} onChange={setSelected}>
         {[[''], ...allFeatures].map(([featureName]) => (
           <option
+            key={featureName}
             value={featureName}
             disabled={features.some((feature) => feature[0] === featureName)}
           >
@@ -35,10 +40,10 @@ function SelectorRow({
           </option>
         ))}
       </select>
-      <button type="button" className="px-2 rounded bg-blue-300 hover:bg-red-300" onClick={removeFeature}>-</button>
-      <div>
+      <button type="button" className="px-2 rounded bg-red-200 hover:bg-red-500" onClick={removeFeature}>-</button>
+      <div className="space-x-2">
         {['true', 'false', '0'].map((v) => (
-          <label>
+          <label key={v}>
             {v}
             <input
               type="radio"
@@ -46,7 +51,7 @@ function SelectorRow({
               value={v}
               checked={val === v}
               onChange={(e) => setVal(e.target.value as InputValue)}
-              className="mx-2"
+              className="ml-2"
             />
           </label>
         ))}
@@ -58,6 +63,7 @@ function SelectorRow({
 export default function FilterFeatures() {
   const [features, setFeatures] = useState<[string, InputValue][]>([]);
   const [selectedDiacritics, setSelectedDiacritics] = useState<Diacritic[]>([]);
+  const [allHeights, setAllHeights] = useState<Height[]>(rawHeights);
 
   const validFeatures = features.filter((feature) => feature[0] !== '' && feature[1] !== null);
 
@@ -77,38 +83,44 @@ export default function FilterFeatures() {
 
   return (
     <div>
-      <ul>
-        {features.map(([selected, val], i) => (
-          <SelectorRow
-            key={selected}
-            selected={selected}
-            setSelected={(e) => setFeatures([
-              ...features.slice(0, i),
-              [e.target.value, val],
-              ...features.slice(i + 1),
-            ])}
-            val={val}
-            setVal={(v) => {
-              setFeatures([
+      <div className="flex flex-col justify-center items-center">
+        <ul className="flex flex-wrap">
+          {features.map(([selected, val], i) => (
+            <SelectorRow
+              key={selected}
+              selected={selected}
+              setSelected={(e) => setFeatures([
                 ...features.slice(0, i),
-                [selected, v],
+                [e.target.value, val],
                 ...features.slice(i + 1),
-              ]);
-            }}
-            features={features}
-            removeFeature={
+              ])}
+              val={val}
+              setVal={(v) => {
+                setFeatures([
+                  ...features.slice(0, i),
+                  [selected, v],
+                  ...features.slice(i + 1),
+                ]);
+              }}
+              features={features}
+              removeFeature={
               () => setFeatures(features.filter((feature) => feature[0] !== selected))
             }
-          />
-        ))}
-      </ul>
-      <button
-        type="button"
-        onClick={() => setFeatures((prev) => [...prev, ['', null]])}
-        className="bg-blue-300 p-2 rounded"
-      >
-        Filter by new feature
-      </button>
+            />
+          ))}
+        </ul>
+        <button
+          type="button"
+          onClick={() => setFeatures([
+            ...features,
+            [getNextAvailableFeature(features), null],
+          ])}
+          className="hover-blue py-2 px-4 rounded mx-auto"
+        >
+          Add new filter
+        </button>
+      </div>
+
       <TableContext.Provider value={{
         selectedDiacritics,
         setSelectedDiacritics,
@@ -116,14 +128,16 @@ export default function FilterFeatures() {
         handleDiacriticClick,
       }}
       >
-        <div>
+        <div className="mt-8">
+          <DiacriticTable>
+            Click diacritics to toggle whether symbols with them appear.
+          </DiacriticTable>
+        </div>
+        <div className="mt-8">
           <ConsonantTable editable={false} />
         </div>
         <div className="mt-8">
-          <DiacriticTable />
-        </div>
-        <div className="mt-8">
-          <VowelTable editable={false} />
+          <VowelTable allHeights={allHeights} setAllHeights={setAllHeights} editable={false} />
         </div>
       </TableContext.Provider>
     </div>
