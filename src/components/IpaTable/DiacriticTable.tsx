@@ -9,7 +9,7 @@ export default function DiacriticTable({ children }: PropsWithChildren<{}>) {
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full space-y-8">
-      <p className="bg-pink-300 text-center rounded-xl p-4">{children}</p>
+      <p className="bg-pink-300 text-center rounded-xl px-2 py-1">{children}</p>
       <div className="flex flex-row justify-center flex-wrap">
         {allDiacritics.map((diacritic) => (
           <button

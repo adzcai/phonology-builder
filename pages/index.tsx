@@ -13,6 +13,7 @@ import FilterFeatures from '../src/components/FilterFeatures';
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
+import TableContainer from '../src/components/TableContainer';
 
 const Section = ({
   children, heading, classes,
@@ -21,6 +22,72 @@ const Section = ({
     <h2 className="text-center text-2xl mb-8">{heading}</h2>
     {children}
   </section>
+);
+
+const SonorityHierarchy = () => (
+  <Section heading="The sonority hierarchy" classes="bg-yellow-200">
+    <TableContainer borderCollapse>
+      <thead>
+        <tr>
+          {['Vowels', 'Glides', 'Liquids', 'Nasals', 'Obstruents'].map((soundClass) => <th key={soundClass} className="border-gray-600 border-4">{soundClass}</th>)}
+        </tr>
+      </thead>
+      <tbody className="text-center">
+        <tr>
+          <td className="border-gray-600 border-4">[+syllabic]</td>
+          <td className="border-gray-600 border-4" colSpan={4}>[-syllabic]</td>
+        </tr>
+        <tr>
+          <td className="border-gray-600 border-4" colSpan={2}>[-consonantal]</td>
+          <td className="border-gray-600 border-4" colSpan={3}>[+consonantal]</td>
+        </tr>
+        <tr>
+          <td className="border-gray-600 border-4" colSpan={3}>[+approximant]</td>
+          <td className="border-gray-600 border-4" colSpan={2}>[-approximant]</td>
+        </tr>
+        <tr>
+          <td className="border-gray-600 border-4" colSpan={4}>[+sonorant]</td>
+          <td className="border-gray-600 border-4">[-sonorant]</td>
+        </tr>
+      </tbody>
+    </TableContainer>
+    <div className="mx-auto text-center p-4 max-w-lg w-full md:w-max bg-pink-300 rounded-2xl mt-8">
+      <details>
+        <summary className="focus:outline-none cursor-pointer">Explanation</summary>
+        <ul>
+          <li>
+            <strong>vowels</strong>
+            {' '}
+            are [+syllabic];
+          </li>
+          <li>
+            <strong>glides</strong>
+            {' '}
+            like [j] and [ɹ] are [-syllabic, -consonantal];
+          </li>
+          <li>
+            <strong>liquids</strong>
+            {' '}
+            like [r] and [l] are [+consonantal], [+approximant];
+          </li>
+          <li>
+            <strong>nasals</strong>
+            {' '}
+            like [m] and [n] are [-approximant, +sonorant];
+          </li>
+          <li>
+            <strong>obstruents</strong>
+            {' '}
+            (stops, fricatives, and affricates) are [-sonorant].
+          </li>
+        </ul>
+        <p>
+          You can experiment with these using the &quot;Filter sounds by feature&quot;
+          utility below.
+        </p>
+      </details>
+    </div>
+  </Section>
 );
 
 export default function Home() {
@@ -164,7 +231,12 @@ export default function Home() {
           ) : <p className="text-center">Begin selecting symbols to view a display chart!</p>}
         </Section>
 
+        <SonorityHierarchy />
+
         <Section heading="List of selected sounds" classes="bg-gradient-to-br from-red-100 to-yellow-100">
+          <p className="mx-auto text-center mb-8">
+            Hover a feature to see its definition.
+          </p>
           <FeatureList sounds={selectedSounds} />
         </Section>
 
@@ -186,7 +258,7 @@ export default function Home() {
             Apply sound changes
           </li>
           <li>
-            Detailed descriptions of features
+            Play sound audio files
           </li>
         </ul>
       </Section>

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { PropsWithoutRef, useContext } from 'react';
 import {
   Sound, TableContext, Diacritic, applyDiacriticsToSound, canApplyDiacriticsToSound,
 } from '../../assets/ipaData';
@@ -84,6 +84,7 @@ export default function TableCell({
       <div className="flex items-center justify-around">
         {/* unvoiced on left, voiced on right */}
         {[...sounds].sort((a) => (a.voice ? 1 : -1)).map((sound) => (
+          // eslint-disable-next-line react/prop-types
           <SoundContainer key={sound.name} sound={sound} />
         ))}
       </div>

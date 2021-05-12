@@ -9,7 +9,7 @@ import ConsonantTable from './IpaTable/ConsonantTable';
 import VowelTable from './IpaTable/VowelTable';
 import DiacriticTable from './IpaTable/DiacriticTable';
 
-type InputValue = 'true' | 'false' | '0';
+type InputValue = '+' | '-' | '0';
 
 type SelectorRowProps = {
   selected: string;
@@ -20,7 +20,7 @@ type SelectorRowProps = {
   features: string[][];
 };
 
-function getNextAvailableFeature(features) {
+function getNextAvailableFeature(features: string[][]) {
   return allFeatures.find(([f]) => f !== 'name' && !features.some(([name]) => f === name))[0];
 }
 
@@ -41,17 +41,18 @@ function SelectorRow({
         ))}
       </select>
       <button type="button" className="px-2 rounded bg-red-200 hover:bg-red-500" onClick={removeFeature}>-</button>
-      <div className="space-x-2">
-        {['true', 'false', '0'].map((v) => (
-          <label key={v}>
+      <div className="w-full flex justify-between">
+        {['+', '-', '0'].map((v) => (
+          <label key={v} htmlFor={`${selected}-val`}>
             {v}
             <input
               type="radio"
+              id={`${selected}-val`}
               name={`${selected}-val`}
               value={v}
               checked={val === v}
               onChange={(e) => setVal(e.target.value as InputValue)}
-              className="ml-2"
+              className="ml-1"
             />
           </label>
         ))}
@@ -74,7 +75,7 @@ export default function FilterFeatures() {
         .flatMap((diacritic) => allSounds
           .filter((sound) => canApplyDiacriticsToSound([diacritic], sound))
           .map((sound) => applyDiacriticsToSound(sound, diacritic))),
-    ], validFeatures.map(([name, val]) => ({ [name]: JSON.parse(val) })),
+    ], validFeatures.map(([name, val]) => ({ [name]: ({ '+': true, '-': false, 0: 0 }[val]) })),
   );
 
   const handleDiacriticClick = (diacritic) => setSelectedDiacritics(
@@ -115,7 +116,7 @@ export default function FilterFeatures() {
             ...features,
             [getNextAvailableFeature(features), null],
           ])}
-          className="hover-blue py-2 px-4 rounded mx-auto"
+          className={`hover-blue py-2 px-4 rounded mx-auto ${features.length > 0 && 'mt-8'}`}
         >
           Add new filter
         </button>

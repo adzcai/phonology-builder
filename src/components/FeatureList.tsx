@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { allFeatures, Sound } from '../assets/ipaData';
 import TableContainer from './TableContainer';
 
@@ -90,9 +91,9 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
             return map;
           }, new Map())).map(([feature, count], i) => (
             <th
+              key={feature}
               colSpan={count}
               className={`bg-${colors[i]}-300 sticky top-0 h-8`}
-              key={feature}
             >
               {feature}
             </th>
@@ -100,8 +101,8 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
         </tr>
         <tr>
           {contrastWith && <td className="w-8 h-28 sticky top-8 border-gray-300 border-2 bg-white" />}
-          {allFeatures.map(([feature]) => (
-            <th key={feature} className="w-8 h-28 sticky top-8 bg-white">
+          {allFeatures.map(([feature, _, __, description]) => (
+            <th key={feature} className="w-8 h-28 sticky top-8 bg-white" title={description}>
               <div
                 className="flex items-center w-full h-full border-gray-300 border-2"
                 style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
