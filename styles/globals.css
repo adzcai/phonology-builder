@@ -37,7 +37,12 @@ th {
 }
 
 .hover-blue {
-  @apply bg-blue-300 hover:bg-blue-500 focus:bg-blue-500 focus:outline-none transition-colors;
+  @apply bg-blue-300 hover:bg-blue-500 focus:bg-blue-500 outline-none focus:outline-none shadow hover:shadow-xl focus:shadow-xl;
+
+  transition-property: background-color, border-color, color, fill, stroke,
+    box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 .border-gray {

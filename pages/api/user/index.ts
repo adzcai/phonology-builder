@@ -17,9 +17,6 @@ export default nextConnect()
         },
       }).exec();
 
-      // console.log(userData.charts[0].sounds);
-
-      console.log(mongoose.models.Sound.schema.paths);
       const data = {
         isLoggedIn: true,
         username: userData.username,
@@ -31,7 +28,6 @@ export default nextConnect()
                 .reduce((prev, curr) => ({ ...prev, [curr]: ['true', 'false', '0'].includes(s[curr]) ? JSON.parse(s[curr]) : s[curr] }), {})),
           })),
       };
-      console.log(data);
       res.json(data);
     } else {
       res.json({

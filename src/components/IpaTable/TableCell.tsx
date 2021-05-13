@@ -1,7 +1,17 @@
 import { useContext } from 'react';
 import {
-  Sound, TableContext, Diacritic, applyDiacriticsToSound, canApplyDiacriticsToSound,
+  Sound, TableContext, Diacritic, applyDiacriticsToSound, canApplyDiacriticsToSound, allFeatures,
 } from '../../assets/ipaData';
+
+function sortSounds(a, b) {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const [feature] of allFeatures) {
+    if (a[feature] === b[feature]) continue;
+    if (a[feature] === true) return 1;
+    if (a[feature] === false) return -1;
+  }
+  return 1;
+}
 
 type TableCellProps = {
   sounds: Sound[];
@@ -25,7 +35,7 @@ export default function TableCell({
   let SoundContainer: (_: SoundContainerProps) => JSX.Element;
 
   if (!editable) {
-    SoundContainer = ({ sound }: SoundContainerProps) => <div className={`${baseStyles} bg-blue-300`}>{sound.name}</div>;
+    SoundContainer = ({ sound }: SoundContainerProps) => <div className={baseStyles}>{sound.name}</div>;
   } else if (selectedDiacritics.length > 0) {
     SoundContainer = ({ sound }: SoundContainerProps) => (
       <button
@@ -72,9 +82,9 @@ export default function TableCell({
 
   return (
     <td className="border-gray">
-      <div className="flex items-center justify-around">
+      <div className="flex h-full w-full items-center justify-around">
         {/* unvoiced on left, voiced on right */}
-        {[...sounds].sort((a) => (a.voice ? 1 : -1)).map((sound) => (
+        {[...sounds].sort(sortSounds).map((sound) => (
           // eslint-disable-next-line react/prop-types
           <SoundContainer key={sound.name} sound={sound} />
         ))}

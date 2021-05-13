@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { allFeatures, Sound } from '../assets/ipaData';
-import TableContainer from './TableContainer';
+import { allFeatures, Sound } from '../../assets/ipaData';
+import TableContainer from '../TableContainer';
 
 type Props = {
   sounds: Sound[];

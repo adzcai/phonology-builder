@@ -36,16 +36,14 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
   if (manners.length === 0) return <p className="rounded bg-red-200 py-2 px-4 mx-auto w-max">No consonant sounds selected!</p>;
 
   return (
-    <div className="w-full h-full overflow-x-auto rounded-xl mx-auto border-black border-8 bg-white">
-      <table>
-        <thead>
-          <tr>
+    <div className="w-full md:w-max max-w-full h-full overflow-x-auto rounded-xl border-black border-8 bg-white">
+      <table className="w-full min-w-max grid items-stretch" style={{ gridTemplateColumns: `auto${editable ? ' auto' : ''} repeat(${places.length}, auto)` }}>
+        <thead className="contents">
+          <tr className="contents">
             <td className="border-gray sticky left-0 bg-gradient-to-r from-white via-white to-transparent" />
-            {editable && (
-            <td className="border-gray" />
-            )}
+            {editable && <td className="border-gray" />}
             {/* only show a column if there is a selected sound in that column */}
-            {places.map((col, i) => (
+            {places.map((col) => (
               <th
                 key={col.name}
                 className="border-gray px-2"
@@ -71,9 +69,9 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="contents">
           {manners.map((manner, row) => (
-            <tr key={manner.name}>
+            <tr key={manner.name} className="contents">
               {/* head of row */}
               <th
                 className={`border-gray sticky left-0

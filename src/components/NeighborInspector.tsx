@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { TableContext } from '../assets/ipaData';
-import FeatureList from './FeatureList';
+import FeatureList from './IndexPage/FeatureList';
 
 export default function NeighborInspector() {
   const { allSounds, neighbor } = useContext(TableContext);

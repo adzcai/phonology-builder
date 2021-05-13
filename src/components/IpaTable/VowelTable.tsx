@@ -46,14 +46,11 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
   if (heights.length === 0) return <p className="rounded bg-red-200 py-2 px-4 mx-auto w-max">No vowel sounds selected!</p>;
 
   return (
-    <div className="w-full h-full xl:w-max overflow-x-auto rounded-xl border-black border-8 bg-white">
-      {/* <pre>{JSON.stringify(sounds.map(sound => sound), null, 2)}</pre>
-      <pre>{JSON.stringify(frontnesses.map(sound => sound.name), null, 2)}</pre>
-      <pre>{JSON.stringify(filterNonEmpty(sounds, allHeights).map(sound => sound.name), null, 2)}</pre> */}
+    <div className="w-full md:w-max max-w-full h-full overflow-x-auto rounded-xl border-black border-8 bg-white">
       <table
-        className="grid"
+        className="w-full min-w-max grid items-stretch"
         style={{
-          gridTemplateColumns: `auto ${editable ? 'auto' : ''}${' 1fr'.repeat(frontnesses.length)}`,
+          gridTemplateColumns: `auto ${editable ? 'auto' : ''} repeat(${frontnesses.length}, 1fr)`,
         }}
       >
         <thead className="contents">
@@ -63,7 +60,7 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
             {frontnesses.map(({ name, features }) => (
               <th
                 key={name}
-                className="flex items-end justify-center border-gray whitespace-normal py-2 lg:px-2"
+                className="flex items-end justify-center border-gray whitespace-normal py-2 lg:py-0 lg:px-2"
                 title={JSON.stringify(features)}
               >
                 <span className={styles['vowel-table-header']}>
