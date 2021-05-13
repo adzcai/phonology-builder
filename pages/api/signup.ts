@@ -8,10 +8,8 @@ export default nextConnect()
   .post(async (req, res) => {
     const { username, password, confirmPassword } = req.body;
 
-    console.log('SIGNUP RECEIVED')
-
     if (!username || !password || !confirmPassword) {
-      return res.status(400).json({ message: 'Missing fields' });
+      return res.status(400).json({ error: { message: 'Missing fields' } });
     }
 
     if (password !== confirmPassword) return res.status(400).json({ message: 'Passwords do not match' });

@@ -1,23 +1,13 @@
-export default async function fetcher(...args) {
-  try {
-    const response = await fetch(...args);
+export default async function fetcher(...args): Promise<{ data?: any, error?: { message: string, data: any } }> {
+  const response = await fetch(...args);
 
-    if (response.ok) {
-      return await response.json();
-    }
-
-    // if the server replies, there's always some data in json
-    // if there's a network error, it will throw at the previous line
-    const data = response.status === 500 ? await response.text() : await response.json();
-
-    const error = new Error(response.statusText);
-    error.response = response;
-    error.data = data;
-    throw error;
-  } catch (error) {
-    if (!error.data) {
-      error.data = { message: error.message };
-    }
-    throw error;
+  // if status code in the 200s
+  if (response.ok) {
+    return response.json();
   }
+
+  // if the server replies, there's always some data in json
+  // if there's a network error, it will throw at the previous line
+  const error = await response.json();
+  return { error }; // will contain error from our API
 }

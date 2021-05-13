@@ -52,6 +52,15 @@ export type Sound = {
 
 export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
 
+export type UserPayload = {
+  error?: { message: string };
+  username?: string;
+  charts: {
+    name: string,
+    sounds: Sound[]
+  }[];
+};
+
 // the two features missing from the original book are
 // implosive and ATR (equivalent to tense in some languages)
 export const allSounds = rawSounds as Sound[];

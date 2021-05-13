@@ -33,16 +33,20 @@ export default function AboutSection({ user, mutateUser }: Props) {
 
     try {
       // will always throw error with { data: ... }
-      const sendUser = await fetchJson(formState === 'Log in' ? '/api/login' : '/api/signup', {
+      const payload = await fetchJson(formState === 'Log in' ? '/api/login' : '/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
-      await mutateUser(sendUser);
+      if (!payload.error) {
+        await mutateUser(payload);
+      } else {
+        setErrorMsg(payload.error.message);
+      }
     } catch (error) {
-      console.error('An unexpected error happened:', error);
-      setErrorMsg(`An unexpected error occurred: ${error.data.message || error.message}`);
+      console.error('An unexpected error occurred:', error);
+      setErrorMsg(`An unexpected error occurred: ${error.message || error.data.message}`);
     }
   }
 

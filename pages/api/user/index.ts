@@ -1,5 +1,4 @@
 import nextConnect from 'next-connect';
-import mongoose from 'mongoose';
 import auth from '../../../src/lib/auth';
 import User from '../../../src/models/User';
 
@@ -30,8 +29,6 @@ export default nextConnect()
       };
       res.json(data);
     } else {
-      res.json({
-        isLoggedIn: false,
-      });
+      res.json({ isLoggedIn: false });
     }
   });

@@ -22,8 +22,6 @@ export default nextConnect()
 
     const user = await User.findOne({ username }).exec();
 
-    console.log('LOADED:', user);
-
     const insertSounds = await Promise.all(sounds.map(async (sound) => {
       const s = await Sound.findOne({ name: sound.name }).exec();
       if (s) return s;
@@ -33,8 +31,6 @@ export default nextConnect()
     user.charts.push({ sounds: insertSounds, name });
     user.markModified('charts');
     await user.save();
-
-    console.log('AFTER', user);
 
     res.json(user);
   });

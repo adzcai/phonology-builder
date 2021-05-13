@@ -46,7 +46,7 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
   if (heights.length === 0) return <p className="rounded bg-red-200 py-2 px-4 mx-auto w-max">No vowel sounds selected!</p>;
 
   return (
-    <div className="w-full md:w-max max-w-full h-full overflow-x-auto rounded-xl border-black border-8 bg-white">
+    <div className="w-full sm:w-max max-w-full h-full overflow-x-auto rounded-xl border-black border-8 bg-white">
       <table
         className="w-full min-w-max grid items-stretch"
         style={{
