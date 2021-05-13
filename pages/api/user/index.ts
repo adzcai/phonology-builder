@@ -1,10 +1,12 @@
+import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
+import { CustomRequest } from '../../../src/assets/ipaData';
 import auth from '../../../src/lib/auth';
 import User from '../../../src/models/User';
 
 export default nextConnect()
   .use(auth)
-  .get(async (req, res) => {
+  .get(async (req: CustomRequest, res: NextApiResponse) => {
     const user = req.session.get('user');
 
     if (user) {

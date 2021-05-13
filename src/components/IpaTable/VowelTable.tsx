@@ -114,7 +114,7 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
                 -
               </th>
               )}
-              {frontnesses.map((frontness, i) => (
+              {frontnesses.map((frontness) => (
                 <TableCell
                   key={frontness.name}
                   sounds={matchFeatures(

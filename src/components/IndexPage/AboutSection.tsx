@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { InputHTMLAttributes, useState } from 'react';
 import fetchJson from '../../lib/fetchJson';
 

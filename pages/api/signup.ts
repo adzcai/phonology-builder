@@ -1,11 +1,12 @@
 import nextConnect from 'next-connect';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { createUser } from '../../src/lib/user';
 import auth from '../../src/lib/auth';
 import User from '../../src/models/User';
 
 export default nextConnect()
   .use(auth)
-  .post(async (req, res) => {
+  .post(async (req: NextApiRequest, res: NextApiResponse) => {
     const { username, password, confirmPassword } = req.body;
 
     if (!username || !password || !confirmPassword) {

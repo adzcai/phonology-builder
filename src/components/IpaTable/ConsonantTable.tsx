@@ -93,7 +93,7 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
               </th>
               )}
               {/* elements / sounds */}
-              {places.map((place, i) => (
+              {places.map((place) => (
                 <TableCell
                   key={place.name}
                   sounds={matchFeatures(

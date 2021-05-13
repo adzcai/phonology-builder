@@ -1,9 +1,10 @@
 import passport from 'passport';
 import Local from 'passport-local';
+import { UserPayload } from '../assets/ipaData';
 import User from '../models/User';
 import { validatePassword } from './user';
 
-passport.serializeUser((user, done) => done(null, user.username));
+passport.serializeUser((user, done) => done(null, (user as UserPayload).username));
 
 passport.deserializeUser(async (req, username, done) => {
   const user = await User.findOne({ username });

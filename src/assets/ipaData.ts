@@ -1,3 +1,4 @@
+import { NextApiRequest } from 'next';
 import { createContext, Dispatch, SetStateAction } from 'react';
 import featureData from './featureData.json';
 import rawSounds from './rawFeatures.json';
@@ -51,6 +52,8 @@ export type Sound = {
 };
 
 export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
+
+export type CustomRequest = NextApiRequest & { session: any };
 
 export type UserPayload = {
   error?: { message: string };

@@ -6,9 +6,10 @@ import {
 function sortSounds(a, b) {
   // eslint-disable-next-line no-restricted-syntax
   for (const [feature] of allFeatures) {
-    if (a[feature] === b[feature]) continue;
-    if (a[feature] === true) return 1;
-    if (a[feature] === false) return -1;
+    if (a[feature] !== b[feature]) {
+      if (a[feature] === true) return 1;
+      if (a[feature] === false) return -1;
+    }
   }
   return 1;
 }
@@ -35,7 +36,9 @@ export default function TableCell({
   let SoundContainer: (_: SoundContainerProps) => JSX.Element;
 
   if (!editable) {
-    SoundContainer = ({ sound }: SoundContainerProps) => <div className={baseStyles}>{sound.name}</div>;
+    SoundContainer = ({ sound }: SoundContainerProps) => (
+      <div className={baseStyles}>{sound.name}</div>
+    );
   } else if (selectedDiacritics.length > 0) {
     SoundContainer = ({ sound }: SoundContainerProps) => (
       <button

@@ -1,6 +1,8 @@
 import nextConnect from 'next-connect';
+import { NextApiResponse } from 'next';
 import passport from '../../src/lib/passport';
 import auth from '../../src/lib/auth';
+import { CustomRequest } from '../../src/assets/ipaData';
 
 function authenticate(method, req, res) {
   return new Promise((resolve, reject) => {
@@ -16,9 +18,10 @@ function authenticate(method, req, res) {
 
 export default nextConnect()
   .use(auth)
-  .post(async (req, res) => {
+  .post(async (req: CustomRequest, res: NextApiResponse) => {
     try {
-      const user = await authenticate('local', req, res);
+      // hacky typescript workaround, user is the second argument to `done` in /src/lib/passport.ts
+      const user = await authenticate('local', req, res) as { username: string };
 
       req.session.set('user', { username: user.username });
       await req.session.save();

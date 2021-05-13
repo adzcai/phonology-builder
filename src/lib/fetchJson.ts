@@ -1,5 +1,7 @@
-export default async function fetcher(...args): Promise<{ data?: any, error?: { message: string, data: any } }> {
-  const response = await fetch(...args);
+export default async function fetcher(
+  input: RequestInfo, init?: RequestInit,
+): Promise<{ data?: any, error?: { message: string, data: any } }> {
+  const response = await fetch(input, init);
 
   // if status code in the 200s
   if (response.ok) {
