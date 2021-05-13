@@ -1,23 +1,25 @@
-import dbConnect from '../../src/assets/dbconnect';
+import nextConnect from 'next-connect';
 import { createUser } from '../../src/lib/user';
-import withSession from '../../src/lib/withSession';
+import auth from '../../src/lib/auth';
 import User from '../../src/models/User';
 
-export default withSession(async (req, res) => {
-  const { username, password, confirmPassword } = req.body;
+export default nextConnect()
+  .use(auth)
+  .post(async (req, res) => {
+    const { username, password, confirmPassword } = req.body;
 
-  if (!username || !password || !confirmPassword) {
-    return res.status(400).json({ message: 'Missing fields' });
-  }
+    console.log('SIGNUP RECEIVED')
 
-  if (password !== confirmPassword) return res.status(400).json({ message: 'Passwords do not match' });
+    if (!username || !password || !confirmPassword) {
+      return res.status(400).json({ message: 'Missing fields' });
+    }
 
-  await dbConnect();
-  if (await User.exists({ username })) return res.status(409).json({ message: 'That username is already taken' });
+    if (password !== confirmPassword) return res.status(400).json({ message: 'Passwords do not match' });
 
-  const user = await createUser({ username, password });
+    if (await User.exists({ username })) return res.status(409).json({ message: 'That username is already taken' });
 
-  console.log('USER:', user);
+    await createUser({ username, password });
 
-  res.redirect('/api/login');
-});
+    // this will save the required cookie
+    res.redirect('/api/login');
+  });

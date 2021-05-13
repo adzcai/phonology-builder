@@ -26,6 +26,16 @@ const Section = ({
   </section>
 );
 
+const TextInput = ({ name, ...props }) => (
+  <input
+    id={name}
+    name={name}
+    required
+    className="ml-2 pl-2 rounded-lg outline-none shadow focus:shadow-lg transition-shadow"
+    {...props}
+  />
+);
+
 const SonorityHierarchy = () => (
   <Section heading="The sonority hierarchy" classes="bg-yellow-200">
     <TableContainer borderCollapse>
@@ -97,6 +107,7 @@ export default function Home() {
 
   const [formState, setFormState] = useState<'Closed' | 'Log in' | 'Sign up'>('Closed');
   const [errorMsg, setErrorMsg] = useState('');
+  const [saveErrorMsg, setSaveErrorMsg] = useState('');
 
   const [allSounds, setAllSounds] = useState<Sound[]>(rawSounds);
   const [selectedSounds, setSelectedSounds] = useState<Sound[]>([]);
@@ -143,6 +154,27 @@ export default function Home() {
     } catch (error) {
       console.error('An unexpected error happened:', error);
       setErrorMsg(`An unexpected error occurred: ${error.data.message || error.message}`);
+    }
+  }
+
+  async function handleSaveSounds(e) {
+    e.preventDefault();
+
+    const body = { sounds: selectedSounds, name: e.currentTarget['chart-name'].value };
+
+    try {
+      const newUser = await fetchJson('/api/user/charts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      console.dir(newUser);
+
+      await mutateUser(newUser);
+    } catch (error) {
+      console.error('An unexpected error happened:', error);
+      setSaveErrorMsg(`An unexpected error occurred: ${error.data.message || error.message}`);
     }
   }
 
@@ -200,16 +232,16 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-x-2 gap-y-4" style={{ gridTemplateColumns: 'auto auto' }}>
                   <label htmlFor="username" className="contents">
                     <span className="text-right">Username</span>
-                    <input id="username" type="text" name="username" required placeholder="Enter username" className="ml-2 pl-2 rounded-lg outline-none shadow focus:shadow-lg transition-shadow" />
+                    <TextInput name="username" type="text" required placeholder="Enter username" />
                   </label>
                   <label htmlFor="password" className="contents">
                     <span className="text-right">Password</span>
-                    <input id="password" type="password" name="password" required placeholder="Enter password" className="ml-2 pl-2 rounded-lg outline-none shadow focus:shadow-lg transition-shadow" />
+                    <TextInput type="password" name="password" required placeholder="Enter password" />
                   </label>
                   {formState === 'Sign up' && (
                   <label htmlFor="confirm-password" className="contents">
                     <span className="text-right">Confirm password</span>
-                    <input id="confirm-password" type="password" name="confirm-password" required placeholder="Confirm password" className="ml-2 pl-2 rounded-lg outline-none shadow focus:shadow-lg transition-shadow" />
+                    <TextInput type="password" name="confirm-password" required placeholder="Confirm password" />
                   </label>
                   )}
                 </div>
@@ -224,6 +256,8 @@ export default function Home() {
         )}
 
       </header>
+
+      <pre>{JSON.stringify(user?.charts[0]?.sounds, null, 2)}</pre>
 
       <TableContext.Provider value={{
         allSounds,
@@ -262,6 +296,20 @@ export default function Home() {
             </li>
           </ul>
 
+          {/* undefined > 0 is false, so this only works if the user has positive charts */}
+          {user?.charts?.length > 0 ? (
+            <Section heading="Your sound charts">
+              <p className="mx-auto w-full text-center">Click a chart to load it!</p>
+              <ul className="flex flex-wrap gap-4 mt-8 justify-center">
+                {user.charts.map(({ name, sounds }) => (
+                  <li key={name}>
+                    <button type="button" className="bg-green-300 hover:bg-green-500 drop-shadow rounded p-2" onClick={() => setSelectedSounds(sounds)}>{name}</button>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          ) : <p>Save some charts!</p>}
+
           <div className="flex items-center justify-evenly mt-8">
             <button
               type="button"
@@ -277,10 +325,33 @@ export default function Home() {
             >
               Reset all
             </button>
+            {user?.isLoggedIn && (
+              <>
+                <form onSubmit={handleSaveSounds} className="flex items-center">
+                  <label htmlFor="chart-name" className="contents">
+                    <span>Chart name</span>
+                    <TextInput type="text" name="chart-name" placeholder="Enter chart name" />
+                  </label>
+                  <button
+                    type="submit"
+                    className="hover-blue p-2 rounded"
+                  >
+                    Save selected sounds
+                  </button>
+                </form>
+
+                <button
+                  type="button"
+                  className="hover-blue p-2 rounded"
+                  onClick={handleSaveSounds}
+                >
+                  Load selected sounds
+                </button>
+              </>
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row md:flex-col items-center justify-around space-y-8 sm:space-x-8 sm:space-y-0 md:space-x-0 md:space-y-8 mt-8">
-            {/* <div className="grid w-full grid-cols-1 lg:grid-cols-4 gap-8 mt-8"> */}
             <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8 max-w-full sm:max-w-md md:max-w-full">
               <ConsonantTable editable />
               <VowelTable

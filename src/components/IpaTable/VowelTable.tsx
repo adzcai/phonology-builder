@@ -47,10 +47,13 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
 
   return (
     <div className="w-full h-full xl:w-max overflow-x-auto rounded-xl border-black border-8 bg-white">
+      {/* <pre>{JSON.stringify(sounds.map(sound => sound), null, 2)}</pre>
+      <pre>{JSON.stringify(frontnesses.map(sound => sound.name), null, 2)}</pre>
+      <pre>{JSON.stringify(filterNonEmpty(sounds, allHeights).map(sound => sound.name), null, 2)}</pre> */}
       <table
         className="grid"
         style={{
-          gridTemplateColumns: `auto auto${' 1fr'.repeat(frontnesses.length)}`,
+          gridTemplateColumns: `auto ${editable ? 'auto' : ''}${' 1fr'.repeat(frontnesses.length)}`,
         }}
       >
         <thead className="contents">

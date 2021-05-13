@@ -5,7 +5,6 @@ import {
 
 type TableCellProps = {
   sounds: Sound[];
-  collapseBorders?: boolean;
   insertBelow?: (toAdd: Diacritic) => void;
   editable: boolean;
 };
@@ -13,7 +12,7 @@ type TableCellProps = {
 type SoundContainerProps = { sound: Sound };
 
 export default function TableCell({
-  sounds, collapseBorders = false, insertBelow, editable,
+  sounds, insertBelow, editable,
 }: TableCellProps) {
   const {
     setAllSounds,
@@ -48,7 +47,7 @@ export default function TableCell({
     SoundContainer = ({ sound }: SoundContainerProps) => (
       <button
         type="button"
-        className={`${baseStyles} ${selectedSounds.includes(sound)
+        className={`${baseStyles} ${selectedSounds.some((s) => s.name === sound.name)
           ? 'bg-green-300 hover:bg-red-500' : 'hover-blue'}`}
         onClick={(e) => {
           // shift key: toggle neighbor
@@ -58,10 +57,10 @@ export default function TableCell({
             if (sound === neighbor) setNeighbor(null);
             else setNeighbor(sound);
           } else if (e.altKey) {
-            setAllSounds((prev) => prev.filter((s) => s !== sound));
+            setAllSounds((prev) => prev.filter((s) => s.name !== sound.name));
           } else {
             setSounds((prev: Sound[]) => (
-              prev.includes(sound) ? prev.filter((s) => s !== sound) : [...prev, sound]
+              prev.includes(sound) ? prev.filter((s) => s.name !== sound.name) : [...prev, sound]
             ));
           }
         }}

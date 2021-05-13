@@ -1,6 +1,9 @@
-import withSession from '../../src/lib/withSession';
+import nextConnect from 'next-connect';
+import auth from '../../src/lib/auth';
 
-export default withSession(async (req, res) => {
-  req.session.destroy();
-  res.json({ isLoggedIn: false });
-});
+export default nextConnect()
+  .use(auth)
+  .post(async (req, res) => {
+    req.session.destroy();
+    res.json({ isLoggedIn: false });
+  });

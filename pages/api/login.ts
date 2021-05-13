@@ -1,11 +1,10 @@
-import passport from 'passport';
 import nextConnect from 'next-connect';
-import localStrategy from '../../src/lib/localStrategy';
-import withSession from '../../src/lib/withSession';
+import passport from '../../src/lib/passport';
+import auth from '../../src/lib/auth';
 
 function authenticate(method, req, res) {
   return new Promise((resolve, reject) => {
-    passport.authenticate(method, { session: false }, (error, token) => {
+    passport.authenticate(method, (error, token) => {
       if (error) {
         reject(error);
       } else {
@@ -15,20 +14,17 @@ function authenticate(method, req, res) {
   });
 }
 
-passport.use(localStrategy);
-
 export default nextConnect()
-  .use(passport.initialize())
-  .post(withSession(async (req, res) => {
+  .use(auth)
+  .post(async (req, res) => {
     try {
-      console.log(req.body);
       const user = await authenticate('local', req, res);
 
-      req.session.set('user', user);
+      req.session.set('user', { username: user.username });
       await req.session.save();
       res.json(user);
     } catch (error) {
       const { response: fetchResponse } = error;
       res.status(fetchResponse?.status || 500).json({ message: error.message });
     }
-  }));
+  });

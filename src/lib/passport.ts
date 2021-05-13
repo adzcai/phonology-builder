@@ -1,16 +1,21 @@
+import passport from 'passport';
 import Local from 'passport-local';
-import { validatePassword } from './user';
 import User from '../models/User';
-import dbConnect from '../assets/dbconnect';
+import { validatePassword } from './user';
 
-export default new Local.Strategy(async (
+passport.serializeUser((user, done) => done(null, user.username));
+
+passport.deserializeUser(async (req, username, done) => {
+  const user = await User.findOne({ username });
+  done(null, user);
+});
+
+passport.use(new Local.Strategy(async (
   username,
   password,
   done,
 ) => {
   try {
-    await dbConnect();
-
     const user = await User.findOne({ username });
     if (user && validatePassword(user, password)) {
       done(null, user);
@@ -20,4 +25,6 @@ export default new Local.Strategy(async (
   } catch (error) {
     done(error);
   }
-});
+}));
+
+export default passport;

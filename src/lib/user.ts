@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import dbConnect from '../assets/dbconnect';
 import User from '../models/User';
 
 /**
@@ -17,8 +16,6 @@ export async function createUser({ username, password }) {
     hash,
     salt,
   };
-
-  await dbConnect();
 
   // This is an in memory store for users, there is no data persistence without a proper DB
   await User.create(user);

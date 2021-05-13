@@ -1,0 +1,35 @@
+import mongoose from 'mongoose';
+
+const Sound = new mongoose.Schema({
+  name: String,
+  syllabic: String,
+  stress: String,
+  long: String,
+  consonantal: String,
+  sonorant: String,
+  continuant: String,
+  'delayed release': String,
+  approximant: String,
+  tap: String,
+  trill: String,
+  nasal: String,
+  voice: String,
+  'spread gl': String,
+  'constr gl': String,
+  labial: String,
+  round: String,
+  labiodental: String,
+  coronal: String,
+  anterior: String,
+  distributed: String,
+  strident: String,
+  lateral: String,
+  dorsal: String,
+  high: String,
+  low: String,
+  front: String,
+  back: String,
+  tense: String,
+});
+
+export default mongoose.models.Sound || mongoose.model('Sound', Sound);

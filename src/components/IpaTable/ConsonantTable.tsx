@@ -3,7 +3,6 @@ import {
   allManners as rawManners,
   allPlaces, Diacritic, filterNonEmpty, matchFeatures, TableContext,
 } from '../../assets/ipaData';
-import TableContainer from '../TableContainer';
 import TableCell from './TableCell';
 
 export default function ConsonantTable({ editable }: { editable: boolean }) {
