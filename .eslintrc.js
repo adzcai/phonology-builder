@@ -12,5 +12,6 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-filename-extension': ['error', { extensions: ['.tsx', '.jsx'] }],
     'no-nested-ternary': 'off',
+    'consistent-return': 'off',
   },
 };

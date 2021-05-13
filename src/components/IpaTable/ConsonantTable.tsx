@@ -37,24 +37,25 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
   if (manners.length === 0) return <p className="rounded bg-red-200 py-2 px-4 mx-auto w-max">No consonant sounds selected!</p>;
 
   return (
-    <TableContainer>
-      <thead>
-        <tr>
-          <td className="border-gray-300 border-b-2 border-r-4 sticky left-0 bg-gradient-to-r from-white via-white to-transparent" />
-          {editable && (
-            <td className="border-gray-300 border-b-2 border-r-2" />
-          )}
-          {/* only show a column if there is a selected sound in that column */}
-          {places.map((col, i) => (
-            <th
-              key={col.name}
-              className={`border-gray-300 border-l-2 ${i < places.length - 1 && 'border-r-2'} border-b-2 px-2`}
-              title={JSON.stringify(col.features)}
-            >
-              <div className="flex items-center justify-center">
-                {col.name}
-                {/* Button to remove a column */}
-                {editable && (
+    <div className="w-full h-full overflow-x-auto rounded-xl mx-auto border-black border-8 bg-white">
+      <table>
+        <thead>
+          <tr>
+            <td className="border-gray sticky left-0 bg-gradient-to-r from-white via-white to-transparent" />
+            {editable && (
+            <td className="border-gray" />
+            )}
+            {/* only show a column if there is a selected sound in that column */}
+            {places.map((col, i) => (
+              <th
+                key={col.name}
+                className="border-gray px-2"
+                title={JSON.stringify(col.features)}
+              >
+                <div className="flex items-center justify-center">
+                  {col.name}
+                  {/* Button to remove a column */}
+                  {editable && (
                   <button
                     type="button"
                     onClick={() => deleteFeatureSet({
@@ -65,53 +66,52 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
                   >
                     -
                   </button>
-                )}
-              </div>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {manners.map((manner, row) => (
-          <tr key={manner.name}>
-            {/* head of row */}
-            <th
-              className={`border-gray-300 border-t-2 ${row !== manners.length && 'border-b-2'} border-r-4 sticky left-0
-        bg-gradient-to-r from-white via-white to-transparent px-2`}
-              title={JSON.stringify(manner.features)}
-            >
-              {manner.name.replace('lateral', 'lat.').replace('approximant', 'approx.')}
-            </th>
-            {editable && (
-            <th
-              className={`border-gray-300 border-t-2 ${row !== manners.length && 'border-b-2'} border-r-2 px-1 bg-red-200 hover:bg-red-500 cursor-pointer`}
-              onClick={() => deleteFeatureSet({
-                name: manner.name,
-                features: { ...manner.features, syllabic: false },
-              })}
-              role="button"
-            >
-              -
-            </th>
-            )}
-            {/* elements / sounds */}
-            {places.map((place, i) => (
-              <TableCell
-                key={place.name}
-                last={i === places.length - 1}
-                lastRow={row === manners.length - 1}
-                sounds={matchFeatures(
-                  editable ? allSounds : sounds,
-                  place.features, manner.features,
-                  { syllabic: false },
-                )}
-                insertBelow={(diacritic) => insertBelow(row, diacritic)}
-                editable={editable}
-              />
+                  )}
+                </div>
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </TableContainer>
+        </thead>
+        <tbody>
+          {manners.map((manner, row) => (
+            <tr key={manner.name}>
+              {/* head of row */}
+              <th
+                className={`border-gray sticky left-0
+        bg-gradient-to-r from-white via-white to-transparent px-2`}
+                title={JSON.stringify(manner.features)}
+              >
+                {manner.name.replace('lateral', 'lat.').replace('approximant', 'approx.')}
+              </th>
+              {editable && (
+              <th
+                className="border-gray px-1 bg-red-200 hover:bg-red-500 cursor-pointer"
+                onClick={() => deleteFeatureSet({
+                  name: manner.name,
+                  features: { ...manner.features, syllabic: false },
+                })}
+                role="button"
+              >
+                -
+              </th>
+              )}
+              {/* elements / sounds */}
+              {places.map((place, i) => (
+                <TableCell
+                  key={place.name}
+                  sounds={matchFeatures(
+                    editable ? allSounds : sounds,
+                    place.features, manner.features,
+                    { syllabic: false },
+                  )}
+                  insertBelow={(diacritic) => insertBelow(row, diacritic)}
+                  editable={editable}
+                />
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

@@ -31,7 +31,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
         {allFeatures.map(([feature]) => (
           <td
             key={feature}
-            className="text-center border-gray-300 border-2"
+            className="text-center border-gray"
           >
             {feature === 'name'
               ? sound[feature]
@@ -48,7 +48,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
 
   return (
     <tr>
-      <td className={`text-center border-gray-300 border-2
+      <td className={`text-center border-gray
         ${nDistinct === 0 ? 'sticky top-36 bg-white' : `bg-red-${Math.min(Math.max(nDistinct, 1), 9)}00`}`}
       >
         {nDistinct}
@@ -56,7 +56,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
       {allFeatures.map(([feature]) => (
         <td
           key={feature}
-          className={`text-center border-gray-300 border-2 ${nDistinct === 0 && 'sticky top-36 bg-white'}
+          className={`text-center border-gray ${nDistinct === 0 && 'sticky top-36 bg-white'}
             ${trueDifference(sound, contrastWith, feature as keyof Sound) && 'bg-red-300'}`}
         >
           {feature === 'name'
@@ -83,7 +83,7 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
         <tr>
           {contrastWith && (
           <td className="bg-white sticky top-0 h-8">
-            <div className="w-full h-full border-gray-300 border-r-2 border-b-2" />
+            <div className="w-full h-full border-gray" />
           </td>
           )}
           {Array.from(allFeatures.reduce((map, [_, __, category]) => {
@@ -93,18 +93,18 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
             <th
               key={feature}
               colSpan={count}
-              className={`bg-${colors[i]}-300 sticky top-0 h-8`}
+              className={`border-gray bg-${colors[i]}-300 sticky top-0 h-8`}
             >
               {feature}
             </th>
           ))}
         </tr>
         <tr>
-          {contrastWith && <td className="w-8 h-28 sticky top-8 border-gray-300 border-2 bg-white" />}
+          {contrastWith && <td className="w-8 h-28 sticky top-8 border-gray bg-white" />}
           {allFeatures.map(([feature, _, __, description]) => (
             <th key={feature} className="w-8 h-28 sticky top-8 bg-white" title={description}>
               <div
-                className="flex items-center w-full h-full border-gray-300 border-2"
+                className="flex items-center w-full h-full border-gray"
                 style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
               >
                 {feature === 'delayed release' ? 'del rel' : feature}

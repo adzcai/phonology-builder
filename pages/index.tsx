@@ -2,6 +2,7 @@ import Head from 'next/head';
 import React, {
   PropsWithChildren, useCallback, useState,
 } from 'react';
+import useSWR from 'swr';
 import {
   Sound, TableContext, Diacritic, FeatureSet, matchFeatures,
   toggleInArray,
@@ -14,6 +15,7 @@ import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
 import TableContainer from '../src/components/TableContainer';
+import fetchJson from '../src/lib/fetchJson';
 
 const Section = ({
   children, heading, classes,
@@ -91,6 +93,11 @@ const SonorityHierarchy = () => (
 );
 
 export default function Home() {
+  const { data: user, mutate: mutateUser } = useSWR('/api/user');
+
+  const [formState, setFormState] = useState<'Closed' | 'Log in' | 'Sign up'>('Closed');
+  const [errorMsg, setErrorMsg] = useState('');
+
   const [allSounds, setAllSounds] = useState<Sound[]>(rawSounds);
   const [selectedSounds, setSelectedSounds] = useState<Sound[]>([]);
   const [neighbor, setNeighbor] = useState<Sound | null>(null);
@@ -110,18 +117,44 @@ export default function Home() {
   );
 
   const deleteFeatureSet = useCallback(({ features }: FeatureSet) => {
-    setAllSounds(allSounds.filter((sound) => !matchFeatures([sound], features).length));
+    setAllSounds((prev) => prev.filter((sound) => matchFeatures([sound], features).length === 0));
   }, []);
+
+  // when user attempts to log in
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const body: { username: string, password: string, confirmPassword?: string } = {
+      username: e.currentTarget.username.value,
+      password: e.currentTarget.password.value,
+    };
+
+    if (formState === 'Sign up') body.confirmPassword = e.currentTarget['confirm-password'].value;
+
+    try {
+      // will always throw error with { data: ... }
+      const sendUser = await fetchJson(formState === 'Log in' ? '/api/login' : '/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      await mutateUser(sendUser);
+    } catch (error) {
+      console.error('An unexpected error happened:', error);
+      setErrorMsg(`An unexpected error occurred: ${error.data.message || error.message}`);
+    }
+  }
 
   return (
     <div>
       <Head>
-        <title>Phonology Creator</title>
+        <title>Phonology Builder</title>
       </Head>
 
-      <header className="p-8 md:py-12 bg-gradient-to-br from-purple-300 to-indigo-300">
-        <h1 className="text-4xl text-center">Phonetic Inventory Builder</h1>
-        <p className="mt-8 mx-auto max-w-lg text-center">
+      <header className="p-8 md:py-12 bg-gradient-to-br from-purple-300 to-indigo-300 w-full flex flex-col items-center space-y-8">
+        <h1 className="text-4xl">Phonetic Inventory Builder</h1>
+        <p className="max-w-lg text-center">
           Based on the
           {' '}
           <a href="https://linguistics.ucla.edu/people/hayes/120a/Pheatures/" className="underline">Pheatures</a>
@@ -139,6 +172,57 @@ export default function Home() {
           </a>
           .
         </p>
+
+        {user?.isLoggedIn ? (
+          <button
+            type="button"
+            onClick={async () => mutateUser(await fetchJson('/api/logout', { method: 'POST' }))}
+            className="bg-pink-300 rounded-xl p-2"
+          >
+            Logout
+          </button>
+        ) : (
+          <>
+            <div className="flex space-x-8 w-max">
+              <button type="button" className="rounded-xl bg-pink-300 hover:bg-pink-500 py-2 px-4 shadow-lg hover:shadow-xl transition outline-none" onClick={() => setFormState('Log in')}>
+                Log in
+              </button>
+              <button type="button" className="rounded-xl bg-pink-300 hover:bg-pink-500 py-2 px-4 shadow-lg hover:shadow-xl transition outline-none" onClick={() => setFormState('Sign up')}>
+                Sign up
+              </button>
+            </div>
+
+            {formState !== 'Closed' && (
+            <div className="bg-pink-300 w-max max-w-sm p-2 rounded-xl">
+              <h3 className="font-bold text-center">{formState}</h3>
+
+              <form onSubmit={handleSubmit} className="w-full mt-4 flex flex-col items-center space-y-4">
+                <div className="grid grid-cols-2 gap-x-2 gap-y-4" style={{ gridTemplateColumns: 'auto auto' }}>
+                  <label htmlFor="username" className="contents">
+                    <span className="text-right">Username</span>
+                    <input id="username" type="text" name="username" required placeholder="Enter username" className="ml-2 pl-2 rounded-lg outline-none shadow focus:shadow-lg transition-shadow" />
+                  </label>
+                  <label htmlFor="password" className="contents">
+                    <span className="text-right">Password</span>
+                    <input id="password" type="password" name="password" required placeholder="Enter password" className="ml-2 pl-2 rounded-lg outline-none shadow focus:shadow-lg transition-shadow" />
+                  </label>
+                  {formState === 'Sign up' && (
+                  <label htmlFor="confirm-password" className="contents">
+                    <span className="text-right">Confirm password</span>
+                    <input id="confirm-password" type="password" name="confirm-password" required placeholder="Confirm password" className="ml-2 pl-2 rounded-lg outline-none shadow focus:shadow-lg transition-shadow" />
+                  </label>
+                  )}
+                </div>
+
+                <button type="submit" className="hover-blue py-2 px-4 rounded-lg shadow">{formState}</button>
+
+                {errorMsg && <p className="text-center">{errorMsg}</p>}
+              </form>
+            </div>
+            )}
+          </>
+        )}
+
       </header>
 
       <TableContext.Provider value={{
@@ -195,22 +279,19 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="grid w-full grid-cols-1 lg:grid-cols-4 gap-8 mt-8">
-            <div className="lg:col-span-3">
+          <div className="flex flex-col sm:flex-row md:flex-col items-center justify-around space-y-8 sm:space-x-8 sm:space-y-0 md:space-x-0 md:space-y-8 mt-8">
+            {/* <div className="grid w-full grid-cols-1 lg:grid-cols-4 gap-8 mt-8"> */}
+            <div className="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8 max-w-full sm:max-w-md md:max-w-full">
               <ConsonantTable editable />
-            </div>
-            <div className="lg:col-span-3">
               <VowelTable
                 allHeights={allHeights}
                 setAllHeights={setAllHeights}
                 editable
               />
             </div>
-            <div className="lg:row-span-2 lg:row-start-1">
-              <DiacriticTable>
-                Click a diacritic to select it, then click a sound to apply it.
-              </DiacriticTable>
-            </div>
+            <DiacriticTable>
+              Click a diacritic to select it, then click a sound to apply it.
+            </DiacriticTable>
           </div>
         </Section>
 

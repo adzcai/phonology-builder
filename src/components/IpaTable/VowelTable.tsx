@@ -8,29 +8,7 @@ import {
   allFrontnesses, Height, matchFeatures,
 } from '../../assets/ipaData';
 import TableCell from './TableCell';
-import TableContainer from '../TableContainer';
-
-const blBorder = 'border-gray-300 border-l-4 border-b-4';
-const brBorder = 'border-gray-300 border-r-4 border-b-4';
-
-const HeaderContainer = ({ name, nCols } : { name: string, nCols: number }) => (
-  nCols > 4
-    ? (
-      <div
-        className="flex items-center justify-end mx-auto w-full leading-4 h-24"
-        style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
-      >
-        {name}
-      </div>
-    )
-    : (
-      <div
-        className="text-center w-full"
-      >
-        {name}
-      </div>
-    )
-);
+import styles from './VowelTable.module.css';
 
 type Props = {
   editable: boolean,
@@ -68,88 +46,90 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
   if (heights.length === 0) return <p className="rounded bg-red-200 py-2 px-4 mx-auto w-max">No vowel sounds selected!</p>;
 
   return (
-    <TableContainer tableClasses="table-fixed" borderCollapse>
-      <colgroup>
-        <col className="w-24" />
-        {editable && <col className="w-6" />}
-        {frontnesses.map(({ name }) => <col key={name} />)}
-      </colgroup>
-      <thead>
-        <tr>
-          <td className="border-gray-300 border-r-4 border-b-4" />
-          {editable && <td className="border-gray-300 border-r-4 border-b-4" />}
-          {frontnesses.map(({ name, features }) => (
-            <th
-              key={name}
-              className="border-gray-300 border-l-4 border-b-4 whitespace-normal"
-              title={JSON.stringify(features)}
-            >
-              <HeaderContainer name={name} nCols={frontnesses.length} />
-            </th>
-          ))}
-        </tr>
-        {editable && (
-        <tr>
-          <td className={brBorder} />
-          <td className={`${brBorder} px-2`} />
-          {frontnesses.map((frontness) => (
-            <th
-              key={frontness.name}
-              role="button"
-              className={`${blBorder} bg-red-200 hover:bg-red-500 w-full leading-none`}
-              onClick={() => deleteFeatureSet({
-                name: frontness.name,
-                features: { ...frontness.features, syllabic: true },
-              })}
-            >
-              -
-            </th>
-          ))}
-        </tr>
-        )}
-      </thead>
-      <tbody>
-        {heights.map((height, row) => (
-          <tr key={height.name}>
-            <th
-              className="border-gray-300 border-t-4 border-r-4 px-2"
-              scope="row"
-              title={JSON.stringify(height.features)}
-            >
-              {height.name}
-            </th>
-            {/* remove row/height button */}
-            {editable && (
-            <th
-              role="button"
-              scope="row"
-              className="border-gray-300 border-t-4 border-r-4 bg-red-200 hover:bg-red-500"
-              onClick={() => deleteFeatureSet({
-                name: height.name,
-                features: { ...height.features, syllabic: true },
-              })}
-            >
-              -
-            </th>
-            )}
-            {frontnesses.map((frontness, i) => (
-              <TableCell
-                key={frontness.name}
-                sounds={matchFeatures(
-                  sounds,
-                  frontness.features, height.features,
-                  { syllabic: true },
-                )}
-                last={i === frontnesses.length - 1}
-                lastRow={row === heights.length - 1}
-                insertBelow={(diacritic) => insertBelow(row, diacritic)}
-                collapseBorders
-                editable={editable}
-              />
+    <div className="w-full h-full xl:w-max overflow-x-auto rounded-xl border-black border-8 bg-white">
+      <table
+        className="grid"
+        style={{
+          gridTemplateColumns: `auto auto${' 1fr'.repeat(frontnesses.length)}`,
+        }}
+      >
+        <thead className="contents">
+          <tr className="contents">
+            <td className="border-gray" />
+            {editable && <td className="border-gray" />}
+            {frontnesses.map(({ name, features }) => (
+              <th
+                key={name}
+                className="flex items-end justify-center border-gray whitespace-normal py-2 lg:px-2"
+                title={JSON.stringify(features)}
+              >
+                <span className={styles['vowel-table-header']}>
+                  {name}
+                </span>
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </TableContainer>
+          {editable && (
+          <tr className="contents">
+            <td className="border-gray" />
+            <td className="border-gray w-4" />
+            {frontnesses.map((frontness) => (
+              <th
+                key={frontness.name}
+                role="button"
+                className="border-gray bg-red-200 hover:bg-red-500 w-full leading-none"
+                onClick={() => deleteFeatureSet({
+                  name: frontness.name,
+                  features: { ...frontness.features, syllabic: true },
+                })}
+              >
+                -
+              </th>
+            ))}
+          </tr>
+          )}
+        </thead>
+
+        <tbody className="contents">
+          {heights.map((height, row) => (
+            <tr key={height.name} className="contents">
+              <th
+                className="border-gray px-2"
+                scope="row"
+                title={JSON.stringify(height.features)}
+              >
+                {height.name}
+              </th>
+              {/* remove row/height button */}
+              {editable && (
+              <th
+                role="button"
+                scope="row"
+                className="border-gray bg-red-200 hover:bg-red-500"
+                onClick={() => deleteFeatureSet({
+                  name: height.name,
+                  features: { ...height.features, syllabic: true },
+                })}
+              >
+                -
+              </th>
+              )}
+              {frontnesses.map((frontness, i) => (
+                <TableCell
+                  key={frontness.name}
+                  sounds={matchFeatures(
+                    sounds,
+                    frontness.features, height.features,
+                    { syllabic: true },
+                  )}
+                  insertBelow={(diacritic) => insertBelow(row, diacritic)}
+                  editable={editable}
+                />
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

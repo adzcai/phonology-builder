@@ -1,12 +1,10 @@
-import { PropsWithoutRef, useContext } from 'react';
+import { useContext } from 'react';
 import {
   Sound, TableContext, Diacritic, applyDiacriticsToSound, canApplyDiacriticsToSound,
 } from '../../assets/ipaData';
 
 type TableCellProps = {
   sounds: Sound[];
-  last: boolean;
-  lastRow: boolean;
   collapseBorders?: boolean;
   insertBelow?: (toAdd: Diacritic) => void;
   editable: boolean;
@@ -15,7 +13,7 @@ type TableCellProps = {
 type SoundContainerProps = { sound: Sound };
 
 export default function TableCell({
-  sounds, last, lastRow, collapseBorders = false, insertBelow, editable,
+  sounds, collapseBorders = false, insertBelow, editable,
 }: TableCellProps) {
   const {
     setAllSounds,
@@ -24,7 +22,7 @@ export default function TableCell({
     selectedDiacritics, setSelectedDiacritics,
   } = useContext(TableContext);
 
-  const baseStyles = 'px-1 w-8 focus:outline-none font-serif text-center';
+  const baseStyles = 'px-1 lg:py-1 w-8 focus:outline-none font-serif text-center';
   let SoundContainer: (_: SoundContainerProps) => JSX.Element;
 
   if (!editable) {
@@ -73,14 +71,8 @@ export default function TableCell({
     );
   }
 
-  const borderClassName = collapseBorders
-    ? 'border-t-4 border-l-4'
-    : `border-l-2 ${!last && 'border-r-2'} border-t-2 ${!lastRow && 'border-b-2'}`;
-
   return (
-    <td
-      className={`border-gray-300 ${borderClassName}`}
-    >
+    <td className="border-gray">
       <div className="flex items-center justify-around">
         {/* unvoiced on left, voiced on right */}
         {[...sounds].sort((a) => (a.voice ? 1 : -1)).map((sound) => (

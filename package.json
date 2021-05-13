@@ -8,13 +8,22 @@
     "start": "next start"
   },
   "dependencies": {
+    "mongoose": "^5.12.8",
     "next": "10.2.0",
+    "next-connect": "^0.10.1",
+    "next-iron-session": "^4.1.13",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "tailwindcss": "^2.1.2"
+    "swr": "^0.5.6",
+    "tailwindcss": "^2.1.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/passport-local": "^1.0.33",
     "@types/react": "^17.0.5",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
     "autoprefixer": "^10.2.5",

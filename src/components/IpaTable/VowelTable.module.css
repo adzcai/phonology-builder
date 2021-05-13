@@ -1,0 +1,11 @@
+.vowel-table-header {
+  writing-mode: vertical-rl;
+  transform: scaleX(-1) scaleY(-1);
+}
+
+@screen lg {
+  .vowel-table-header {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+}

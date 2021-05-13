@@ -51,7 +51,7 @@ function SelectorRow({
               name={`${selected}-val`}
               value={v}
               checked={val === v}
-              onChange={(e) => setVal(e.target.value as InputValue)}
+              onChange={(e) => setVal(e.currentTarget.value as InputValue)}
               className="ml-1"
             />
           </label>
@@ -92,7 +92,7 @@ export default function FilterFeatures() {
               selected={selected}
               setSelected={(e) => setFeatures([
                 ...features.slice(0, i),
-                [e.target.value, val],
+                [e.currentTarget.value, val],
                 ...features.slice(i + 1),
               ])}
               val={val}
