@@ -43,11 +43,11 @@ export default function AboutSection({ user, mutateUser }: Props) {
       if (!payload.error) {
         await mutateUser(payload);
       } else {
-        setErrorMsg(payload.error.message);
+        setErrorMsg((payload.error as { message: string }).message);
       }
     } catch (error) {
       console.error('An unexpected error occurred:', error);
-      setErrorMsg(`An unexpected error occurred: ${error.message || error.data.message}`);
+      setErrorMsg(`An unexpected error occurred: ${error.message || error}`);
     }
   }
 
