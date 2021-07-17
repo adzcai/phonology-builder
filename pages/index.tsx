@@ -10,7 +10,7 @@ import {
   Sound, TableContext, Diacritic, FeatureSet, matchFeatures,
   toggleInArray,
   Height, allHeights as rawHeights, allSounds as rawSounds,
-} from '../src/assets/ipaData';
+} from '../src/assets/ipa-data';
 import NeighborInspector from '../src/components/NeighborInspector';
 import FilterFeatures from '../src/components/IndexPage/FilterFeatures';
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';

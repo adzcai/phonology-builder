@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import { CustomRequest } from '../../src/assets/ipaData';
+import { CustomRequest } from '../../src/assets/ipa-data';
 import auth from '../../src/lib/auth';
 
 export default nextConnect()

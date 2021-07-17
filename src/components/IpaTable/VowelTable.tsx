@@ -6,7 +6,7 @@ import {
 import {
   Diacritic, filterNonEmpty, TableContext,
   allFrontnesses, Height, matchFeatures,
-} from '../../assets/ipaData';
+} from '../../assets/ipa-data';
 import TableCell from './TableCell';
 import styles from './VowelTable.module.css';
 
@@ -27,7 +27,7 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
   // will only render if editable
   const insertBelow = useCallback((row: number, diacritic: Diacritic) => {
     const height = heights[row];
-    if (!diacritic.createNewRow || heights.some((m) => m.name === `${diacritic.displayName} ${height.name}`)) return;
+    if (!diacritic.createNewRow || heights.some((m) => m.name === `${diacritic.name} ${height.name}`)) return;
 
     setAllHeights([
       ...heights.slice(0, row),
@@ -39,7 +39,7 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
             .every((key) => sound[key] === diacritic.features[key]),
         ],
       },
-      { name: `${diacritic.displayName} ${height.name}`, features: [height.features, diacritic.features] },
+      { name: `${diacritic.name} ${height.name}`, features: [height.features, diacritic.features] },
       ...heights.slice(row + 1)]);
   }, [heights]);
 

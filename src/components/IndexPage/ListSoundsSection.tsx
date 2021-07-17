@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Sound } from '../../assets/ipaData';
+import { Sound } from '../../assets/ipa-data';
 import TableContainer from '../TableContainer';
 import FeatureList from './FeatureList';
 

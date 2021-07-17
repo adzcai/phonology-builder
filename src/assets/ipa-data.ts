@@ -1,7 +1,7 @@
 import { NextApiRequest } from 'next';
 import { createContext, Dispatch, SetStateAction } from 'react';
-import featureData from './featureData.json';
-import rawSounds from './rawFeatures.json';
+import featureData from './feature-data.json';
+import rawSounds from './base-features.json';
 
 export type Condition = Partial<Sound> | ((_: Sound) => boolean) | Condition[];
 
@@ -14,13 +14,13 @@ export type Place = FeatureSet;
 export type Frontness = FeatureSet;
 export type Height = FeatureSet;
 export type Diacritic = FeatureSet & {
-  displayName: string;
+  symbol: string;
   requirements: Partial<Sound>;
   createNewRow: boolean;
 };
 
 export type Sound = {
-  name: string;
+  symbol: string;
   syllabic: boolean | 0;
   stress: boolean | 0;
   long: boolean | 0;
@@ -217,7 +217,7 @@ export function canApplyDiacriticsToSound(diacritics: Diacritic[], sound: Sound)
 export function applyDiacriticsToSound(sound: Sound, ...diacritics: Diacritic[]) {
   const newSound: Sound = { ...sound };
   diacritics.forEach((diacritic) => {
-    newSound.name += diacritic.name;
+    newSound.symbol += diacritic.symbol;
     Object.keys(diacritic.features).forEach((feature) => {
       newSound[feature] = diacritic.features[feature];
     });

@@ -1,5 +1,5 @@
 import { PropsWithChildren, useContext } from 'react';
-import { allDiacritics, TableContext } from '../../assets/ipaData';
+import { allDiacritics, TableContext } from '../../assets/ipa-data';
 
 // This table will only exist if the parent IpaTable is editable
 export default function DiacriticTable({ children }: PropsWithChildren<{}>) {
@@ -13,16 +13,16 @@ export default function DiacriticTable({ children }: PropsWithChildren<{}>) {
       <div className="flex flex-row justify-center flex-wrap">
         {allDiacritics.map((diacritic) => (
           <button
-            key={diacritic.displayName}
+            key={diacritic.name}
             type="button"
             className={`
               ${selectedDiacritics.includes(diacritic) ? 'bg-green-300 hover:bg-red-300' : 'hover-blue'}
               focus:outline-none w-10 border-white border-8 m-1 rounded-lg
               text-2xl flex items-center justify-center`}
             onClick={() => handleDiacriticClick(diacritic)}
-            title={diacritic.displayName}
+            title={diacritic.name}
           >
-            {diacritic.name}
+            {diacritic.symbol}
           </button>
         ))}
       </div>

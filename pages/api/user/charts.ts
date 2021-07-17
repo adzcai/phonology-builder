@@ -1,6 +1,6 @@
 import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import { CustomRequest } from '../../../src/assets/ipaData';
+import { CustomRequest } from '../../../src/assets/ipa-data';
 import auth from '../../../src/lib/auth';
 import Sound from '../../../src/models/Sound';
 import User from '../../../src/models/User';
@@ -25,7 +25,7 @@ export default nextConnect()
     const user = await User.findOne({ username }).exec();
 
     const insertSounds = await Promise.all(sounds.map(async (sound) => {
-      const s = await Sound.findOne({ name: sound.name }).exec();
+      const s = await Sound.findOne({ symbol: sound.symbol }).exec();
       if (s) return s;
       return Sound.create(sound);
     }));

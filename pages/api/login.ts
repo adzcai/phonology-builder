@@ -2,7 +2,7 @@ import nextConnect from 'next-connect';
 import { NextApiResponse } from 'next';
 import passport from '../../src/lib/passport';
 import auth from '../../src/lib/auth';
-import { CustomRequest } from '../../src/assets/ipaData';
+import { CustomRequest } from '../../src/assets/ipa-data';
 
 function authenticate(method, req, res) {
   return new Promise((resolve, reject) => {

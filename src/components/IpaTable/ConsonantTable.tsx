@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useState } from 'react';
 import {
   allManners as rawManners,
   allPlaces, Diacritic, filterNonEmpty, matchFeatures, TableContext,
-} from '../../assets/ipaData';
+} from '../../assets/ipa-data';
 import TableCell from './TableCell';
 
 export default function ConsonantTable({ editable }: { editable: boolean }) {
@@ -16,7 +16,7 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
 
   const insertBelow = useCallback((row: number, diacritic: Diacritic) => {
     const manner = manners[row];
-    if (!diacritic.createNewRow || manners.some((m) => m.name === `${diacritic.displayName} ${manner.name}`)) return;
+    if (!diacritic.createNewRow || manners.some((m) => m.name === `${diacritic.name} ${manner.name}`)) return;
     const index = manners.findIndex((a) => a === manner);
 
     setAllManners([
@@ -29,7 +29,7 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
             .every((key) => sound[key] === diacritic.features[key]),
         ],
       },
-      { name: `${diacritic.displayName} ${manner.name}`, features: [manner.features, diacritic.features] },
+      { name: `${diacritic.name} ${manner.name}`, features: [manner.features, diacritic.features] },
       ...manners.slice(index + 1)]);
   }, [manners]);
 

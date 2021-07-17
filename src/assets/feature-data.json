@@ -1,8 +1,8 @@
 {
   "diacritics": [
     {
-      "displayName": "syllabic",
-      "name": "̩",
+      "name": "syllabic",
+      "symbol": "̩",
       "features": {
         "syllabic": true
       },
@@ -12,8 +12,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "creaky voice",
-      "name": "̰",
+      "name": "creaky voice",
+      "symbol": "̰",
       "features": {
         "spread gl": false,
         "constr gl": true
@@ -24,8 +24,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "breathy voice",
-      "name": "̤",
+      "name": "breathy voice",
+      "symbol": "̤",
       "features": {
         "spread gl": true,
         "constr gl": false
@@ -36,8 +36,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "voiceless",
-      "name": "̥",
+      "name": "voiceless",
+      "symbol": "̥",
       "features": {
         "voice": false
       },
@@ -47,8 +47,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "palato-alveolar",
-      "name": "̠",
+      "name": "palato-alveolar",
+      "symbol": "̠",
       "features": {
         "anterior": false,
         "distributed": true
@@ -60,8 +60,8 @@
       "createNewRow": false
     },
     {
-      "displayName": "dental",
-      "name": "̪",
+      "name": "dental",
+      "symbol": "̪",
       "features": {
         "anterior": true,
         "distributed": true
@@ -73,8 +73,8 @@
       "createNewRow": false
     },
     {
-      "displayName": "fronted velar",
-      "name": "̟",
+      "name": "fronted velar",
+      "symbol": "̟",
       "features": {
         "front": true,
         "back": false
@@ -86,8 +86,8 @@
       "createNewRow": false
     },
     {
-      "displayName": "backed velar",
-      "name": "̠",
+      "name": "backed velar",
+      "symbol": "̠",
       "features": {
         "front": false,
         "back": true
@@ -99,8 +99,8 @@
       "createNewRow": false
     },
     {
-      "displayName": "stressed",
-      "name": "ˈ",
+      "name": "stressed",
+      "symbol": "ˈ",
       "features": {
         "stress": true
       },
@@ -108,8 +108,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "long",
-      "name": "ː",
+      "name": "long",
+      "symbol": "ː",
       "features": {
         "long": true
       },
@@ -117,8 +117,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "aspirated",
-      "name": "ʰ",
+      "name": "aspirated",
+      "symbol": "ʰ",
       "features": {
         "spread gl": true,
         "constr gl": false
@@ -129,8 +129,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "palatalized",
-      "name": "ʲ",
+      "name": "palatalized",
+      "symbol": "ʲ",
       "features": {
         "dorsal": true,
         "high": true,
@@ -144,8 +144,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "labialized",
-      "name": "ʷ",
+      "name": "labialized",
+      "symbol": "ʷ",
       "features": {
         "labial": true,
         "round": true
@@ -156,8 +156,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "velarized",
-      "name": "ˠ",
+      "name": "velarized",
+      "symbol": "ˠ",
       "features": {
         "dorsal": true,
         "high": true,
@@ -171,8 +171,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "pharyngealized",
-      "name": "ˤ",
+      "name": "pharyngealized",
+      "symbol": "ˤ",
       "features": {
         "dorsal": true,
         "high": false,
@@ -186,8 +186,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "nasalized",
-      "name": "̃",
+      "name": "nasalized",
+      "symbol": "̃",
       "features": {
         "nasal": true
       },
@@ -197,8 +197,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "rhotic",
-      "name": "˞",
+      "name": "rhotic",
+      "symbol": "˞",
       "features": {
         "coronal": true,
         "anterior": true,
@@ -211,8 +211,8 @@
       "createNewRow": true
     },
     {
-      "displayName": "ejective",
-      "name": "ʼ",
+      "name": "ejective",
+      "symbol": "ʼ",
       "features": {
         "spread gl": false,
         "constr gl": true

@@ -1,6 +1,6 @@
 import passport from 'passport';
 import Local from 'passport-local';
-import { UserPayload } from '../assets/ipaData';
+import { UserPayload } from '../assets/ipa-data';
 import User from '../models/User';
 import { validatePassword } from './user';
 

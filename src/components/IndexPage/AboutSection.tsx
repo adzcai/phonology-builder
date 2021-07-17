@@ -46,6 +46,7 @@ export default function AboutSection({ user, mutateUser }: Props) {
         setErrorMsg((payload.error as { message: string }).message);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('An unexpected error occurred:', error);
       setErrorMsg(`An unexpected error occurred: ${error.message || error}`);
     }

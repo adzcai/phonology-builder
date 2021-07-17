@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { TableContext } from '../assets/ipaData';
+import { TableContext } from '../assets/ipa-data';
 import FeatureList from './IndexPage/FeatureList';
 
 export default function NeighborInspector() {

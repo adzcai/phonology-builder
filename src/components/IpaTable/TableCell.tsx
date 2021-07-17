@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import {
   Sound, TableContext, Diacritic, applyDiacriticsToSound, canApplyDiacriticsToSound, allFeatures,
-} from '../../assets/ipaData';
+} from '../../assets/ipa-data';
 
 function sortSounds(a, b) {
   // eslint-disable-next-line no-restricted-syntax
@@ -37,7 +37,7 @@ export default function TableCell({
 
   if (!editable) {
     SoundContainer = ({ sound }: SoundContainerProps) => (
-      <div className={baseStyles}>{sound.name}</div>
+      <div className={baseStyles}>{sound.symbol}</div>
     );
   } else if (selectedDiacritics.length > 0) {
     SoundContainer = ({ sound }: SoundContainerProps) => (
@@ -53,14 +53,14 @@ export default function TableCell({
           }
         }}
       >
-        {sound.name}
+        {sound.symbol}
       </button>
     );
   } else {
     SoundContainer = ({ sound }: SoundContainerProps) => (
       <button
         type="button"
-        className={`${baseStyles} ${selectedSounds.some((s) => s.name === sound.name)
+        className={`${baseStyles} ${selectedSounds.some((s) => s.symbol === sound.symbol)
           ? 'bg-green-300 hover:bg-red-500' : 'hover-blue'}`}
         onClick={(e) => {
           // shift key: toggle neighbor
@@ -70,15 +70,16 @@ export default function TableCell({
             if (sound === neighbor) setNeighbor(null);
             else setNeighbor(sound);
           } else if (e.altKey) {
-            setAllSounds((prev) => prev.filter((s) => s.name !== sound.name));
+            setAllSounds((prev) => prev.filter((s) => s.symbol !== sound.symbol));
           } else {
             setSounds((prev: Sound[]) => (
-              prev.includes(sound) ? prev.filter((s) => s.name !== sound.name) : [...prev, sound]
+              prev.includes(sound)
+                ? prev.filter((s) => s.symbol !== sound.symbol) : [...prev, sound]
             ));
           }
         }}
       >
-        {sound.name}
+        {sound.symbol}
       </button>
     );
   }
@@ -89,7 +90,7 @@ export default function TableCell({
         {/* unvoiced on left, voiced on right */}
         {[...sounds].sort(sortSounds).map((sound) => (
           // eslint-disable-next-line react/prop-types
-          <SoundContainer key={sound.name} sound={sound} />
+          <SoundContainer key={sound.symbol} sound={sound} />
         ))}
       </div>
     </td>

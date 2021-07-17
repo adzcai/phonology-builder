@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { allFeatures, Sound } from '../../assets/ipaData';
+import { allFeatures, Sound } from '../../assets/ipa-data';
 import TableContainer from '../TableContainer';
 
 type Props = {
@@ -115,7 +115,7 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
       </thead>
       <tbody>
         {allSounds.map((sound) => (
-          <TableRow key={sound.name} sound={sound} contrastWith={contrastWith} />
+          <TableRow key={sound.symbol} sound={sound} contrastWith={contrastWith} />
         ))}
       </tbody>
     </TableContainer>

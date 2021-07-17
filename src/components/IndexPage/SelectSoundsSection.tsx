@@ -4,7 +4,7 @@ import React, {
 import { Link } from 'react-router-dom';
 import {
   allHeights as rawHeights, Height, TableContext, allSounds as rawSounds,
-} from '../../assets/ipaData';
+} from '../../assets/ipa-data';
 import fetchJson from '../../lib/fetchJson';
 import ConsonantTable from '../IpaTable/ConsonantTable';
 import DiacriticTable from '../IpaTable/DiacriticTable';
@@ -38,10 +38,9 @@ export default function SelectSoundsSection({
         body: JSON.stringify(body),
       });
 
-      console.dir(newUser);
-
       await mutateUser(newUser);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('An unexpected error happened:', error);
       setSaveErrorMsg(`An unexpected error occurred: ${error.data.message || error.message}`);
     }

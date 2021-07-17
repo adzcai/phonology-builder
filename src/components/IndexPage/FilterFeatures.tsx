@@ -4,7 +4,7 @@ import React, {
 import {
   allFeatures, matchFeatures, allSounds, toggleInArray, Diacritic, TableContext,
   canApplyDiacriticsToSound, applyDiacriticsToSound, allHeights as rawHeights, Height,
-} from '../../assets/ipaData';
+} from '../../assets/ipa-data';
 import ConsonantTable from '../IpaTable/ConsonantTable';
 import VowelTable from '../IpaTable/VowelTable';
 import DiacriticTable from '../IpaTable/DiacriticTable';
@@ -142,7 +142,7 @@ export default function FilterFeatures() {
         soundToFind[change] = changesToApply[change];
       });
       const found = matchFeatures(soundsWithDiacritics, soundToFind);
-      return { ...sound, name: `${sound.name} → ${found.length > 0 ? found[0].name : '?'}` };
+      return { ...sound, name: `${sound.symbol} → ${found.length > 0 ? found[0].symbol : '?'}` };
     });
   }
 

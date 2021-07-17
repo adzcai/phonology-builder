@@ -1,8 +1,10 @@
 # phonology-creator
 
-Based on the Pheatures program by UCLA. This is an application made by Alexander Cai for exploring phonological features. All functionality with diacritics is currently experimental.
+Based on the [Pheatures](https://linguistics.ucla.edu/people/hayes/120a/Pheatures/) program by UCLA. This is an application made by Alexander Cai for exploring phonological features. All functionality with diacritics is currently experimental.
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+Data for the features comes from the data files bundled into the Pheatures jar.
 
 ## Getting Started
 
