@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  allHeights as rawHeights, Height, TableContext, allSounds as rawSounds,
+  allHeights as rawHeights, Height, TableContext, allSounds as rawSounds, SoundHook,
 } from '../../assets/ipa-data';
 import fetchJson from '../../lib/fetchJson';
 import ConsonantTable from '../IpaTable/ConsonantTable';
@@ -15,6 +15,39 @@ type Props = {
   mutateUser: (data?: any, shouldRevalidate?: boolean) => Promise<any>
   allHeights: Height[];
   setAllHeights: Dispatch<SetStateAction<Height[]>>;
+};
+
+const UserCharts = ({ user, setSelectedSounds }: { user: any, setSelectedSounds: SoundHook }) => {
+  if (!user.data.isLoggedIn) {
+    return (
+      <p>
+        <Link to="/" className="underline">Sign up</Link>
+        {' '}
+        to save your own sound charts!
+      </p>
+    );
+  }
+
+  if (user.data.charts.length === 0) return <p>Save some charts!</p>;
+
+  return (
+    <>
+      <p className="mx-auto w-full text-center">Click a chart to load it!</p>
+      <ul className="flex flex-wrap gap-4 justify-center">
+        {user.charts.map(({ name, sounds }) => (
+          <li key={name}>
+            <button
+              type="button"
+              className="bg-green-300 hover:bg-green-500 drop-shadow rounded p-2"
+              onClick={() => setSelectedSounds(sounds)}
+            >
+              {name}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
 };
 
 export default function SelectSoundsSection({
@@ -158,26 +191,7 @@ export default function SelectSoundsSection({
 
       {/* undefined > 0 is false, so this only works if the user has positive charts */}
       <h2 className="text-2xl font-bold">Your charts</h2>
-      {user?.isLoggedIn ? (user?.charts?.length > 0
-        ? (
-          <>
-            <p className="mx-auto w-full text-center">Click a chart to load it!</p>
-            <ul className="flex flex-wrap gap-4 justify-center">
-              {user.charts.map(({ name, sounds }) => (
-                <li key={name}>
-                  <button type="button" className="bg-green-300 hover:bg-green-500 drop-shadow rounded p-2" onClick={() => setSelectedSounds(sounds)}>{name}</button>
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : <p>Save some charts!</p>)
-        : (
-          <p>
-            <Link to="/" className="underline">Sign up</Link>
-            {' '}
-            to save your own sound charts!
-          </p>
-        )}
+      <UserCharts user={user} setSelectedSounds={setSelectedSounds} />
     </>
   );
 }

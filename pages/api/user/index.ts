@@ -29,8 +29,8 @@ export default nextConnect()
                 .reduce((prev, curr) => ({ ...prev, [curr]: ['true', 'false', '0'].includes(s[curr]) ? JSON.parse(s[curr]) : s[curr] }), {})),
           })),
       };
-      res.json(data);
+      res.json({ data });
     } else {
-      res.json({ isLoggedIn: false });
+      res.json({ data: { isLoggedIn: false }, errorMessage: 'You must be logged in' });
     }
   });

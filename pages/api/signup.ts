@@ -10,12 +10,12 @@ export default nextConnect()
     const { username, password, confirmPassword } = req.body;
 
     if (!username || !password || !confirmPassword) {
-      return res.status(400).json({ error: { message: 'Missing fields' } });
+      return res.status(400).json({ errorMessage: 'Missing fields' });
     }
 
-    if (password !== confirmPassword) return res.status(400).json({ message: 'Passwords do not match' });
+    if (password !== confirmPassword) return res.status(400).json({ errorMessage: 'Passwords do not match' });
 
-    if (await User.exists({ username })) return res.status(409).json({ message: 'That username is already taken' });
+    if (await User.exists({ username })) return res.status(409).json({ errorMessage: 'That username is already taken' });
 
     await createUser({ username, password });
 

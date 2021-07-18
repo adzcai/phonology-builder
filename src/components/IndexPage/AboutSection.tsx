@@ -34,16 +34,17 @@ export default function AboutSection({ user, mutateUser }: Props) {
 
     try {
       // will always throw error with { data: ... }
-      const payload = await fetchJson(formState === 'Log in' ? '/api/login' : '/api/signup', {
+      const url = formState === 'Log in' ? '/api/login' : '/api/signup';
+      const payload = await fetchJson(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
-      if (!payload.error) {
+      if (!payload.errorMessage) {
         await mutateUser(payload);
       } else {
-        setErrorMsg((payload.error as { message: string }).message);
+        setErrorMsg(payload.errorMessage);
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -74,7 +75,7 @@ export default function AboutSection({ user, mutateUser }: Props) {
         .
       </p>
 
-      {user?.isLoggedIn ? (
+      {user.data.isLoggedIn ? (
         <button
           type="button"
           onClick={async () => mutateUser(await fetchJson('/api/logout', { method: 'POST' }))}

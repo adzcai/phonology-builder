@@ -7,5 +7,5 @@ export default nextConnect()
   .use(auth)
   .post(async (req: CustomRequest, res: NextApiResponse) => {
     req.session.destroy();
-    res.json({ isLoggedIn: false });
+    res.json({ data: { isLoggedIn: false } });
   });

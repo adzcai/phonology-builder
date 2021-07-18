@@ -25,9 +25,9 @@ export default nextConnect()
 
       req.session.set('user', { username: user.username });
       await req.session.save();
-      res.json(user);
+      res.json({ data: user });
     } catch (error) {
       const { response: fetchResponse } = error;
-      res.status(fetchResponse?.status || 500).json({ message: error.message });
+      res.status(fetchResponse?.status || 500).json({ errorMessage: error.message });
     }
   });
