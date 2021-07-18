@@ -3,6 +3,7 @@ import { createContext, Dispatch, SetStateAction } from 'react';
 import featureData from './feature-data.json';
 import rawSounds from './base-features.json';
 import rawDiacritics from './diacritics.json';
+import { Sound } from '../models/Sound';
 
 export type Condition = Partial<Sound> | ((_: Sound) => boolean) | Condition[];
 
@@ -18,38 +19,6 @@ export type Diacritic = FeatureSet & {
   symbol: string;
   requirements: Partial<Sound>;
   createNewRow: boolean;
-};
-
-export type Sound = {
-  symbol: string;
-  syllabic: boolean | 0;
-  stress: boolean | 0;
-  long: boolean | 0;
-  consonantal: boolean | 0;
-  sonorant: boolean | 0;
-  continuant: boolean | 0;
-  'delayed release': boolean | 0;
-  approximant: boolean | 0;
-  tap: boolean | 0;
-  trill: boolean | 0;
-  nasal: boolean | 0;
-  voice: boolean | 0;
-  'spread gl': boolean | 0;
-  'constr gl': boolean | 0;
-  labial: boolean | 0;
-  round: boolean | 0;
-  labiodental: boolean | 0;
-  coronal: boolean | 0;
-  anterior: boolean | 0;
-  distributed: boolean | 0;
-  strident: boolean | 0;
-  lateral: boolean | 0;
-  dorsal: boolean | 0;
-  high: boolean | 0;
-  low: boolean | 0;
-  front: boolean | 0;
-  back: boolean | 0;
-  tense: boolean | 0;
 };
 
 export type SoundHook = Dispatch<SetStateAction<Sound[]>>;

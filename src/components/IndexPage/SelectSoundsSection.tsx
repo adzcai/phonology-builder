@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  allHeights as rawHeights, Height, TableContext, allSounds as rawSounds, SoundHook,
+  allHeights as rawHeights, Height, TableContext, allSounds as rawSounds,
 } from '../../assets/ipa-data';
 import fetchJson from '../../lib/fetchJson';
 import ConsonantTable from '../IpaTable/ConsonantTable';
@@ -17,7 +17,21 @@ type Props = {
   setAllHeights: Dispatch<SetStateAction<Height[]>>;
 };
 
-const UserCharts = ({ user, setSelectedSounds }: { user: any, setSelectedSounds: SoundHook }) => {
+const UserCharts = ({ user }: { user: any }) => {
+  const { setSelectedSounds } = useContext(TableContext);
+
+  if (!user) return <p>Loading...</p>;
+
+  if (user.errorMessage) {
+    console.error(user.errorMessage);
+    return (
+      <p>
+        An error occurred:
+        {user.errorMessage}
+      </p>
+    );
+  }
+
   if (!user.data.isLoggedIn) {
     return (
       <p>
@@ -34,12 +48,15 @@ const UserCharts = ({ user, setSelectedSounds }: { user: any, setSelectedSounds:
     <>
       <p className="mx-auto w-full text-center">Click a chart to load it!</p>
       <ul className="flex flex-wrap gap-4 justify-center">
-        {user.charts.map(({ name, sounds }) => (
+        {user.data.charts.map(({ name, sounds }) => (
           <li key={name}>
             <button
               type="button"
               className="bg-green-300 hover:bg-green-500 drop-shadow rounded p-2"
-              onClick={() => setSelectedSounds(sounds)}
+              onClick={() => {
+                console.log(sounds);
+                setSelectedSounds(sounds);
+              }}
             >
               {name}
             </button>
@@ -136,7 +153,7 @@ export default function SelectSoundsSection({
             Select all
           </button>
         </div>
-        {user?.isLoggedIn && (
+        {user?.data?.isLoggedIn && (
         <>
           <form onSubmit={handleSaveSounds} className="flex flex-col items-center space-y-4">
             <label htmlFor="chart-name" className="contents space-y-2 md:space-y-0 md:space-x-2">
@@ -157,14 +174,6 @@ export default function SelectSoundsSection({
               Save selected sounds
             </button>
           </form>
-
-          <button
-            type="button"
-            className="hover-blue p-2 rounded"
-            onClick={handleSaveSounds}
-          >
-            Load selected sounds
-          </button>
 
           {saveErrorMsg}
         </>
@@ -191,7 +200,7 @@ export default function SelectSoundsSection({
 
       {/* undefined > 0 is false, so this only works if the user has positive charts */}
       <h2 className="text-2xl font-bold">Your charts</h2>
-      <UserCharts user={user} setSelectedSounds={setSelectedSounds} />
+      <UserCharts user={user} />
     </>
   );
 }

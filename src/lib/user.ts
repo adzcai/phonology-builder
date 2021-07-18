@@ -1,10 +1,20 @@
 import crypto from 'crypto';
 import User from '../models/User';
 
-/**
- * User methods. The example doesn't contain a DB, but for real applications you must use a
- * db here, such as MongoDB, Fauna, SQL, etc.
- */
+export function userToJson(user: { username: string, charts?: { name: string, sounds: any[] }[] }) {
+  return {
+    data: {
+      isLoggedIn: true,
+      username: user.username,
+      charts: user.charts?.map(({ name, sounds }) => ({
+        name,
+        sounds: sounds
+          .map((s) => Object.keys(s.toJSON())
+            .reduce((prev, curr) => ({ ...prev, [curr]: ['true', 'false', '0'].includes(s[curr]) ? JSON.parse(s[curr]) : s[curr] }), {})),
+      })),
+    },
+  };
+}
 
 export async function createUser({ username, password }) {
   const salt = crypto.randomBytes(16).toString('hex');

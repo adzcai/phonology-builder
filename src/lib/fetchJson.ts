@@ -1,3 +1,4 @@
+// Client side fetcher utility function.
 export default async function fetcher(
   input: RequestInfo, init?: RequestInit,
 ): Promise<{ data?: any, errorMessage?: string }> {
