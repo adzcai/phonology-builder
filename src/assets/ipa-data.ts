@@ -4,6 +4,7 @@ import rawSounds from './base-features.json';
 import rawDiacritics from './diacritics.json';
 import {
   Manner, Place, Condition, Diacritic, FeatureFilter, Features, Height, Sound, TableContextType,
+  HeightsContextType,
 } from '../lib/types';
 
 // the two features missing from the original book are
@@ -15,7 +16,7 @@ export const allSounds = rawSounds.map(({ symbol, ...features }) => ({
 export const allManners = featureData.manners as Manner[];
 export const allPlaces = featureData.places as Place[];
 
-function matchConditions(sound: Features, condition: Condition) {
+function matchConditions(sound: Features, condition: Condition, strict: boolean = true) {
   if (Array.isArray(condition)) return condition.every((c) => matchConditions(sound, c));
 
   if (typeof condition === 'object') {
@@ -23,7 +24,8 @@ function matchConditions(sound: Features, condition: Condition) {
     return Object.keys(condition)
       .every((key) => (Array.isArray(condition[key])
         ? condition[key].includes(sound[key])
-        : sound[key] === condition[key] || sound[key] === 0 || condition[key] === 0));
+        : sound[key] === condition[key]
+          || (!strict && (sound[key] === 0 || condition[key] === 0))));
   }
 
   if (typeof condition === 'function') return condition(sound);
@@ -68,6 +70,11 @@ export const TableContext = createContext<TableContextType>({
   setSelectedDiacritics: () => {},
   handleDiacriticClick: () => {},
   deleteFeatureSet: () => {},
+});
+
+export const HeightsContext = createContext<HeightsContextType>({
+  allHeights: [],
+  setAllHeights: () => {},
 });
 
 export const allFeatures: [keyof Features, string, string][] = [

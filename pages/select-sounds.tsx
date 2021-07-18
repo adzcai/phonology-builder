@@ -1,21 +1,16 @@
 import React, {
-  Dispatch, SetStateAction, useCallback, useContext, useState,
+  useCallback, useContext, useState,
 } from 'react';
 import { Link } from 'react-router-dom';
+import useSWR from 'swr';
 import {
-  allHeights as rawHeights, Height, TableContext, allSounds as rawSounds,
-} from '../../assets/ipa-data';
-import fetchJson from '../../lib/fetchJson';
-import ConsonantTable from '../IpaTable/ConsonantTable';
-import DiacriticTable from '../IpaTable/DiacriticTable';
-import VowelTable from '../IpaTable/VowelTable';
-
-type Props = {
-  user: any;
-  mutateUser: (data?: any, shouldRevalidate?: boolean) => Promise<any>
-  allHeights: Height[];
-  setAllHeights: Dispatch<SetStateAction<Height[]>>;
-};
+  allHeights as rawHeights, TableContext, allSounds as rawSounds, HeightsContext,
+} from '../src/assets/ipa-data';
+import fetchJson from '../src/lib/fetchJson';
+import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
+import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
+import VowelTable from '../src/components/IpaTable/VowelTable';
+import Layout from '../src/components/Layout';
 
 const UserCharts = ({ user }: { user: any }) => {
   const { setSelectedSounds } = useContext(TableContext);
@@ -67,12 +62,13 @@ const UserCharts = ({ user }: { user: any }) => {
   );
 };
 
-export default function SelectSoundsSection({
-  user, mutateUser, allHeights, setAllHeights,
-}: Props) {
+export default function SelectSoundsPage() {
+  const { data: user, mutate: mutateUser } = useSWR('/api/user');
+
   const {
     selectedSounds, setAllSounds, allSounds, setSelectedSounds, setNeighbor, setSelectedDiacritics,
   } = useContext(TableContext);
+  const { allHeights, setAllHeights } = useContext(HeightsContext);
 
   const [saveErrorMsg, setSaveErrorMsg] = useState('');
 
@@ -105,7 +101,7 @@ export default function SelectSoundsSection({
   }, []);
 
   return (
-    <>
+    <Layout>
       <ul className="mx-auto text-center p-4 max-w-lg w-full md:w-max space-y-2 bg-pink-300 rounded-2xl">
         <li>
           Hover over a row or column to see the features that define it.
@@ -201,6 +197,6 @@ export default function SelectSoundsSection({
       {/* undefined > 0 is false, so this only works if the user has positive charts */}
       <h2 className="text-2xl font-bold">Your charts</h2>
       <UserCharts user={user} />
-    </>
+    </Layout>
   );
 }

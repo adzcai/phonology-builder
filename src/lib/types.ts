@@ -108,3 +108,12 @@ export type TableContextType = {
   handleDiacriticClick: (diacritic: Diacritic) => void;
   deleteFeatureSet?: (featureSet: FeatureFilter) => void;
 };
+
+export type HeightsContextType = {
+  allHeights: Height[];
+  setAllHeights: Dispatch<SetStateAction<FeatureFilter[]>>;
+};
+
+export type SerializedFeatureValue = '+' | '-' | '0';
+
+export type SerializedFeatureList = [string, SerializedFeatureValue][];

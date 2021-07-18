@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { allFeatures, serializeFeatureValue } from '../../assets/ipa-data';
-import { Features, Sound } from '../../lib/types';
-import TableContainer from '../TableContainer';
+import { allFeatures, serializeFeatureValue } from '../assets/ipa-data';
+import { Features, Sound } from '../lib/types';
+import TableContainer from './IpaTable/TableContainer';
 
 type Props = {
   sounds: Sound[];
@@ -32,7 +32,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
   if (contrastWith === null) {
     return (
       <tr>
-        <td>{sound.symbol}</td>
+        <td className="text-center border-gray">{sound.symbol}</td>
         {allFeatures.map(([feature]) => (
           <td
             key={feature}
