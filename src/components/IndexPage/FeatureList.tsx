@@ -99,6 +99,7 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
             <div className="w-full h-full border-gray" />
           </td>
           )}
+          <td className="border-gray" />
           {Object.keys(categoryCount).map((category, i) => (
             <th
               key={category}

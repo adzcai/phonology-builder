@@ -21,10 +21,9 @@ function matchConditions(sound: Features, condition: Condition) {
   if (typeof condition === 'object') {
     // check for array
     return Object.keys(condition)
-      .filter((key) => key !== 'name')
       .every((key) => (Array.isArray(condition[key])
         ? condition[key].includes(sound[key])
-        : sound[key] === condition[key]));
+        : sound[key] === condition[key] || sound[key] === 0 || condition[key] === 0));
   }
 
   if (typeof condition === 'function') return condition(sound);
@@ -177,4 +176,8 @@ export function deserializeSound(sound: any) {
   return Object.keys(sound).filter((key) => key !== 'symbol').reduce((obj, feature) => ({
     ...obj, [feature]: deserializeFeatureValue(obj[feature]),
   }), { symbol: sound.symbol });
+}
+
+export function cloneSound(sound: Sound) {
+  return { symbol: sound.symbol, features: { ...sound.features } };
 }

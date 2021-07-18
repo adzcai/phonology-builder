@@ -2,13 +2,14 @@ import React, {
   ChangeEventHandler, Dispatch, SetStateAction, useState,
 } from 'react';
 import {
-  allFeatures, matchFeatures, allSounds, toggleInArray, TableContext,
+  allFeatures, allSounds, toggleInArray, TableContext,
   canApplyDiacriticsToSound, applyDiacriticsToSound, allHeights as rawHeights,
+  matchSounds, cloneSound, deserializeFeatureValue,
 } from '../../assets/ipa-data';
 import ConsonantTable from '../IpaTable/ConsonantTable';
 import VowelTable from '../IpaTable/VowelTable';
 import DiacriticTable from '../IpaTable/DiacriticTable';
-import { Diacritic, Height, Sound } from '../../lib/types';
+import { Diacritic, Features, Height } from '../../lib/types';
 
 type InputValue = '+' | '-' | '0';
 
@@ -131,36 +132,31 @@ export default function FilterFeatures() {
     ...allSounds,
     ...selectedDiacritics
       .flatMap((diacritic) => allSounds
-        .filter((sound) => canApplyDiacriticsToSound([diacritic], sound))
+        .filter((sound) => canApplyDiacriticsToSound([diacritic], sound.features))
         .map((sound) => applyDiacriticsToSound(sound, diacritic))),
   ];
 
   let selectedSounds = validFeatures.length === 0
     ? []
-    : matchFeatures(soundsWithDiacritics, validFeatures.map(([name, val]) => ({ [name]: ({ '+': true, '-': false, 0: 0 }[val]) })));
+    : matchSounds(soundsWithDiacritics, validFeatures.map(([name, val]) => ({
+      [name]: deserializeFeatureValue(val),
+    })));
 
-  console.log({ soundChanges });
-
-  const changesToApply: Partial<Sound> = soundChanges
+  const changesToApply: Partial<Features> = soundChanges
     .filter(([name, value]) => name !== '' && value !== null)
-    .reduce((prev, [name, val]) => ({ ...prev, [name]: ({ '+': true, '-': false, 0: 0 }[val]) }), {});
-
-  console.log({ changesToApply });
+    .reduce((prev, [name, val]) => ({ ...prev, [name]: deserializeFeatureValue(val) }), {});
 
   if (Object.keys(changesToApply).length > 0) {
     selectedSounds = selectedSounds.map((sound) => {
-      const soundToFind = { ...sound };
-      Object.keys(changesToApply).forEach((change) => {
-        soundToFind[change] = changesToApply[change];
-      });
-      const found = matchFeatures(soundsWithDiacritics, soundToFind);
+      const soundToFind = cloneSound(sound);
+      Object.assign(soundToFind.features, changesToApply);
+      const found = matchSounds(soundsWithDiacritics, soundToFind.features);
+      console.log(soundToFind, found, soundsWithDiacritics.find((sound) => sound.symbol === 'v'));
       return { ...sound, symbol: `${sound.symbol} → ${found.length > 0 ? found[0].symbol : '?'}` };
     });
-
-    console.log({ selectedSounds });
   }
 
-  const handleDiacriticClick = (diacritic) => setSelectedDiacritics(
+  const handleDiacriticClick = (diacritic: Diacritic) => setSelectedDiacritics(
     toggleInArray(selectedDiacritics, diacritic),
   );
 
