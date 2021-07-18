@@ -21,7 +21,7 @@ export default function SelectSoundsSection({
   user, mutateUser, allHeights, setAllHeights,
 }: Props) {
   const {
-    selectedSounds, setAllSounds, setSelectedSounds, setNeighbor, setSelectedDiacritics,
+    selectedSounds, setAllSounds, allSounds, setSelectedSounds, setNeighbor, setSelectedDiacritics,
   } = useContext(TableContext);
 
   const [saveErrorMsg, setSaveErrorMsg] = useState('');
@@ -86,7 +86,7 @@ export default function SelectSoundsSection({
             className="hover-blue p-2 rounded"
             onClick={() => setSelectedSounds([])}
           >
-            Clear
+            Clear selection
           </button>
           <button
             type="button"
@@ -94,6 +94,13 @@ export default function SelectSoundsSection({
             onClick={resetAll}
           >
             Reset all
+          </button>
+          <button
+            type="button"
+            className="hover-blue p-2 rounded ml-4"
+            onClick={() => setSelectedSounds(allSounds)}
+          >
+            Select all
           </button>
         </div>
         {user?.isLoggedIn && (

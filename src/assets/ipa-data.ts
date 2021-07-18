@@ -137,43 +137,42 @@ export const TableContext = createContext<TableContextType>({
   deleteFeatureSet: () => {},
 });
 
-export const allFeatures: [keyof Sound | 'name', string, string, string][] = [
-  ['name', 'name', 'name', 'the name of the feature'],
+export const allFeatures: [keyof Sound, string, string][] = [
+  ['symbol', 'symbol', 'the IPA character for this segment'],
 
-  ['syllabic', 'sonority', 'manner', 'can occur as syllable nucleus; typically [+syllabic] consists of vowels'],
-  ['consonantal', 'sonority', 'manner', 'see sonority hierarchy'],
-  ['approximant', 'sonority', 'manner', 'see sonority hierarchy'],
-  ['sonorant', 'sonority', 'manner', 'see sonority hierarchy'],
-  ['continuant', 'obstruents', 'manner', '[-continuant] means full closure of oral cavity'],
-  ['delayed release', 'obstruents', 'manner', 'includes frication (hissing) noise'],
-  ['nasal', 'nasal', 'manner', 'air escapes through the nose'],
+  ['syllabic', 'manner', 'can occur as syllable nucleus; typically [+syllabic] consists of vowels'],
+  ['consonantal', 'manner', 'see sonority hierarchy'],
+  ['approximant', 'manner', 'see sonority hierarchy'],
+  ['sonorant', 'manner', 'see sonority hierarchy'],
+  ['continuant', 'manner', 'see sonority hierarchy; [-continuant] full closure of oral cavity'],
+  ['delayed release', 'manner', 'see sonority hierarchy; includes frication (hissing) noise'],
+  ['nasal', 'manner', 'air escapes through the nose'],
+  ['tap', 'manner', 'motion where one articulator is thrown against another'],
+  ['trill', 'manner', 'vibration between the active and passive articulator'],
 
-  ['tap', 'trills and taps', 'manner', 'motion where one articulator is thrown against another'],
-  ['trill', 'trills and taps', 'manner', 'vibration between the active and passive articulator'],
+  ['voice', 'laryngeal', 'vocal chord vibration'],
+  ['spread gl', 'laryngeal', 'vocal chords far apart, producing wide glottis'],
+  ['constr gl', 'laryngeal', 'vocal chords close together, producing narrow or closed glottis'],
 
-  ['voice', 'laryngeal', 'laryngeal', 'vocal chord vibration'],
-  ['spread gl', 'laryngeal', 'laryngeal', 'vocal chords far apart, producing wide glottis'],
-  ['constr gl', 'laryngeal', 'laryngeal', 'vocal chords close together, producing narrow or closed glottis'],
+  ['labial', 'place', 'articulated with the lips'],
+  ['round', 'place', 'rounded lips'],
+  ['labiodental', 'place', 'touching lower lip to upper teeth'],
 
-  ['labial', 'labial', 'place', 'articulated with the lips'],
-  ['round', 'labial', 'place', 'rounded lips'],
-  ['labiodental', 'labial', 'place', 'touching lower lip to upper teeth'],
+  ['coronal', 'place', 'articulated with the tip/blade of the tongue'],
+  ['anterior', 'place', 'at the alveolar ridge or forward'],
+  ['distributed', 'place', 'laminals (tongue blade) are [+distributed], apicals (tongue tip) are [-distributed]'],
+  ['strident', 'place', 'airstream channelled through groove and blown at the teeth; [+strident] aka sibilant'],
+  ['lateral', 'place', 'tongue compressed horizontally to allow airflow through sides'],
+  ['dorsal', 'place', 'articulated with the body of the tongue'],
 
-  ['coronal', 'coronal', 'place', 'articulated with the tip/blade of the tongue'],
-  ['anterior', 'coronal', 'place', 'at the alveolar ridge or forward'],
-  ['distributed', 'coronal', 'place', 'laminals (tongue blade) are [+distributed], apicals (tongue tip) are [-distributed]'],
-  ['strident', 'coronal', 'place', 'airstream channelled through groove and blown at the teeth; [+strident] aka sibilant'],
-  ['lateral', 'coronal', 'place', 'tongue compressed horizontally to allow airflow through sides'],
+  ['high', 'dorsal', 'tongue body high in the mouth'],
+  ['low', 'dorsal', 'tongue body low in the mouth'],
+  ['front', 'dorsal', 'tongue body in the front of the mouth'],
+  ['back', 'dorsal', 'tongue body in back of the mouth'],
+  ['tense', 'dorsal', 'finer distinction of height; [-tense] aka lax'],
 
-  ['dorsal', 'dorsal', 'place', 'articulated with the body of the tongue'],
-  ['high', 'dorsal', 'place', 'tongue body high in the mouth'],
-  ['low', 'dorsal', 'place', 'tongue body low in the mouth'],
-  ['front', 'dorsal', 'place', 'tongue body in the front of the mouth'],
-  ['back', 'dorsal', 'place', 'tongue body in back of the mouth'],
-  ['tense', 'dorsal', 'place', 'finer distinction of height; [-tense] aka lax'],
-
-  ['stress', 'prosody', 'prosody', 'emphasized sound'],
-  ['long', 'prosody', 'prosody', 'increased duration of vowel or consonant'],
+  ['stress', 'prosody', 'emphasized sound'],
+  ['long', 'prosody', 'increased duration of vowel or consonant'],
 ];
 
 export const allDiacritics: Diacritic[] = rawDiacritics;

@@ -26,6 +26,12 @@ function countDistinctFeatures(a: Sound, b: Sound) {
   return allFeatures.filter(([feature]) => trueDifference(a, b, feature as keyof Sound)).length;
 }
 
+function showFeature(sound: Sound, feature: keyof Sound) {
+  if (feature === 'symbol') return sound[feature];
+  if (sound[feature] === 0) return 0;
+  return sound[feature] ? '+' : '-';
+}
+
 function TableRow({ sound, contrastWith }: TableRowProps) {
   if (contrastWith === null) {
     return (
@@ -35,11 +41,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
             key={feature}
             className="text-center border-gray"
           >
-            {feature === 'name'
-              ? sound[feature]
-              : sound[feature] === 0
-                ? 0
-                : sound[feature] ? '+' : '-'}
+            {showFeature(sound, feature)}
           </td>
         ))}
       </tr>
@@ -61,11 +63,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
           className={`text-center border-gray ${nDistinct === 0 && 'sticky top-36 bg-white'}
             ${trueDifference(sound, contrastWith, feature as keyof Sound) && 'bg-red-300'}`}
         >
-          {feature === 'name'
-            ? sound[feature]
-            : sound[feature] === 0
-              ? 0
-              : sound[feature] ? '+' : '-'}
+          {showFeature(sound, feature)}
         </td>
       ))}
     </tr>
@@ -79,6 +77,10 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
       (a, b) => countDistinctFeatures(a, contrastWith) - countDistinctFeatures(b, contrastWith),
     );
 
+  const categoryCount = allFeatures.reduce((obj, [_, category]) => ({
+    ...obj, [category]: (obj[category] || 0) + 1,
+  }), {});
+
   return (
     <TableContainer classes="overflow-y-auto max-h-96">
       <thead>
@@ -88,22 +90,19 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
             <div className="w-full h-full border-gray" />
           </td>
           )}
-          {Array.from(allFeatures.reduce((map, [_, __, category]) => {
-            map.set(category, (map.get(category) || 0) + 1);
-            return map;
-          }, new Map())).map(([feature, count], i) => (
+          {Object.keys(categoryCount).map((category, i) => (
             <th
-              key={feature}
-              colSpan={count}
+              key={category}
+              colSpan={categoryCount[category]}
               className={`border-gray bg-${colors[i]}-300 sticky top-0 h-8`}
             >
-              {feature}
+              {category}
             </th>
           ))}
         </tr>
         <tr>
           {contrastWith && <td className="w-8 h-28 sticky top-8 border-gray bg-white" />}
-          {allFeatures.map(([feature, _, __, description]) => (
+          {allFeatures.map(([feature, _, description]) => (
             <th key={feature} className="w-8 h-28 sticky top-8 bg-white" title={description}>
               <div
                 className="flex items-center w-full h-full border-gray"

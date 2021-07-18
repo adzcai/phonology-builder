@@ -41,7 +41,8 @@
     {
       "name": "nasal",
       "features": {
-        "nasal": true
+        "sonorant": true,
+        "approximant": false
       }
     },
     {
@@ -58,7 +59,7 @@
       }
     },
     {
-      "name": "lateral flap",
+      "name": "lateral tap/flap",
       "features": {
         "tap": true,
         "lateral": true
@@ -77,8 +78,9 @@
       "name": "lateral approximant",
       "features": {
         "approximant": true,
-        "lateral": true,
-        "tap": false
+        "trill": false,
+        "tap": false,
+        "lateral": true
       }
     }
   ],
@@ -128,6 +130,29 @@
         "coronal": true,
         "anterior": false,
         "distributed": false
+      }
+    },
+    {
+      "name": "alveolo-palatal",
+      "features": {
+        "anterior": true,
+        "distributed": true,
+        "strident": true,
+        "high": true,
+        "front": true
+      }
+    },
+    {
+      "name": "palatal",
+      "features": {
+        "coronal": true,
+        "anterior": false,
+        "distributed": true,
+        "dorsal": true,
+        "high": true,
+        "low": false,
+        "front": true,
+        "back": false
       }
     },
     {
@@ -219,29 +244,6 @@
         "low": false,
         "front": false,
         "back": true
-      }
-    },
-    {
-      "name": "alveolo-palatal",
-      "features": {
-        "anterior": true,
-        "distributed": true,
-        "strident": true,
-        "high": true,
-        "front": true
-      }
-    },
-    {
-      "name": "palatal",
-      "features": {
-        "coronal": true,
-        "anterior": false,
-        "distributed": true,
-        "dorsal": true,
-        "high": true,
-        "low": false,
-        "front": true,
-        "back": false
       }
     }
   ]

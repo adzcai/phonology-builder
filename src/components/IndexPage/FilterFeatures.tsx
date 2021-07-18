@@ -14,7 +14,7 @@ type InputValue = '+' | '-' | '0';
 type FeatureList = [string, InputValue][];
 
 function getNextAvailableFeature(features: string[][]) {
-  return allFeatures.find(([f]) => f !== 'name' && !features.some(([name]) => f === name))[0];
+  return allFeatures.find(([f]) => f !== 'symbol' && !features.some(([name]) => f === name))[0];
 }
 
 type SelectorRowProps = {
@@ -30,17 +30,24 @@ type SelectorRowProps = {
 function SelectorRow({
   selected, setSelected, val, setVal, removeFeature, features, groupName,
 }: SelectorRowProps) {
+  const optGroups = [...new Set(allFeatures.map(([, category]) => category).filter((cat) => cat !== 'symbol'))];
+
   return (
     <li className="border-gray-300 border-4 w-max bg-white rounded-xl p-2">
       <select value={selected} onChange={setSelected}>
-        {[[''], ...allFeatures].map(([featureName]) => (
-          <option
-            key={featureName}
-            value={featureName}
-            disabled={features.some((feature) => feature[0] === featureName)}
-          >
-            {featureName}
-          </option>
+        <option>{}</option>
+        {optGroups.map((category) => (
+          <optgroup key={category} label={category}>
+            {allFeatures.filter(([, cat]) => cat === category).map(([featureName]) => (
+              <option
+                key={featureName}
+                value={featureName}
+                disabled={features.some(([feature]) => feature === featureName)}
+              >
+                {featureName}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
       <button type="button" className="px-2 rounded bg-red-200 hover:bg-red-500 focus:outline-none" onClick={removeFeature}>-</button>
