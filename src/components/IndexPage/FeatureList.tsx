@@ -17,7 +17,9 @@ type TableRowProps = {
 // explicitly check if they are two booleans since we don't want a comparison
 // with 0 to show up
 function trueDifference(a: Sound, b: Sound, feature: keyof Sound) {
-  return feature !== 'name' && ((a[feature] === true && b[feature] === false) || (a[feature] === false && b[feature] === true));
+  return feature !== 'symbol'
+    && ((a[feature] === true && b[feature] === false)
+    || (a[feature] === false && b[feature] === true));
 }
 
 function countDistinctFeatures(a: Sound, b: Sound) {

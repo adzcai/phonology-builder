@@ -1,0 +1,262 @@
+[
+  {
+    "name": "syllabic",
+    "symbol": "̩",
+    "requirements": {
+      "syllabic": false
+    },
+    "features": {
+      "syllabic": true
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "creaky voice",
+    "symbol": "̰",
+    "requirements": {
+      "voice": true,
+      "spread gl": false,
+      "constr gl": false
+    },
+    "features": {
+      "spread gl": false,
+      "constr gl": true
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "breathy voice",
+    "symbol": "̤",
+    "requirements": {
+      "voice": true,
+      "spread gl": false,
+      "constr gl": false
+    },
+    "features": {
+      "spread gl": true,
+      "constr gl": false
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "voiceless",
+    "symbol": "̥",
+    "requirements": {
+      "sonorant": true,
+      "voice": true
+    },
+    "features": {
+      "voice": false
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "palato-alveolar",
+    "symbol": "̠",
+    "requirements": {
+      "consonantal": true,
+      "coronal": true,
+      "anterior": true,
+      "distributed": false
+    },
+    "features": {
+      "anterior": false,
+      "distributed": true
+    },
+    "createNewRow": false
+  },
+  {
+    "name": "dental",
+    "symbol": "̪",
+    "requirements": {
+      "consonantal": true,
+      "coronal": true,
+      "anterior": true,
+      "distributed": false
+    },
+    "features": {
+      "anterior": true,
+      "distributed": true
+    },
+    "createNewRow": false
+  },
+  {
+    "name": "fronted velar",
+    "symbol": "̟",
+    "requirements": {
+      "consonantal": true,
+      "coronal": false,
+      "dorsal": true,
+      "high": true,
+      "low": false
+    },
+    "features": {
+      "front": true,
+      "back": false
+    },
+    "createNewRow": false
+  },
+  {
+    "name": "backed velar",
+    "symbol": "̠",
+    "requirements": {
+      "consonantal": true,
+      "dorsal": true,
+      "high": true,
+      "low": false
+    },
+    "features": {
+      "front": false,
+      "back": true
+    },
+    "createNewRow": false
+  },
+  {
+    "name": "stressed",
+    "symbol": "ˈ",
+    "requirements": {
+      "stress": false
+    },
+    "features": {
+      "stress": true
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "long",
+    "symbol": "ː",
+    "requirements": {
+      "long": false
+    },
+    "features": {
+      "long": true
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "aspirated",
+    "symbol": "ʰ",
+    "requirements": {
+      "consonantal": true,
+      "voice": false,
+      "spread gl": false,
+      "constr gl": false
+    },
+    "features": {
+      "spread gl": true,
+      "constr gl": false
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "palatalized",
+    "symbol": "ʲ",
+    "requirements": {
+      "consonantal": true
+    },
+    "features": {
+      "dorsal": true,
+      "high": true,
+      "low": false,
+      "front": true,
+      "back": false
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "labialized",
+    "symbol": "ʷ",
+    "requirements": {
+      "consonantal": true,
+      "round": false
+    },
+    "features": {
+      "labial": true,
+      "round": true
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "velarized",
+    "symbol": "ˠ",
+    "requirements": {
+      "consonantal": true,
+      "dorsal": false
+    },
+    "features": {
+      "dorsal": true,
+      "high": true,
+      "low": false,
+      "front": false,
+      "back": true
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "pharyngealized",
+    "symbol": "ˤ",
+    "requirements": {
+      "consonantal": true,
+      "dorsal": false
+    },
+    "features": {
+      "dorsal": true,
+      "high": false,
+      "low": true,
+      "front": false,
+      "back": true
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "nasalized",
+    "symbol": "̃",
+    "requirements": {
+      "sonorant": true,
+      "nasal": false
+    },
+    "features": {
+      "nasal": true
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "rhotic",
+    "symbol": "˞",
+    "requirements": {
+      "syllabic": true,
+      "consonantal": false,
+      "sonorant": true,
+      "tap": false,
+      "trill": false,
+      "coronal": false,
+      "dorsal": true
+    },
+    "features": {
+      "coronal": true,
+      "anterior": true,
+      "distributed": true,
+      "strident": false
+    },
+    "createNewRow": true
+  },
+  {
+    "name": "ejective",
+    "symbol": "ʼ",
+    "requirements": {
+      "consonantal": true,
+      "sonorant": false,
+      "tap": false,
+      "trill": false,
+      "nasal": false,
+      "voice": false,
+      "spread gl": false,
+      "constr gl": false
+    },
+    "features": {
+      "spread gl": false,
+      "constr gl": true
+    },
+    "createNewRow": true
+  }
+]

@@ -2,6 +2,7 @@ import { NextApiRequest } from 'next';
 import { createContext, Dispatch, SetStateAction } from 'react';
 import featureData from './feature-data.json';
 import rawSounds from './base-features.json';
+import rawDiacritics from './diacritics.json';
 
 export type Condition = Partial<Sound> | ((_: Sound) => boolean) | Condition[];
 
@@ -136,7 +137,7 @@ export const TableContext = createContext<TableContextType>({
   deleteFeatureSet: () => {},
 });
 
-export const allFeatures = [
+export const allFeatures: [keyof Sound | 'name', string, string, string][] = [
   ['name', 'name', 'name', 'the name of the feature'],
 
   ['syllabic', 'sonority', 'manner', 'can occur as syllable nucleus; typically [+syllabic] consists of vowels'],
@@ -175,9 +176,8 @@ export const allFeatures = [
   ['long', 'prosody', 'prosody', 'increased duration of vowel or consonant'],
 ];
 
-export const allDiacritics: Diacritic[] = featureData.diacritics;
+export const allDiacritics: Diacritic[] = rawDiacritics;
 
-/* eslint-disable object-curly-newline */
 export const allFrontnesses = [
   { name: 'front unrounded', features: { round: false, front: true, back: false } },
   { name: 'front rounded', features: { round: true, front: true, back: false } },
@@ -194,13 +194,12 @@ export const allHeights: Height[] = [
   { name: 'near-open', features: { high: false, low: false, tense: false } },
   { name: 'open', features: { high: false, low: true } },
 ];
-/* eslint-enable object-curly-newline */
 
 // arr is a list of all e.g. places, manners, heights, frontnesses
 // get all elements of arr which contain sounds
 export function filterNonEmpty(sounds: Sound[], arr: FeatureSet[], ...conditions: Condition[]) {
   return arr.filter(
-    ({ features }) => matchFeatures(sounds, features, ...conditions).length,
+    ({ features }) => matchFeatures(sounds, features, ...conditions).length > 0,
   );
 }
 
