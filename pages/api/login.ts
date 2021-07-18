@@ -2,8 +2,8 @@ import nextConnect from 'next-connect';
 import { NextApiResponse } from 'next';
 import passport from '../../src/lib/passport';
 import auth from '../../src/lib/auth';
-import { CustomRequest } from '../../src/assets/ipa-data';
 import { userToJson } from '../../src/lib/user';
+import { CustomRequest } from '../../src/lib/types';
 
 function authenticate(method, req, res) {
   return new Promise((resolve, reject) => {

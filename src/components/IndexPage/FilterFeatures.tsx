@@ -2,19 +2,20 @@ import React, {
   ChangeEventHandler, Dispatch, SetStateAction, useState,
 } from 'react';
 import {
-  allFeatures, matchFeatures, allSounds, toggleInArray, Diacritic, TableContext,
-  canApplyDiacriticsToSound, applyDiacriticsToSound, allHeights as rawHeights, Height,
+  allFeatures, matchFeatures, allSounds, toggleInArray, TableContext,
+  canApplyDiacriticsToSound, applyDiacriticsToSound, allHeights as rawHeights,
 } from '../../assets/ipa-data';
 import ConsonantTable from '../IpaTable/ConsonantTable';
 import VowelTable from '../IpaTable/VowelTable';
 import DiacriticTable from '../IpaTable/DiacriticTable';
+import { Diacritic, Height, Sound } from '../../lib/types';
 
 type InputValue = '+' | '-' | '0';
 
 type FeatureList = [string, InputValue][];
 
 function getNextAvailableFeature(features: string[][]) {
-  return allFeatures.find(([f]) => f !== 'symbol' && !features.some(([name]) => f === name))[0];
+  return allFeatures.find(([feat]) => !features.some(([name]) => feat === name))[0];
 }
 
 type SelectorRowProps = {
@@ -30,7 +31,7 @@ type SelectorRowProps = {
 function SelectorRow({
   selected, setSelected, val, setVal, removeFeature, features, groupName,
 }: SelectorRowProps) {
-  const optGroups = [...new Set(allFeatures.map(([, category]) => category).filter((cat) => cat !== 'symbol'))];
+  const optGroups = [...new Set(allFeatures.map(([, category]) => category))];
 
   return (
     <li className="border-gray-300 border-4 w-max bg-white rounded-xl p-2">
@@ -138,9 +139,13 @@ export default function FilterFeatures() {
     ? []
     : matchFeatures(soundsWithDiacritics, validFeatures.map(([name, val]) => ({ [name]: ({ '+': true, '-': false, 0: 0 }[val]) })));
 
-  const changesToApply = soundChanges
-    .filter((change) => change[0] !== '' && change[1] !== null)
+  console.log({ soundChanges });
+
+  const changesToApply: Partial<Sound> = soundChanges
+    .filter(([name, value]) => name !== '' && value !== null)
     .reduce((prev, [name, val]) => ({ ...prev, [name]: ({ '+': true, '-': false, 0: 0 }[val]) }), {});
+
+  console.log({ changesToApply });
 
   if (Object.keys(changesToApply).length > 0) {
     selectedSounds = selectedSounds.map((sound) => {
@@ -149,8 +154,10 @@ export default function FilterFeatures() {
         soundToFind[change] = changesToApply[change];
       });
       const found = matchFeatures(soundsWithDiacritics, soundToFind);
-      return { ...sound, name: `${sound.symbol} → ${found.length > 0 ? found[0].symbol : '?'}` };
+      return { ...sound, symbol: `${sound.symbol} → ${found.length > 0 ? found[0].symbol : '?'}` };
     });
+
+    console.log({ selectedSounds });
   }
 
   const handleDiacriticClick = (diacritic) => setSelectedDiacritics(

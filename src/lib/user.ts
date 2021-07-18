@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import User from '../models/User';
+import User from '../models/User.model';
 
 export function userToJson(user: { username: string, charts?: { name: string, sounds: any[] }[] }) {
   return {

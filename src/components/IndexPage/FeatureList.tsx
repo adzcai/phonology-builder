@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { allFeatures, Sound } from '../../assets/ipa-data';
+import { allFeatures, serializeFeatureValue } from '../../assets/ipa-data';
+import { Features, Sound } from '../../lib/types';
 import TableContainer from '../TableContainer';
 
 type Props = {
@@ -7,41 +8,37 @@ type Props = {
   contrastWith?: Sound;
 };
 
-const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'pink'];
-
 type TableRowProps = {
   sound: Sound;
   contrastWith: Sound;
 };
 
+const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'pink'];
+
 // explicitly check if they are two booleans since we don't want a comparison
 // with 0 to show up
-function trueDifference(a: Sound, b: Sound, feature: keyof Sound) {
-  return feature !== 'symbol'
-    && ((a[feature] === true && b[feature] === false)
+function trueDifference(a: Features, b: Features, feature: keyof Features) {
+  return ((a[feature] === true && b[feature] === false)
     || (a[feature] === false && b[feature] === true));
 }
 
 function countDistinctFeatures(a: Sound, b: Sound) {
-  return allFeatures.filter(([feature]) => trueDifference(a, b, feature as keyof Sound)).length;
-}
-
-function showFeature(sound: Sound, feature: keyof Sound) {
-  if (feature === 'symbol') return sound[feature];
-  if (sound[feature] === 0) return 0;
-  return sound[feature] ? '+' : '-';
+  return allFeatures.filter(([feature]) => (
+    trueDifference(a.features, b.features, feature)
+  )).length;
 }
 
 function TableRow({ sound, contrastWith }: TableRowProps) {
   if (contrastWith === null) {
     return (
       <tr>
+        <td>{sound.symbol}</td>
         {allFeatures.map(([feature]) => (
           <td
             key={feature}
             className="text-center border-gray"
           >
-            {showFeature(sound, feature)}
+            {serializeFeatureValue(sound.features[feature])}
           </td>
         ))}
       </tr>
@@ -57,18 +54,30 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
       >
         {nDistinct}
       </td>
+      <td>{sound.symbol}</td>
       {allFeatures.map(([feature]) => (
         <td
           key={feature}
           className={`text-center border-gray ${nDistinct === 0 && 'sticky top-36 bg-white'}
-            ${trueDifference(sound, contrastWith, feature as keyof Sound) && 'bg-red-300'}`}
+            ${trueDifference(sound.features, contrastWith.features, feature) && 'bg-red-300'}`}
         >
-          {showFeature(sound, feature)}
+          {serializeFeatureValue(sound.features[feature])}
         </td>
       ))}
     </tr>
   );
 }
+
+const VerticalCell = ({ title, content }: { title: string, content: string }) => (
+  <th className="w-8 h-28 sticky top-8 bg-white" title={title}>
+    <div
+      className="flex items-center w-full h-full border-gray"
+      style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
+    >
+      {content}
+    </div>
+  </th>
+);
 
 export default function FeatureList({ sounds, contrastWith = null }: Props) {
   const allSounds = contrastWith === null
@@ -102,15 +111,9 @@ export default function FeatureList({ sounds, contrastWith = null }: Props) {
         </tr>
         <tr>
           {contrastWith && <td className="w-8 h-28 sticky top-8 border-gray bg-white" />}
+          <VerticalCell title="the IPA character of this segment" content="symbol" />
           {allFeatures.map(([feature, _, description]) => (
-            <th key={feature} className="w-8 h-28 sticky top-8 bg-white" title={description}>
-              <div
-                className="flex items-center w-full h-full border-gray"
-                style={{ writingMode: 'vertical-rl', transform: 'scaleX(-1) scaleY(-1)' }}
-              >
-                {feature === 'delayed release' ? 'del rel' : feature}
-              </div>
-            </th>
+            <VerticalCell key={feature} title={description} content={feature === 'delayed release' ? 'del rel' : feature} />
           ))}
         </tr>
       </thead>

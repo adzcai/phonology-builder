@@ -1,9 +1,9 @@
 import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import { CustomRequest } from '../../../src/assets/ipa-data';
 import auth from '../../../src/lib/auth';
 import { userToJson } from '../../../src/lib/user';
-import User from '../../../src/models/User';
+import { CustomRequest } from '../../../src/lib/types';
+import { UserModel } from '../../../src/models';
 
 export default nextConnect()
   .use(auth)
@@ -11,7 +11,7 @@ export default nextConnect()
     const user = req.session.get('user');
 
     if (user) {
-      const userData = await User.findOne({ username: user.username }).populate({
+      const userData = await UserModel.findOne({ username: user.username }).populate({
         path: 'charts',
         populate: {
           path: 'sounds',

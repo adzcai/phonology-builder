@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 import nextConnect from 'next-connect';
 import { ironSession } from 'next-iron-session';
 import passport from './passport';
-import '../models/Sound';
-import '../models/User';
+import '../models'; // initialize models
 
 export default nextConnect()
   .use(ironSession({

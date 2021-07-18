@@ -1,0 +1,21 @@
+Each version of the language phonology is stored as a `Chart` with a name, a list of sounds, and a list of words (or maybe a set of phonotactical rules for generating words).
+
+Arrows between these charts consist of an ordered list of sound changes.
+
+Each of these sound changes has <from> -> <dest> / <environment>
+
+
+[ +feature1 ]
+[ -feature2 ]   _____   [ -feature2 ]   #
+[ +feature3 ]
+
+
+Each Chart may have multiple child Charts, but only one parent Chart.
+
+To apply sound changes in order, take a bunch of words
+Loop through the list of sound changes
+For each one:
+    Find the places where <environment> occurs (maybe regular expressions)
+        Possibly by replacing _____ with whatever is indicated in the feature
+        Could this be vectorized? Better algorithms?
+        

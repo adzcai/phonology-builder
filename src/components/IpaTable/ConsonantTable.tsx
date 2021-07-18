@@ -1,8 +1,9 @@
 import React, { useCallback, useContext, useState } from 'react';
 import {
   allManners as rawManners,
-  allPlaces, Diacritic, filterNonEmpty, matchFeatures, TableContext,
+  allPlaces, filterNonEmptyFeatureSets, matchSounds, TableContext,
 } from '../../assets/ipa-data';
+import { Diacritic } from '../../lib/types';
 import TableCell from './TableCell';
 
 export default function ConsonantTable({ editable }: { editable: boolean }) {
@@ -11,25 +12,35 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
 
   const sounds = editable ? allSounds : selectedSounds;
 
-  const places = filterNonEmpty(sounds, allPlaces, { syllabic: false });
-  const manners = filterNonEmpty(sounds, allManners, { syllabic: false });
+  const places = filterNonEmptyFeatureSets(sounds, allPlaces, { syllabic: false });
+  const manners = filterNonEmptyFeatureSets(sounds, allManners, { syllabic: false });
+  console.log(allManners);
 
   const insertBelow = useCallback((row: number, diacritic: Diacritic) => {
     const manner = manners[row];
     if (!diacritic.createNewRow || manners.some((m) => m.name === `${diacritic.name} ${manner.name}`)) return;
+
     const index = manners.findIndex((a) => a === manner);
+
+    // the clicked manner, minus all of the features in the diacritic
+    const mannerWithoutDiacriticFeatures = {
+      name: manner.name,
+      features: [
+        manner.features,
+        (sound) => !Object.keys(diacritic.features)
+          .every((key) => sound[key] === diacritic.features[key]),
+      ],
+    };
+
+    const mannerWithDiacriticFeatures = {
+      name: `${diacritic.name} ${manner.name}`,
+      features: [manner.features, diacritic.features],
+    };
 
     setAllManners([
       ...manners.slice(0, index),
-      {
-        name: manner.name,
-        features: [
-          manner.features,
-          (sound) => !Object.keys(diacritic.features)
-            .every((key) => sound[key] === diacritic.features[key]),
-        ],
-      },
-      { name: `${diacritic.name} ${manner.name}`, features: [manner.features, diacritic.features] },
+      mannerWithoutDiacriticFeatures,
+      mannerWithDiacriticFeatures,
       ...manners.slice(index + 1)]);
   }, [manners]);
 
@@ -96,7 +107,7 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
               {places.map((place) => (
                 <TableCell
                   key={place.name}
-                  sounds={matchFeatures(
+                  sounds={matchSounds(
                     editable ? allSounds : sounds,
                     place.features, manner.features,
                     { syllabic: false },

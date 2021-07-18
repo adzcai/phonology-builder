@@ -4,9 +4,10 @@ import {
   useCallback, useContext,
 } from 'react';
 import {
-  Diacritic, filterNonEmpty, TableContext,
-  allFrontnesses, Height, matchFeatures,
+  filterNonEmptyFeatureSets, TableContext,
+  allFrontnesses, matchSounds,
 } from '../../assets/ipa-data';
+import { Height, Diacritic } from '../../lib/types';
 import TableCell from './TableCell';
 import styles from './VowelTable.module.css';
 
@@ -21,25 +22,32 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
 
   const sounds = editable ? allSounds : selectedSounds;
 
-  const heights = filterNonEmpty(sounds, allHeights, { syllabic: true });
-  const frontnesses = filterNonEmpty(sounds, allFrontnesses, { syllabic: true });
+  const heights = filterNonEmptyFeatureSets(sounds, allHeights, { syllabic: true });
+  const frontnesses = filterNonEmptyFeatureSets(sounds, allFrontnesses, { syllabic: true });
 
   // will only render if editable
   const insertBelow = useCallback((row: number, diacritic: Diacritic) => {
     const height = heights[row];
     if (!diacritic.createNewRow || heights.some((m) => m.name === `${diacritic.name} ${height.name}`)) return;
 
+    const heightWithoutDiacriticFeatures = {
+      name: height.name,
+      features: {
+        ...height.features,
+        ...Object.keys(diacritic.features)
+          .reduce((prev, key) => ({ ...prev, [key]: !diacritic.features[key] }), {}),
+      },
+    };
+
+    const heightWithDiacriticFeatures = {
+      name: `${diacritic.name} ${height.name}`,
+      features: { ...height.features, ...diacritic.features },
+    };
+
     setAllHeights([
       ...heights.slice(0, row),
-      {
-        name: height.name,
-        features: [
-          height.features,
-          (sound) => !Object.keys(diacritic.features)
-            .every((key) => sound[key] === diacritic.features[key]),
-        ],
-      },
-      { name: `${diacritic.name} ${height.name}`, features: [height.features, diacritic.features] },
+      heightWithoutDiacriticFeatures,
+      heightWithDiacriticFeatures,
       ...heights.slice(row + 1)]);
   }, [heights]);
 
@@ -117,7 +125,7 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
               {frontnesses.map((frontness) => (
                 <TableCell
                   key={frontness.name}
-                  sounds={matchFeatures(
+                  sounds={matchSounds(
                     sounds,
                     frontness.features, height.features,
                     { syllabic: true },

@@ -7,9 +7,7 @@ import {
   BrowserRouter as Router, Switch, Route, Link,
 } from 'react-router-dom';
 import {
-  Sound, TableContext, Diacritic, FeatureSet, matchFeatures,
-  toggleInArray,
-  Height, allHeights as rawHeights, allSounds as rawSounds,
+  TableContext, matchFeatures, toggleInArray, allHeights as rawHeights, allSounds as rawSounds,
 } from '../src/assets/ipa-data';
 import NeighborInspector from '../src/components/NeighborInspector';
 import FilterFeatures from '../src/components/IndexPage/FilterFeatures';
@@ -18,6 +16,9 @@ import VowelTable from '../src/components/IpaTable/VowelTable';
 import AboutSection from '../src/components/IndexPage/AboutSection';
 import ListSoundsSection from '../src/components/IndexPage/ListSoundsSection';
 import SelectSoundsSection from '../src/components/IndexPage/SelectSoundsSection';
+import {
+  Diacritic, FeatureFilter, Height, Sound,
+} from '../src/lib/types';
 
 export default function Home() {
   const { data: user, mutate: mutateUser } = useSWR('/api/user');
@@ -32,8 +33,10 @@ export default function Home() {
     toggleInArray(selectedDiacritics, diacritic),
   );
 
-  const deleteFeatureSet = useCallback(({ features }: FeatureSet) => {
-    setAllSounds((prev) => prev.filter((sound) => matchFeatures([sound], features).length === 0));
+  const deleteFeatureSet = useCallback(({ features }: FeatureFilter) => {
+    setAllSounds((prev) => prev.filter(
+      (sound) => matchFeatures([sound.features], features).length === 0,
+    ));
   }, []);
 
   const paths = [

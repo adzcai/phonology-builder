@@ -1,46 +1,21 @@
-import { NextApiRequest } from 'next';
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext } from 'react';
 import featureData from './feature-data.json';
 import rawSounds from './base-features.json';
 import rawDiacritics from './diacritics.json';
-import { Sound } from '../models/Sound';
-
-export type Condition = Partial<Sound> | ((_: Sound) => boolean) | Condition[];
-
-export type FeatureSet = {
-  name: string;
-  features: Condition;
-};
-export type Manner = FeatureSet;
-export type Place = FeatureSet;
-export type Frontness = FeatureSet;
-export type Height = FeatureSet;
-export type Diacritic = FeatureSet & {
-  symbol: string;
-  requirements: Partial<Sound>;
-  createNewRow: boolean;
-};
-
-export type SoundHook = Dispatch<SetStateAction<Sound[]>>;
-
-export type CustomRequest = NextApiRequest & { session: any };
-
-export type UserPayload = {
-  error?: { message: string };
-  username?: string;
-  charts: {
-    name: string,
-    sounds: Sound[]
-  }[];
-};
+import {
+  Manner, Place, Condition, Diacritic, FeatureFilter, Features, Height, Sound, TableContextType,
+} from '../lib/types';
 
 // the two features missing from the original book are
 // implosive and ATR (equivalent to tense in some languages)
-export const allSounds = rawSounds as Sound[];
+export const allSounds = rawSounds.map(({ symbol, ...features }) => ({
+  symbol,
+  features,
+})) as Sound[];
 export const allManners = featureData.manners as Manner[];
 export const allPlaces = featureData.places as Place[];
 
-function matchConditions(sound: Sound, condition: Condition) {
+function matchConditions(sound: Features, condition: Condition) {
   if (Array.isArray(condition)) return condition.every((c) => matchConditions(sound, c));
 
   if (typeof condition === 'object') {
@@ -57,10 +32,14 @@ function matchConditions(sound: Sound, condition: Condition) {
   return true;
 }
 
-export function matchFeatures(sounds: Sound[], ...conditions: Condition[]) {
-  return sounds.filter(
-    (sound) => matchConditions(sound, conditions),
+export function matchFeatures(featuresArr: Features[], ...conditions: Condition[]) {
+  return featuresArr.filter(
+    (features) => matchConditions(features, conditions),
   );
+}
+
+export function matchSounds(sounds: Sound[], ...conditions: Condition[]) {
+  return sounds.filter((sound) => matchConditions(sound.features, conditions));
 }
 
 const featureInverseMap = new Map<boolean | 0, [boolean | 0, boolean | 0]>([
@@ -69,7 +48,7 @@ const featureInverseMap = new Map<boolean | 0, [boolean | 0, boolean | 0]>([
   [false, [0, true]],
 ]);
 
-export function invertFeatures(features: Partial<Sound>) {
+export function invertFeatures(features: Partial<Features>) {
   return Object.keys(features).reduce(
     (prev, key) => ({
       ...prev,
@@ -78,20 +57,6 @@ export function invertFeatures(features: Partial<Sound>) {
     {},
   );
 }
-
-// all of the optional fields are for the FilterFeature component to work properly
-export type TableContextType = {
-  allSounds?: Sound[];
-  setAllSounds?: SoundHook;
-  selectedSounds: Sound[];
-  setSelectedSounds?: SoundHook;
-  neighbor?: Sound | null;
-  setNeighbor?: Dispatch<SetStateAction<Sound | null>>;
-  selectedDiacritics: Diacritic[] | null;
-  setSelectedDiacritics: Dispatch<SetStateAction<Diacritic[]>>;
-  handleDiacriticClick: (diacritic: Diacritic) => void;
-  deleteFeatureSet?: (featureSet: FeatureSet) => void;
-};
 
 export const TableContext = createContext<TableContextType>({
   allSounds: [],
@@ -106,9 +71,7 @@ export const TableContext = createContext<TableContextType>({
   deleteFeatureSet: () => {},
 });
 
-export const allFeatures: [keyof Sound, string, string][] = [
-  ['symbol', 'symbol', 'the IPA character for this segment'],
-
+export const allFeatures: [keyof Features, string, string][] = [
   ['syllabic', 'manner', 'can occur as syllable nucleus; typically [+syllabic] consists of vowels'],
   ['consonantal', 'manner', 'see sonority hierarchy'],
   ['approximant', 'manner', 'see sonority hierarchy'],
@@ -165,9 +128,12 @@ export const allHeights: Height[] = [
 
 // arr is a list of all e.g. places, manners, heights, frontnesses
 // get all elements of arr which contain sounds
-export function filterNonEmpty(sounds: Sound[], arr: FeatureSet[], ...conditions: Condition[]) {
+export function filterNonEmptyFeatureSets(
+  sounds: Sound[], arr: FeatureFilter[], ...conditions: Condition[]
+) {
+  const soundFeatures = sounds.map((sound) => sound.features);
   return arr.filter(
-    ({ features }) => matchFeatures(sounds, features, ...conditions).length > 0,
+    ({ features }) => matchFeatures(soundFeatures, features, ...conditions).length > 0,
   );
 }
 
@@ -175,19 +141,40 @@ export function toggleInArray<T>(array: T[], element: T) {
   return array.includes(element) ? array.filter((e) => e !== element) : [...array, element];
 }
 
-export function canApplyDiacriticsToSound(diacritics: Diacritic[], sound: Sound) {
+export function canApplyDiacriticsToSound(diacritics: Diacritic[], sound: Features) {
   // can't apply diacritics if they have no effect
   return diacritics.every((diacritic) => matchFeatures([sound], diacritic.requirements).length > 0
           && matchFeatures([sound], diacritic.features).length === 0);
 }
 
 export function applyDiacriticsToSound(sound: Sound, ...diacritics: Diacritic[]) {
-  const newSound: Sound = { ...sound };
+  const newSound: Sound = {
+    symbol: sound.symbol,
+    features: { ...sound.features },
+  }; // copy the current sound
   diacritics.forEach((diacritic) => {
-    newSound.symbol += diacritic.symbol;
-    Object.keys(diacritic.features).forEach((feature) => {
-      newSound[feature] = diacritic.features[feature];
-    });
+    newSound.symbol += diacritic.symbol; // TODO assumes the diacritic comes after
+    Object.assign(newSound.features, diacritic.features);
   });
   return newSound;
+}
+
+export function serializeFeatureValue(feature) {
+  return (feature === 0 ? '0' : (feature ? '+' : '-'));
+}
+
+export function deserializeFeatureValue(feature) {
+  return ({ 0: 0, '+': true, '-': false }[feature]);
+}
+
+export function serializeSound(sound: Sound) {
+  return Object.keys(sound).filter((key) => key !== 'symbol').reduce((obj, feature) => ({
+    ...obj, [feature]: serializeFeatureValue(obj[feature]),
+  }), { symbol: sound.symbol });
+}
+
+export function deserializeSound(sound: any) {
+  return Object.keys(sound).filter((key) => key !== 'symbol').reduce((obj, feature) => ({
+    ...obj, [feature]: deserializeFeatureValue(obj[feature]),
+  }), { symbol: sound.symbol });
 }

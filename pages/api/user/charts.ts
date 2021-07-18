@@ -1,10 +1,10 @@
 import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import { CustomRequest } from '../../../src/assets/ipa-data';
 import auth from '../../../src/lib/auth';
 import { userToJson } from '../../../src/lib/user';
-import SoundModel, { serializeSound, Sound } from '../../../src/models/Sound';
-import User from '../../../src/models/User';
+import { CustomRequest, Sound } from '../../../src/lib/types';
+import { UserModel, SoundModel } from '../../../src/models';
+import { serializeSound } from '../../../src/assets/ipa-data';
 
 export default nextConnect()
   .use(auth)
@@ -16,7 +16,7 @@ export default nextConnect()
     }
   })
   .get(async (req: CustomRequest, res: NextApiResponse) => {
-    const user = await User.findOne({ username: req.session.get('user').username })
+    const user = await UserModel.findOne({ username: req.session.get('user').username })
       .populate('charts').exec();
     res.json({ charts: user.charts });
   })
@@ -24,15 +24,17 @@ export default nextConnect()
     const { sounds, name } = req.body;
     const { username } = req.session.get('user');
 
-    const user = await User.findOne({ username }).exec();
+    const user = await UserModel.findOne({ username }).exec();
 
-    const insertSounds = await Promise.all(sounds.map(async (sound: Sound) => {
+    const insertSounds = await Promise.all<Sound>(sounds.map(async (sound: Sound) => {
       const s = await SoundModel.findOne({ symbol: sound.symbol }).exec();
       if (s) return s;
       return SoundModel.create(serializeSound(sound));
     }));
 
-    user.charts.push({ sounds: insertSounds, name });
+    user.charts.push({
+      _id: `${username}/${name}`, sounds: insertSounds, name, parent: null,
+    });
     user.markModified('charts');
     await user.save();
 

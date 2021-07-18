@@ -2,7 +2,7 @@ import nextConnect from 'next-connect';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createUser } from '../../src/lib/user';
 import auth from '../../src/lib/auth';
-import User from '../../src/models/User';
+import { UserModel } from '../../src/models';
 
 export default nextConnect()
   .use(auth)
@@ -15,7 +15,7 @@ export default nextConnect()
 
     if (password !== confirmPassword) return res.status(400).json({ errorMessage: 'Passwords do not match' });
 
-    if (await User.exists({ username })) return res.status(409).json({ errorMessage: 'That username is already taken' });
+    if (await UserModel.exists({ username })) return res.status(409).json({ errorMessage: 'That username is already taken' });
 
     await createUser({ username, password });
 
