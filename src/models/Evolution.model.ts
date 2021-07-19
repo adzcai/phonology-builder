@@ -4,11 +4,9 @@ import { Evolution } from '../lib/types';
 const EvolutionSchema = new mongoose.Schema<Evolution>({
   rules: [{
     src: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
-    dest: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
-    environment: {
-      preceding: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
-      following: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
-    },
+    dst: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
+    preceding: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
+    following: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
   }],
 });
 

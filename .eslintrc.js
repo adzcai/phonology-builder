@@ -13,5 +13,10 @@ module.exports = {
     'react/jsx-filename-extension': ['error', { extensions: ['.tsx', '.jsx'] }],
     'no-nested-ternary': 'off',
     'consistent-return': 'off',
+    'no-plusplus': 'off',
+    'jsx-a11y/label-has-associated-control': [
+      'error',
+      { required: { some: ['nesting', 'id'] } },
+    ],
   },
 };

@@ -1,11 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { SWRConfig } from 'swr';
 import {
-  toggleInArray, matchFeatures, TableContext, allSounds as rawSounds, allHeights as rawHeights,
+  toggleInArray, filterFeatures, TableContext, allSounds as rawSounds, allHeights as rawHeights,
   HeightsContext,
 } from '../src/assets/ipa-data';
 import fetch from '../src/lib/fetchJson';
-import { Sound, Diacritic, FeatureFilter } from '../src/lib/types';
+import {
+  Sound, Diacritic, FeatureFilter, Chart,
+} from '../src/lib/types';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
@@ -14,6 +16,7 @@ function MyApp({ Component, pageProps }) {
   const [neighbor, setNeighbor] = useState<Sound | null>(null);
   const [selectedDiacritics, setSelectedDiacritics] = useState<Diacritic[]>([]);
   const [allHeights, setAllHeights] = useState(rawHeights);
+  const [selectedChart, setSelectedChart] = useState<Chart | null>(null);
 
   const handleDiacriticClick = (diacritic) => setSelectedDiacritics(
     toggleInArray(selectedDiacritics, diacritic),
@@ -21,9 +24,13 @@ function MyApp({ Component, pageProps }) {
 
   const deleteFeatureSet = useCallback(({ features }: FeatureFilter) => {
     setAllSounds((prev) => prev.filter(
-      (sound) => matchFeatures([sound.features], features).length === 0,
+      (sound) => filterFeatures([sound.features], features).length === 0,
     ));
   }, []);
+
+  useEffect(() => {
+    if (selectedChart !== null) setSelectedSounds(selectedChart.sounds);
+  }, [selectedChart]);
 
   return (
     <SWRConfig
@@ -45,6 +52,8 @@ function MyApp({ Component, pageProps }) {
         setSelectedDiacritics,
         handleDiacriticClick,
         deleteFeatureSet,
+        selectedChart,
+        setSelectedChart,
       }}
       >
         <HeightsContext.Provider value={{

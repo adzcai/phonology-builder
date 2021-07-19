@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useState } from 'react';
 import {
   allManners as rawManners,
-  allPlaces, filterNonEmptyFeatureSets, matchSounds, TableContext,
+  allPlaces, filterNonEmptyFeatureSets, filterSounds, TableContext,
 } from '../../assets/ipa-data';
 import { Diacritic } from '../../lib/types';
 import TableCell from './TableCell';
@@ -106,7 +106,7 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
               {places.map((place) => (
                 <TableCell
                   key={place.name}
-                  sounds={matchSounds(
+                  sounds={filterSounds(
                     editable ? allSounds : sounds,
                     place.features, manner.features,
                     { syllabic: false },

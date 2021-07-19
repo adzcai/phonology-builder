@@ -3,7 +3,7 @@ import nextConnect from 'next-connect';
 import auth from '../../../src/lib/auth';
 import { userToJson } from '../../../src/lib/user';
 import { CustomRequest, Sound } from '../../../src/lib/types';
-import { UserModel, SoundModel } from '../../../src/models';
+import { UserModel, SoundModel, ChartModel } from '../../../src/models';
 import { serializeSound } from '../../../src/assets/ipa-data';
 
 export default nextConnect()
@@ -32,11 +32,17 @@ export default nextConnect()
       return SoundModel.create(serializeSound(sound));
     }));
 
-    user.charts.push({
-      _id: `${username}/${name}`, sounds: insertSounds, name, parent: null,
-    });
-    user.markModified('charts');
-    await user.save();
+    try {
+      const chart = await ChartModel.create({
+        _id: `${username}/${name}`, sounds: insertSounds, name, parent: null,
+      });
 
-    res.json(userToJson(user));
+      user.charts.push(chart);
+      user.markModified('charts');
+      await user.save();
+      res.json(userToJson(user));
+    } catch (e) {
+      console.error('Error when saving new chart:', e);
+      res.status(409).json({ errorMessage: e.message });
+    }
   });

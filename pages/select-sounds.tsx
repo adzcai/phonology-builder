@@ -1,7 +1,6 @@
 import React, {
   useCallback, useContext, useState,
 } from 'react';
-import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 import {
   allHeights as rawHeights, TableContext, allSounds as rawSounds, HeightsContext,
@@ -11,56 +10,7 @@ import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
 import Layout from '../src/components/Layout';
-
-const UserCharts = ({ user }: { user: any }) => {
-  const { setSelectedSounds } = useContext(TableContext);
-
-  if (!user) return <p>Loading...</p>;
-
-  if (user.errorMessage) {
-    console.error(user.errorMessage);
-    return (
-      <p>
-        An error occurred:
-        {user.errorMessage}
-      </p>
-    );
-  }
-
-  if (!user.data.isLoggedIn) {
-    return (
-      <p>
-        <Link to="/" className="underline">Sign up</Link>
-        {' '}
-        to save your own sound charts!
-      </p>
-    );
-  }
-
-  if (user.data.charts.length === 0) return <p>Save some charts!</p>;
-
-  return (
-    <>
-      <p className="mx-auto w-full text-center">Click a chart to load it!</p>
-      <ul className="flex flex-wrap gap-4 justify-center">
-        {user.data.charts.map(({ name, sounds }) => (
-          <li key={name}>
-            <button
-              type="button"
-              className="bg-green-300 hover:bg-green-500 drop-shadow rounded p-2"
-              onClick={() => {
-                console.log(sounds);
-                setSelectedSounds(sounds);
-              }}
-            >
-              {name}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-};
+import UserCharts from '../src/components/SelectSoundsPage/UserCharts';
 
 export default function SelectSoundsPage() {
   const { data: user, mutate: mutateUser } = useSWR('/api/user');
@@ -196,7 +146,7 @@ export default function SelectSoundsPage() {
 
       {/* undefined > 0 is false, so this only works if the user has positive charts */}
       <h2 className="text-2xl font-bold">Your charts</h2>
-      <UserCharts user={user} />
+      <UserCharts />
     </Layout>
   );
 }

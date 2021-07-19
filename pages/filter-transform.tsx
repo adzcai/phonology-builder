@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   allSounds, toggleInArray, TableContext,
   canApplyDiacriticsToSound, applyDiacriticsToSound, allHeights as rawHeights,
-  matchSounds, cloneSound, deserializeFeatureValue,
+  filterSounds, cloneSound, deserializeFeatureValue,
 } from '../src/assets/ipa-data';
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
@@ -18,6 +18,7 @@ export default function FilterFeaturesPage() {
   const [soundChanges, setSoundChanges] = useState<SerializedFeatureList>([]);
   const [selectedDiacritics, setSelectedDiacritics] = useState<Diacritic[]>([]);
   const [allHeights, setAllHeights] = useState<Height[]>(rawHeights);
+  const [selectedChart, setSelectedChart] = useState(null);
 
   const validFeatures = filters.filter((feature) => feature[0] !== '' && feature[1] !== null);
 
@@ -31,7 +32,7 @@ export default function FilterFeaturesPage() {
 
   let selectedSounds = validFeatures.length === 0
     ? []
-    : matchSounds(soundsWithDiacritics, validFeatures.map(([name, val]) => ({
+    : filterSounds(soundsWithDiacritics, validFeatures.map(([name, val]) => ({
       [name]: deserializeFeatureValue(val),
     })));
 
@@ -43,7 +44,7 @@ export default function FilterFeaturesPage() {
     selectedSounds = selectedSounds.map((sound) => {
       const soundToFind = cloneSound(sound);
       Object.assign(soundToFind.features, changesToApply);
-      const found = matchSounds(soundsWithDiacritics, soundToFind.features);
+      const found = filterSounds(soundsWithDiacritics, soundToFind.features);
       return { ...sound, symbol: `${sound.symbol} → ${found.length > 0 ? found[0].symbol : '?'}` };
     });
   }
@@ -62,6 +63,8 @@ export default function FilterFeaturesPage() {
         setSelectedDiacritics,
         selectedSounds,
         handleDiacriticClick,
+        selectedChart,
+        setSelectedChart,
       }}
       >
         <DiacriticTable>

@@ -5,7 +5,7 @@ import {
 } from 'react';
 import {
   filterNonEmptyFeatureSets, TableContext,
-  allFrontnesses, matchSounds,
+  allFrontnesses, filterSounds,
 } from '../../assets/ipa-data';
 import { Height, Diacritic } from '../../lib/types';
 import TableCell from './TableCell';
@@ -125,7 +125,7 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
               {frontnesses.map((frontness) => (
                 <TableCell
                   key={frontness.name}
-                  sounds={matchSounds(
+                  sounds={filterSounds(
                     sounds,
                     frontness.features, height.features,
                     { syllabic: true },

@@ -5,28 +5,33 @@ import { useRouter } from 'next/router';
 const paths = [
   {
     path: '/',
-    color: 'bg-green-300',
+    color: 'bg-pink-300',
     title: 'About',
   },
   {
     path: '/select-sounds',
-    color: 'bg-red-100',
+    color: 'bg-red-300',
     title: 'Choose sounds',
   },
   {
     path: '/view-inventory',
-    color: 'bg-green-100',
+    color: 'bg-yellow-100',
     title: 'View inventory',
   },
   {
     path: '/compare-sounds',
-    color: 'bg-purple-200',
+    color: 'bg-green-300',
     title: 'Compare sounds',
   },
   {
     path: '/filter-transform',
-    color: 'bg-red-200',
+    color: 'bg-blue-300',
     title: 'Filter and transform sounds',
+  },
+  {
+    path: '/evolve',
+    color: 'bg-indigo-300',
+    title: 'Evolve phonology',
   },
 ];
 
@@ -49,7 +54,7 @@ export default function Layout({ children }) {
       </header>
       <nav className="bg-indigo-800 md:bg-gradient-to-tr from-purple-300 to-indigo-300 p-8 md:p-0">
         {/* MANUALLY CHANGE GRID COLS WHEN PATHS CHANGES */}
-        <ul className="grid items-stretch grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2 md:gap-0">
+        <ul className="grid items-stretch grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2 md:gap-0">
           {paths.map(({ path, color: liColor, title: liTitle }) => (
             <Link key={path} href={path}>
               <a href={path} className="contents">

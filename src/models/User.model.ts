@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema<User>({
   hash: { type: String, required: true },
   salt: { type: String, required: true },
   charts: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chart' }],
+    type: [{ type: String, ref: 'Chart' }],
     default: [],
     required: true,
   },

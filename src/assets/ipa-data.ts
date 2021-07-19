@@ -5,6 +5,7 @@ import rawDiacritics from './diacritics.json';
 import {
   Manner, Place, Condition, Diacritic, FeatureFilter, Features, Height, Sound, TableContextType,
   HeightsContextType,
+  SerializedFeatureList,
 } from '../lib/types';
 
 // the two features missing from the original book are
@@ -16,67 +17,51 @@ export const allSounds = rawSounds.map(({ symbol, ...features }) => ({
 export const allManners = featureData.manners as Manner[];
 export const allPlaces = featureData.places as Place[];
 
-function matchConditions(sound: Features, condition: Condition, strict: boolean = true) {
-  if (Array.isArray(condition)) return condition.every((c) => matchConditions(sound, c));
+/**
+ * Check if a segment matches a given condition or set of conditions.
+ * @param segment the set of features to check
+ * @param condition the condition to check it by
+ * @param strict set to false to consider 0 as equal to + or -
+ * @returns true if the segment matches the condition
+ */
+export function matchConditions(segment: Features, condition: Condition, strict: boolean = true) {
+  if (Array.isArray(condition)) return condition.every((c) => matchConditions(segment, c));
 
+  // if the condition is a feature
   if (typeof condition === 'object') {
-    // check for array
     return Object.keys(condition)
-      .every((key) => (Array.isArray(condition[key])
-        ? condition[key].includes(sound[key])
-        : sound[key] === condition[key]
-          || (!strict && (sound[key] === 0 || condition[key] === 0))));
+      .every((key) => (segment[key] === condition[key]
+          || (!strict && (segment[key] === 0 || condition[key] === 0))));
   }
 
-  if (typeof condition === 'function') return condition(sound);
+  if (typeof condition === 'function') return condition(segment);
 
   return true;
 }
 
-export function matchFeatures(featuresArr: Features[], ...conditions: Condition[]) {
+/**
+ * Filter an array of segments by a set of conditions.
+ * @param featuresArr the list of segments to filter through
+ * @param conditions the set of conditions to filter by
+ * @returns the segments which match the given conditions
+ */
+export function filterFeatures(featuresArr: Features[], ...conditions: Condition[]) {
   return featuresArr.filter(
     (features) => matchConditions(features, conditions),
   );
 }
 
-export function matchSounds(sounds: Sound[], ...conditions: Condition[]) {
+/**
+ * Filter an array of sounds by a set of conditions.
+ * @param sounds the list of sounds to filter through
+ * @param conditions the list of conditions to filter by
+ * @returns the sounds which match the given conditions
+ */
+export function filterSounds(sounds: Sound[], ...conditions: Condition[]) {
   return sounds.filter((sound) => matchConditions(sound.features, conditions));
 }
 
-const featureInverseMap = new Map<boolean | 0, [boolean | 0, boolean | 0]>([
-  [0, [true, false]],
-  [true, [false, 0]],
-  [false, [0, true]],
-]);
-
-export function invertFeatures(features: Partial<Features>) {
-  return Object.keys(features).reduce(
-    (prev, key) => ({
-      ...prev,
-      [key]: featureInverseMap.get(features[key]),
-    }),
-    {},
-  );
-}
-
-export const TableContext = createContext<TableContextType>({
-  allSounds: [],
-  setAllSounds: () => {},
-  selectedSounds: [],
-  setSelectedSounds: () => {},
-  neighbor: null,
-  setNeighbor: () => {},
-  selectedDiacritics: null,
-  setSelectedDiacritics: () => {},
-  handleDiacriticClick: () => {},
-  deleteFeatureSet: () => {},
-});
-
-export const HeightsContext = createContext<HeightsContextType>({
-  allHeights: [],
-  setAllHeights: () => {},
-});
-
+// Descriptions of the supported features in the form [name, category, description].
 export const allFeatures: [keyof Features, string, string][] = [
   ['syllabic', 'manner', 'can occur as syllable nucleus; typically [+syllabic] consists of vowels'],
   ['consonantal', 'manner', 'see sonority hierarchy'],
@@ -113,6 +98,7 @@ export const allFeatures: [keyof Features, string, string][] = [
   ['long', 'prosody', 'increased duration of vowel or consonant'],
 ];
 
+// All builtin diacritics
 export const allDiacritics: Diacritic[] = rawDiacritics;
 
 export const allFrontnesses = [
@@ -132,14 +118,20 @@ export const allHeights: Height[] = [
   { name: 'open', features: { high: false, low: true } },
 ];
 
-// arr is a list of all e.g. places, manners, heights, frontnesses
-// get all elements of arr which contain sounds
+/**
+ * Get all feature filters (e.g. heights, manners, places) which contain some of
+ * the given sounds.
+ * @param sounds the set of sounds to use
+ * @param arr the list of feature filters to filter through
+ * @param conditions the set of conditions to filter by
+ * @returns all elements of arr which match some of the given sounds
+ */
 export function filterNonEmptyFeatureSets(
   sounds: Sound[], arr: FeatureFilter[], ...conditions: Condition[]
 ) {
   const soundFeatures = sounds.map((sound) => sound.features);
   return arr.filter(
-    ({ features }) => matchFeatures(soundFeatures, features, ...conditions).length > 0,
+    ({ features }) => filterFeatures(soundFeatures, features, ...conditions).length > 0,
   );
 }
 
@@ -147,17 +139,32 @@ export function toggleInArray<T>(array: T[], element: T) {
   return array.includes(element) ? array.filter((e) => e !== element) : [...array, element];
 }
 
+/**
+ * Check if a set of diacritics can all be applied to a given sound.
+ * @param diacritics the set of diacritics whose validity to check
+ * @param sound the sound we are trying to apply to the diacritics to
+ * @returns true if the given diacritics can all be applied to the given sound
+ */
 export function canApplyDiacriticsToSound(diacritics: Diacritic[], sound: Features) {
   // can't apply diacritics if they have no effect
-  return diacritics.every((diacritic) => matchFeatures([sound], diacritic.requirements).length > 0
-          && matchFeatures([sound], diacritic.features).length === 0);
+  return diacritics.every((diacritic) => filterFeatures([sound], diacritic.requirements).length > 0
+          && filterFeatures([sound], diacritic.features).length === 0);
 }
 
+export function cloneSound(sound: Sound) {
+  return { symbol: sound.symbol, features: { ...sound.features } };
+}
+
+/**
+ * Apply diacritics to a sound.
+ * @param sound the sound to apply the diacritics to (not modified)
+ * @param diacritics the diacritics to apply
+ * @returns the resulting sound when the given diacritics are applied to the given sound
+ */
 export function applyDiacriticsToSound(sound: Sound, ...diacritics: Diacritic[]) {
-  const newSound: Sound = {
-    symbol: sound.symbol,
-    features: { ...sound.features },
-  }; // copy the current sound
+  // copy the current sound
+  const newSound: Sound = cloneSound(sound);
+
   diacritics.forEach((diacritic) => {
     newSound.symbol += diacritic.symbol; // TODO assumes the diacritic comes after
     Object.assign(newSound.features, diacritic.features);
@@ -185,6 +192,28 @@ export function deserializeSound(sound: any) {
   }), { symbol: sound.symbol });
 }
 
-export function cloneSound(sound: Sound) {
-  return { symbol: sound.symbol, features: { ...sound.features } };
+export function featureListToFeatures(featureList: SerializedFeatureList): Partial<Features> {
+  return featureList.reduce((obj, [feature, value]) => ({
+    ...obj, [feature]: deserializeFeatureValue(value),
+  }), {});
 }
+
+export const TableContext = createContext<TableContextType>({
+  allSounds: [],
+  setAllSounds: () => {},
+  selectedSounds: [],
+  setSelectedSounds: () => {},
+  neighbor: null,
+  setNeighbor: () => {},
+  selectedDiacritics: null,
+  setSelectedDiacritics: () => {},
+  selectedChart: null,
+  setSelectedChart: () => {},
+  handleDiacriticClick: () => {},
+  deleteFeatureSet: () => {},
+});
+
+export const HeightsContext = createContext<HeightsContextType>({
+  allHeights: [],
+  setAllHeights: () => {},
+});

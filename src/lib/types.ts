@@ -83,12 +83,10 @@ export type Chart = {
 };
 
 export type Rule = {
-  src: Features,
-  dest: Features,
-  environment: {
-    preceding: Features[],
-    following: Features[]
-  }
+  src: SerializedFeatureList[],
+  dst: SerializedFeatureList[],
+  preceding: SerializedFeatureList[],
+  following: SerializedFeatureList[]
 };
 
 export type Evolution = {
@@ -105,6 +103,8 @@ export type TableContextType = {
   setNeighbor?: Dispatch<SetStateAction<Sound | null>>;
   selectedDiacritics: Diacritic[] | null;
   setSelectedDiacritics: Dispatch<SetStateAction<Diacritic[]>>;
+  selectedChart: Chart | null;
+  setSelectedChart: Dispatch<SetStateAction<Chart>>;
   handleDiacriticClick: (diacritic: Diacritic) => void;
   deleteFeatureSet?: (featureSet: FeatureFilter) => void;
 };
@@ -116,4 +116,4 @@ export type HeightsContextType = {
 
 export type SerializedFeatureValue = '+' | '-' | '0';
 
-export type SerializedFeatureList = [string, SerializedFeatureValue][];
+export type SerializedFeatureList = [keyof Features, SerializedFeatureValue][];
