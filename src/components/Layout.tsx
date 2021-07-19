@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { PropsWithChildren } from 'react';
 
 const paths = [
   {
@@ -35,7 +36,7 @@ const paths = [
   },
 ];
 
-export default function Layout({ children }) {
+export default function Layout({ children }: PropsWithChildren<{}>) {
   const router = useRouter();
 
   const { color, title } = paths.find(({ path }) => path === router.pathname);

@@ -55,8 +55,8 @@ export default function FilterFeaturesPage() {
 
   return (
     <Layout>
-      <FeatureSelector features={filters} setFeatures={setFilters} buttonLabel="Add new filter condition" />
-      <FeatureSelector features={soundChanges} setFeatures={setSoundChanges} buttonLabel="Add new sound change" />
+      <FeatureSelector features={filters} setFeatures={setFilters} buttonLabel="Add new filter condition" groupName="filter-condition" />
+      <FeatureSelector features={soundChanges} setFeatures={setSoundChanges} buttonLabel="Add new sound change" groupName="sound-change" />
 
       <TableContext.Provider value={{
         selectedDiacritics,

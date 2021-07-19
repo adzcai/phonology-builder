@@ -1,4 +1,4 @@
-import { ChangeEventHandler } from 'react';
+import React, { ChangeEventHandler } from 'react';
 import { allFeatures } from '../../assets/ipa-data';
 import { SerializedFeatureValue } from '../../lib/types';
 
@@ -9,7 +9,7 @@ type SelectorRowProps = {
   setVal: (_: SerializedFeatureValue) => void;
   removeFeature: () => void;
   features: string[][];
-  groupName: string;
+  groupName: React.Key;
 };
 
 export default function SelectorRow({
@@ -21,12 +21,12 @@ export default function SelectorRow({
     <li className="border-gray-300 border-4 w-max bg-white rounded-xl p-2">
       <div>
         <select value={selected} onChange={setSelected} className="outline-none border-b-2 border-gray-300">
-          <option>{}</option>
+          <option>{null}</option>
           {optGroups.map((category) => (
             <optgroup key={category} label={category}>
               {allFeatures.filter(([, cat]) => cat === category).map(([featureName]) => (
                 <option
-                  key={featureName}
+                  key={`${groupName}-${featureName}`}
                   value={featureName}
                   disabled={features.some(([feature]) => feature === featureName)}
                 >
@@ -40,11 +40,12 @@ export default function SelectorRow({
       </div>
       <div className="w-full flex justify-between">
         {['+', '-', '0'].map((v) => (
-          <label key={v}>
+          <label key={v} htmlFor={`${groupName}-${selected}`}>
             {v}
             <input
               type="radio"
-              name={`${selected}-val-${groupName}`}
+              id={`${groupName}-${selected}`}
+              name={`${groupName}-${selected}`}
               value={v}
               checked={val === v}
               onChange={(e) => setVal(e.currentTarget.value as SerializedFeatureValue)}

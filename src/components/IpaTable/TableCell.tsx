@@ -1,4 +1,5 @@
-import { useContext } from 'react';
+import { FC, useContext } from 'react';
+
 import {
   TableContext, applyDiacriticsToSound, canApplyDiacriticsToSound, allFeatures,
 } from '../../assets/ipa-data';
@@ -34,7 +35,7 @@ export default function TableCell({
   } = useContext(TableContext);
 
   const baseStyles = 'px-1 lg:py-1 w-8 focus:outline-none font-serif text-center';
-  let SoundContainer: (_: SoundContainerProps) => JSX.Element;
+  let SoundContainer: FC<SoundContainerProps>;
 
   if (!editable) {
     SoundContainer = ({ sound }: SoundContainerProps) => (

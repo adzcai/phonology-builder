@@ -2,7 +2,7 @@ import {
   Dispatch, SetStateAction, useEffect, useState,
 } from 'react';
 import {
-  FaLongArrowAltRight, FaPlus, FaTrash,
+  FaLongArrowAltRight, FaMinus, FaPlus,
 } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
 import useSWR from 'swr';
@@ -57,34 +57,44 @@ const FeatureMatrix = ({
   }, [features]);
 
   return (
-    <div className={`relative ${color} shadow-inner p-4 rounded-lg`}>
-      <button
-        type="button"
-        onClick={() => {
-          setMatrices((prev) => [...prev.slice(0, index), createMatrix(), ...prev.slice(index)]);
-        }}
-        className="absolute top-1/2 left-0 transform -translate-x-1/2 -translate-y-1/2 p-1 text-sm bg-green-300 rounded-xl outline-none hover:bg-green-500 transition-colors"
-      >
-        <FaPlus />
-      </button>
+    <div className={`relative ${color} shadow-xl p-4 rounded-lg`}>
       <FeatureSelector
         features={features}
         setFeatures={setFeatures}
         buttonLabel={<FaPlus />}
-        groupName={index.toString()}
+        groupName={id}
         flexDirection="col"
       />
+      <button
+        type="button"
+        title="add feature matrix"
+        onClick={() => {
+          setMatrices((prev) => [...prev.slice(0, index), createMatrix(), ...prev.slice(index)]);
+        }}
+        className="absolute top-1/2 left-0 transform -translate-x-1/2 -translate-y-1/2 p-1 text-sm bg-green-300 rounded-xl focus:outline-none hover:bg-green-500 transition-colors"
+      >
+        <FaPlus />
+      </button>
       {isEnd && (
       <button
         type="button"
+        title="add feature matrix"
         onClick={() => {
           setMatrices((prev) => [...prev, createMatrix()]);
         }}
-        className="absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 p-1 text-sm bg-green-300 rounded-xl outline-none hover:bg-green-500 transition-colors"
+        className="absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 p-1 text-sm bg-green-300 rounded-xl focus:outline-none hover:bg-green-500 transition-colors"
       >
         <FaPlus />
       </button>
       )}
+      <button
+        type="button"
+        title="remove this feature matrix"
+        onClick={() => setMatrices((prev) => [...prev.slice(0, index), ...prev.slice(index + 1)])}
+        className="absolute top-0 right-0 z-10 transform translate-x-1/2 -translate-y-1/2 p-1 text-sm bg-red-300 rounded-xl focus:outline-none hover:bg-red-500 transition-colors"
+      >
+        <FaMinus />
+      </button>
     </div>
   );
 };
@@ -127,12 +137,13 @@ const findIndexOfMatrices = (str: Features[], matrices: Condition[], startIndex 
 };
 
 const RuleComponent = ({
-  setRules, index, words, id,
+  setRules, index, words, id, last,
 }: {
-  setRules: Dispatch<SetStateAction<Rule[]>>,
-  index: number,
-  words: string[],
-  id: React.Key
+  setRules: Dispatch<SetStateAction<Rule[]>>;
+  index: number;
+  words: string[];
+  id: React.Key;
+  last: boolean;
 }) => {
   const [src, setSrc] = useState<Matrix[]>([createMatrix()]);
   const [dst, setDst] = useState<Matrix[]>([createMatrix()]);
@@ -151,6 +162,78 @@ const RuleComponent = ({
 
   return (
     <div className="relative container">
+      <div className="flex bg-gray-200 items-center gap-4 shadow-xl p-8 border-gray-300 border-4 overflow-auto">
+        <MatrixList color="bg-yellow-300" matrices={src} setMatrices={setSrc} />
+        <span className="text-6xl mx-2"><FaLongArrowAltRight /></span>
+        <MatrixList color="bg-purple-300" matrices={dst} setMatrices={setDst} />
+        <span className="text-6xl font-extrabold mx-2">/</span>
+        <MatrixList color="bg-indigo-300" matrices={preceding} setMatrices={setPreceding} />
+        <span className="text-6xl font-extrabold mx-2">__</span>
+        <MatrixList color="bg-indigo-300" matrices={following} setMatrices={setFollowing} />
+      </div>
+      <div>
+        {src.length === dst.length
+          ? (
+            <ul>
+              {words.map((word) => {
+                // turn word into a list of feature matrices
+                const str = word.split('').map((char) => allSounds.find((segment) => segment.symbol === char).features);
+                const matrices = src.map((matrix) => featureListToFeatures(matrix.data));
+                const dstMatrices = dst.map((matrix) => featureListToFeatures(matrix.data));
+                const foundIndex = findIndexOfMatrices(str, matrices);
+
+                if (foundIndex < 0) {
+                  return (
+                    <li>
+                      {word}
+                      {' '}
+                      not found
+                    </li>
+                  );
+                }
+
+                const displayWord = [
+                  word.slice(0, foundIndex),
+                  <span className="bg-green-100">{word.substr(foundIndex, matrices.length)}</span>,
+                  word.slice(foundIndex + matrices.length),
+                ];
+
+                const replacement = str.slice(foundIndex, foundIndex + matrices.length)
+                  .map((features, i) => {
+                    console.log(i, dstMatrices[i]);
+                    const matchingSounds = filterSounds(allSounds, {
+                      ...features,
+                      ...dstMatrices[i],
+                    });
+                    if (matchingSounds.length === 0) return '?';
+                    return matchingSounds[0].symbol;
+                  }).join('');
+
+                const newStr = (word.slice(0, foundIndex)
+                  + replacement + word.slice(foundIndex + matrices.length))
+                  .split('')
+                  .map((char, i) => (
+                    <span
+                      className="hover:bg-white transition-colors"
+                      title={JSON.stringify(str[i])}
+                    >
+                      {char}
+                    </span>
+                  ));
+
+                return (
+                  <li key={word}>
+                    {displayWord}
+                    {' '}
+                    became
+                    {' '}
+                    {newStr}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : 'Make sure there are the same number of source and destination matrices'}
+      </div>
       {index === 0 && (
       <button
         type="button"
@@ -159,57 +242,11 @@ const RuleComponent = ({
           createRule(),
           ...prev.slice(index),
         ])}
-        className="absolute z-10 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-green-300 px-4 py-2 hover:bg-green-500 rounded transition-colors outline-none"
+        className="absolute z-10 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-green-300 p-3 hover:bg-green-500 rounded-xl transition-colors focus:outline-none"
       >
         <FaPlus />
       </button>
       )}
-      <div className="flex bg-gray-200 items-center gap-4 shadow-xl p-8 border-gray-300 border-4 overflow-auto">
-        <MatrixList color="bg-yellow-300" matrices={src} setMatrices={setSrc} />
-        <span className="text-6xl mx-2"><FaLongArrowAltRight /></span>
-        <MatrixList color="bg-red-300" matrices={dst} setMatrices={setDst} />
-        <span className="text-6xl font-extrabold mx-2">/</span>
-        <MatrixList color="bg-indigo-300" matrices={preceding} setMatrices={setPreceding} />
-        <span className="text-6xl font-extrabold mx-2">__</span>
-        <MatrixList color="bg-indigo-300" matrices={following} setMatrices={setFollowing} />
-      </div>
-      <div>
-        {words.map((word) => {
-          const str = word.split('').map((char) => allSounds.find((segment) => segment.symbol === char).features);
-          const matrices = src.map((matrix) => featureListToFeatures(matrix.data));
-          const foundIndex = findIndexOfMatrices(str, matrices);
-          if (foundIndex >= 0) {
-            let newStr = word.slice(0, foundIndex);
-            newStr += str.slice(foundIndex, foundIndex + matrices.length)
-              .map((features, i) => filterSounds(allSounds, {
-                ...str[foundIndex + i],
-                ...matrices[i],
-              })[0].symbol).join('');
-            newStr += str.slice(foundIndex + matrices.length);
-
-            return (
-              <p className="font-bold">
-                {word}
-                {' '}
-                became
-                {' '}
-                {newStr}
-              </p>
-            );
-          }
-          return (
-            <p>
-              Found
-              {' '}
-              {word}
-              {' '}
-              at index
-              {' '}
-              {foundIndex}
-            </p>
-          );
-        })}
-      </div>
       <button
         type="button"
         onClick={() => setRules((prev) => [
@@ -217,10 +254,22 @@ const RuleComponent = ({
           createRule(),
           ...prev.slice(index + 1),
         ])}
-        className="absolute z-10 bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 transform bg-green-300 px-4 py-2 hover:bg-green-500 rounded transition-colors outline-none"
+        className="absolute z-10 bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 transform bg-green-300 p-3 hover:bg-green-500 rounded-xl transition-colors focus:outline-none"
       >
         <FaPlus />
       </button>
+      {!last && (
+      <button
+        type="button"
+        onClick={() => setRules((prev) => [
+          ...prev.slice(0, index),
+          ...prev.slice(index + 1),
+        ])}
+        className="absolute z-10 top-0 right-0 translate-x-1/2 -translate-y-1/2 transform bg-red-300 p-3 hover:bg-red-500 rounded-xl transition-colors focus:outline-none"
+      >
+        <FaMinus />
+      </button>
+      )}
     </div>
   );
 };
@@ -294,6 +343,7 @@ export default function EvolvePage() {
             words={words}
             key={id}
             id={id}
+            last={rules.length === 1}
           />
         ))}
       </div>

@@ -116,4 +116,4 @@ export type HeightsContextType = {
 
 export type SerializedFeatureValue = '+' | '-' | '0';
 
-export type SerializedFeatureList = [keyof Features, SerializedFeatureValue][];
+export type SerializedFeatureList = [keyof Features | '', SerializedFeatureValue][];

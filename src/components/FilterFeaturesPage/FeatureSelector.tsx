@@ -1,13 +1,13 @@
-import React, { Dispatch, ReactElement, SetStateAction } from 'react';
+import React, { Dispatch, ReactNode, SetStateAction } from 'react';
 import { allFeatures } from '../../assets/ipa-data';
-import { SerializedFeatureList } from '../../lib/types';
+import { Features, SerializedFeatureList } from '../../lib/types';
 import SelectorRow from './SelectorRow';
 
 type Props = {
   features: SerializedFeatureList;
-  setFeatures: Dispatch<SetStateAction<SerializedFeatureList>>
-  buttonLabel: ReactElement;
-  groupName: string;
+  setFeatures: Dispatch<SetStateAction<SerializedFeatureList>>;
+  buttonLabel: ReactNode;
+  groupName: React.Key;
   flexDirection?: 'row' | 'col';
 };
 
@@ -28,7 +28,7 @@ export default function FeatureSelector({
             selected={selected}
             setSelected={(e) => setFeatures((prev) => [
               ...prev.slice(0, i),
-              [e.target.value, val],
+              [e.target.value as keyof Features, val],
               ...prev.slice(i + 1),
             ])}
             val={val}
