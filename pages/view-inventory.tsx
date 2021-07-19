@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { HeightsContext, TableContext } from '../src/assets/ipa-data';
 import FeatureList from '../src/components/FeatureList';
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
 import Layout from '../src/components/Layout';
+import { TableContext, HeightsContext } from '../src/lib/context';
 
 export default function ViewInventoryPage() {
   const { selectedSounds } = useContext(TableContext);

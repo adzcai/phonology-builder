@@ -93,27 +93,6 @@ export type Evolution = {
   rules: Rule[]
 };
 
-// all of the optional fields are for the FilterFeature component to work properly
-export type TableContextType = {
-  allSounds?: Sound[];
-  setAllSounds?: SoundHook;
-  selectedSounds: Sound[];
-  setSelectedSounds?: SoundHook;
-  neighbor?: Sound | null;
-  setNeighbor?: Dispatch<SetStateAction<Sound | null>>;
-  selectedDiacritics: Diacritic[] | null;
-  setSelectedDiacritics: Dispatch<SetStateAction<Diacritic[]>>;
-  selectedChart: Chart | null;
-  setSelectedChart: Dispatch<SetStateAction<Chart>>;
-  handleDiacriticClick: (diacritic: Diacritic) => void;
-  deleteFeatureSet?: (featureSet: FeatureFilter) => void;
-};
-
-export type HeightsContextType = {
-  allHeights: Height[];
-  setAllHeights: Dispatch<SetStateAction<FeatureFilter[]>>;
-};
-
 export type SerializedFeatureValue = '+' | '-' | '0';
 
 export type SerializedFeatureList = [keyof Features | '', SerializedFeatureValue][];

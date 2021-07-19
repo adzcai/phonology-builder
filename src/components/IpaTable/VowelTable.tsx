@@ -3,11 +3,10 @@ import {
   SetStateAction,
   useCallback, useContext,
 } from 'react';
-import {
-  filterNonEmptyFeatureSets, TableContext,
-  allFrontnesses, filterSounds,
-} from '../../assets/ipa-data';
+import { allFrontnesses } from '../../assets/ipa-data';
+import { TableContext } from '../../lib/context';
 import { Height, Diacritic } from '../../lib/types';
+import { filterNonEmptyFeatureSets, filterSounds } from '../../lib/util';
 import TableCell from './TableCell';
 import styles from './VowelTable.module.css';
 

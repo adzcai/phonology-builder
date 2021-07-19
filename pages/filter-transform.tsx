@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import {
-  allSounds, toggleInArray, TableContext,
-  canApplyDiacriticsToSound, applyDiacriticsToSound, allHeights as rawHeights,
-  filterSounds, cloneSound, deserializeFeatureValue,
+  allSounds, allHeights as rawHeights,
 } from '../src/assets/ipa-data';
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
@@ -12,6 +10,11 @@ import {
 } from '../src/lib/types';
 import Layout from '../src/components/Layout';
 import FeatureSelector from '../src/components/FilterFeaturesPage/FeatureSelector';
+import { TableContext } from '../src/lib/context';
+import {
+  canApplyDiacriticsToSound, applyDiacriticsToSound, filterSounds, deserializeFeatureValue,
+  cloneSound, toggleInArray,
+} from '../src/lib/util';
 
 export default function FilterFeaturesPage() {
   const [filters, setFilters] = useState<SerializedFeatureList>([]);

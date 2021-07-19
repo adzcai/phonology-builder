@@ -1,5 +1,6 @@
 import { PropsWithChildren, useContext } from 'react';
-import { allDiacritics, TableContext } from '../../assets/ipa-data';
+import { allDiacritics } from '../../assets/ipa-data';
+import { TableContext } from '../../lib/context';
 
 // This table will only exist if the parent IpaTable is editable
 export default function DiacriticTable({ children }: PropsWithChildren<{}>) {

@@ -1,9 +1,9 @@
 import { FC, useContext } from 'react';
 
-import {
-  TableContext, applyDiacriticsToSound, canApplyDiacriticsToSound, allFeatures,
-} from '../../assets/ipa-data';
+import { allFeatures } from '../../assets/ipa-data';
+import { TableContext } from '../../lib/context';
 import { Diacritic, Sound } from '../../lib/types';
+import { canApplyDiacriticsToSound, applyDiacriticsToSound } from '../../lib/util';
 
 function sortSounds(a, b) {
   // eslint-disable-next-line no-restricted-syntax

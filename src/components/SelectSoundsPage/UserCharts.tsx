@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { TableContext } from '../../assets/ipa-data';
 import { Chart } from '../../lib/types';
+import { TableContext } from '../../lib/context';
 
 export default function UserCharts() {
   const { data: user } = useSWR('/api/user');

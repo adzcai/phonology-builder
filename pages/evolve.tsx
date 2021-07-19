@@ -1,18 +1,18 @@
+import useSWR from 'swr';
+import { v4 as uuidv4 } from 'uuid';
 import {
   Dispatch, SetStateAction, useEffect, useState,
 } from 'react';
 import {
   FaLongArrowAltRight, FaMinus, FaPlus,
 } from 'react-icons/fa';
-import { v4 as uuidv4 } from 'uuid';
-import useSWR from 'swr';
+
 import FeatureSelector from '../src/components/FilterFeaturesPage/FeatureSelector';
 import Layout from '../src/components/Layout';
 import UserCharts from '../src/components/SelectSoundsPage/UserCharts';
 import { Condition, Features, SerializedFeatureList } from '../src/lib/types';
-import {
-  allSounds, featureListToFeatures, filterSounds, matchConditions,
-} from '../src/assets/ipa-data';
+import { allSounds } from '../src/assets/ipa-data';
+import { matchConditions, featureListToFeatures, filterSounds } from '../src/lib/util';
 
 type Matrix = {
   data: SerializedFeatureList,
@@ -136,6 +136,70 @@ const findIndexOfMatrices = (str: Features[], matrices: Condition[], startIndex 
   return -1;
 };
 
+const PreviewEvolution = ({ words, src, dst }: {
+  words: string[];
+  src: Matrix[];
+  dst: Matrix[];
+}) => (
+  <ul>
+    {words.map((word) => {
+    // turn word into a list of feature matrices
+      const str = word.split('').map((char) => allSounds.find((segment) => segment.symbol === char).features);
+      const matrices = src.map((matrix) => featureListToFeatures(matrix.data));
+      const dstMatrices = dst.map((matrix) => featureListToFeatures(matrix.data));
+      const foundIndex = findIndexOfMatrices(str, matrices);
+
+      if (foundIndex < 0) {
+        return (
+          <li key={word}>
+            {word}
+            {' '}
+            not found
+          </li>
+        );
+      }
+
+      const displayWord = [
+        word.slice(0, foundIndex),
+        <span className="bg-green-100">{word.substr(foundIndex, matrices.length)}</span>,
+        word.slice(foundIndex + matrices.length),
+      ];
+
+      const replacement = str.slice(foundIndex, foundIndex + matrices.length)
+        .map((features, i) => {
+          const matchingSounds = filterSounds(allSounds, {
+            ...features,
+            ...dstMatrices[i],
+          });
+          if (matchingSounds.length === 0) return '?';
+          return matchingSounds[0].symbol;
+        }).join('');
+
+      const newStr = (word.slice(0, foundIndex)
+      + replacement + word.slice(foundIndex + matrices.length))
+        .split('')
+        .map((char, i) => (
+          <span
+            className="hover:bg-white transition-colors"
+            title={JSON.stringify(str[i])}
+          >
+            {char}
+          </span>
+        ));
+
+      return (
+        <li key={word}>
+          {displayWord}
+          {' '}
+          became
+          {' '}
+          {newStr}
+        </li>
+      );
+    })}
+  </ul>
+);
+
 const RuleComponent = ({
   setRules, index, words, id, last,
 }: {
@@ -173,66 +237,8 @@ const RuleComponent = ({
       </div>
       <div>
         {src.length === dst.length
-          ? (
-            <ul>
-              {words.map((word) => {
-                // turn word into a list of feature matrices
-                const str = word.split('').map((char) => allSounds.find((segment) => segment.symbol === char).features);
-                const matrices = src.map((matrix) => featureListToFeatures(matrix.data));
-                const dstMatrices = dst.map((matrix) => featureListToFeatures(matrix.data));
-                const foundIndex = findIndexOfMatrices(str, matrices);
-
-                if (foundIndex < 0) {
-                  return (
-                    <li>
-                      {word}
-                      {' '}
-                      not found
-                    </li>
-                  );
-                }
-
-                const displayWord = [
-                  word.slice(0, foundIndex),
-                  <span className="bg-green-100">{word.substr(foundIndex, matrices.length)}</span>,
-                  word.slice(foundIndex + matrices.length),
-                ];
-
-                const replacement = str.slice(foundIndex, foundIndex + matrices.length)
-                  .map((features, i) => {
-                    console.log(i, dstMatrices[i]);
-                    const matchingSounds = filterSounds(allSounds, {
-                      ...features,
-                      ...dstMatrices[i],
-                    });
-                    if (matchingSounds.length === 0) return '?';
-                    return matchingSounds[0].symbol;
-                  }).join('');
-
-                const newStr = (word.slice(0, foundIndex)
-                  + replacement + word.slice(foundIndex + matrices.length))
-                  .split('')
-                  .map((char, i) => (
-                    <span
-                      className="hover:bg-white transition-colors"
-                      title={JSON.stringify(str[i])}
-                    >
-                      {char}
-                    </span>
-                  ));
-
-                return (
-                  <li key={word}>
-                    {displayWord}
-                    {' '}
-                    became
-                    {' '}
-                    {newStr}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : 'Make sure there are the same number of source and destination matrices'}
+          ? <PreviewEvolution words={words} src={src} dst={dst} />
+          : 'Make sure there are the same number of source and destination matrices'}
       </div>
       {index === 0 && (
       <button

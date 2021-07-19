@@ -1,13 +1,14 @@
 import { useState, useCallback, useEffect } from 'react';
 import { SWRConfig } from 'swr';
 import {
-  toggleInArray, filterFeatures, TableContext, allSounds as rawSounds, allHeights as rawHeights,
-  HeightsContext,
+  allSounds as rawSounds, allHeights as rawHeights,
 } from '../src/assets/ipa-data';
+import { TableContext, HeightsContext } from '../src/lib/context';
 import fetch from '../src/lib/fetchJson';
 import {
   Sound, Diacritic, FeatureFilter, Chart,
 } from '../src/lib/types';
+import { toggleInArray, filterFeatures } from '../src/lib/util';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {

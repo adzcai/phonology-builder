@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { allFeatures, serializeFeatureValue } from '../assets/ipa-data';
+import { allFeatures } from '../assets/ipa-data';
 import { Features, Sound } from '../lib/types';
+import { serializeFeatureValue } from '../lib/util';
 import TableContainer from './IpaTable/TableContainer';
 
 type Props = {

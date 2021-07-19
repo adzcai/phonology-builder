@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import useSWR from 'swr';
 import {
-  allHeights as rawHeights, TableContext, allSounds as rawSounds, HeightsContext,
+  allHeights as rawHeights, allSounds as rawSounds,
 } from '../src/assets/ipa-data';
 import fetchJson from '../src/lib/fetchJson';
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
@@ -11,6 +11,7 @@ import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
 import Layout from '../src/components/Layout';
 import UserCharts from '../src/components/SelectSoundsPage/UserCharts';
+import { TableContext, HeightsContext } from '../src/lib/context';
 
 export default function SelectSoundsPage() {
   const { data: user, mutate: mutateUser } = useSWR('/api/user');
