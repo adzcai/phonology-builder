@@ -4,7 +4,7 @@ import auth from '../../../src/lib/auth';
 import { userToJson } from '../../../src/lib/user';
 import { CustomRequest, Sound } from '../../../src/lib/types';
 import { UserModel, SoundModel, ChartModel } from '../../../src/models';
-import { serializeSound } from '../../../src/assets/ipa-data';
+import { serializeSound } from '../../../src/lib/util';
 
 export default nextConnect()
   .use(auth)
