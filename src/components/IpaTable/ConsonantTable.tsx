@@ -11,8 +11,8 @@ export default function ConsonantTable({ editable }: { editable: boolean }) {
 
   const sounds = editable ? allSounds : selectedSounds;
 
-  const places = filterNonEmptyFeatureSets(sounds, allPlaces, { syllabic: false });
-  const manners = filterNonEmptyFeatureSets(sounds, allManners, { syllabic: false });
+  const places = filterNonEmptyFeatureSets(allPlaces, sounds, { syllabic: false });
+  const manners = filterNonEmptyFeatureSets(allManners, sounds, { syllabic: false });
 
   const insertBelow = useCallback((row: number, diacritic: Diacritic) => {
     const manner = manners[row];

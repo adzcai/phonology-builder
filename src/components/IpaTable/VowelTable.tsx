@@ -21,8 +21,8 @@ export default function VowelTable({ editable, allHeights, setAllHeights }: Prop
 
   const sounds = editable ? allSounds : selectedSounds;
 
-  const heights = filterNonEmptyFeatureSets(sounds, allHeights, { syllabic: true });
-  const frontnesses = filterNonEmptyFeatureSets(sounds, allFrontnesses, { syllabic: true });
+  const heights = filterNonEmptyFeatureSets(allHeights, sounds, { syllabic: true });
+  const frontnesses = filterNonEmptyFeatureSets(allFrontnesses, sounds, { syllabic: true });
 
   // will only render if editable
   const insertBelow = useCallback((row: number, diacritic: Diacritic) => {

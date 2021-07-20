@@ -96,3 +96,16 @@ export type Evolution = {
 export type SerializedFeatureValue = '+' | '-' | '0';
 
 export type SerializedFeatureList = [keyof Features | '', SerializedFeatureValue][];
+
+export type Matrix = {
+  data: SerializedFeatureList,
+  id: React.Key
+};
+
+export type RuleWithId = {
+  src: Matrix[];
+  dst: Matrix[];
+  preceding: Matrix[];
+  following: Matrix[];
+  id: React.Key;
+};

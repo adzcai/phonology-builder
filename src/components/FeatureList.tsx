@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { allFeatures } from '../assets/ipa-data';
-import { Features, Sound } from '../lib/types';
-import { serializeFeatureValue } from '../lib/util';
+import { Sound } from '../lib/types';
+import {
+  countDistinctFeatures, serializeFeatureValue, sortSoundsBySimilarityTo, trueDifference,
+} from '../lib/util';
 import TableContainer from './IpaTable/TableContainer';
 
 type Props = {
@@ -15,19 +17,6 @@ type TableRowProps = {
 };
 
 const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'pink'];
-
-// explicitly check if they are two booleans since we don't want a comparison
-// with 0 to show up
-function trueDifference(a: Features, b: Features, feature: keyof Features) {
-  return ((a[feature] === true && b[feature] === false)
-    || (a[feature] === false && b[feature] === true));
-}
-
-function countDistinctFeatures(a: Sound, b: Sound) {
-  return allFeatures.filter(([feature]) => (
-    trueDifference(a.features, b.features, feature)
-  )).length;
-}
 
 function TableRow({ sound, contrastWith }: TableRowProps) {
   if (contrastWith === null) {
@@ -46,7 +35,7 @@ function TableRow({ sound, contrastWith }: TableRowProps) {
     );
   }
 
-  const nDistinct = countDistinctFeatures(sound, contrastWith);
+  const nDistinct = countDistinctFeatures(sound.features, contrastWith.features);
 
   return (
     <tr>
@@ -83,9 +72,7 @@ const VerticalCell = ({ title, content }: { title: string, content: string }) =>
 export default function FeatureList({ sounds, contrastWith = null }: Props) {
   const allSounds = contrastWith === null
     ? sounds
-    : sounds.slice().sort(
-      (a, b) => countDistinctFeatures(a, contrastWith) - countDistinctFeatures(b, contrastWith),
-    );
+    : sortSoundsBySimilarityTo(sounds, contrastWith.features);
 
   const categoryCount = allFeatures.reduce((obj, [_, category]) => ({
     ...obj, [category]: (obj[category] || 0) + 1,

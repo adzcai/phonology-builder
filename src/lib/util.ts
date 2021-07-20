@@ -1,6 +1,43 @@
+import { v4 as uuidv4 } from 'uuid';
+import { allFeatures } from '../assets/ipa-data';
 import {
-  Features, Condition, Sound, FeatureFilter, Diacritic, SerializedFeatureList,
+  Features, Condition, Sound, FeatureFilter, Diacritic, SerializedFeatureList, Matrix, RuleWithId,
 } from './types';
+
+// ==================== MISC ====================
+
+// explicitly check if they are two booleans since we don't want a comparison
+// with 0 to show up
+export function trueDifference(a: Features, b: Features, feature: keyof Features) {
+  return ((a[feature] === true && b[feature] === false)
+    || (a[feature] === false && b[feature] === true));
+}
+
+export function countDistinctFeatures(a: Features, b: Features) {
+  return allFeatures.filter(([feature]) => trueDifference(a, b, feature)).length;
+}
+
+export function cloneSound(sound: Sound) {
+  return { symbol: sound.symbol, features: { ...sound.features } };
+}
+
+export function toggleInArray<T>(array: T[], element: T) {
+  return array.includes(element) ? array.filter((e) => e !== element) : [...array, element];
+}
+
+export function createMatrix(): Matrix {
+  return {
+    data: [['', null]], id: uuidv4(),
+  };
+}
+
+export function createRule(): RuleWithId {
+  return {
+    src: [], dst: [], preceding: [], following: [], id: uuidv4(),
+  };
+}
+
+// ==================== FILTER AND MATCH ====================
 
 /**
  * Check if a segment matches a given condition or set of conditions.
@@ -37,7 +74,7 @@ export function filterFeatures(featuresArr: Features[], ...conditions: Condition
 }
 
 /**
-   * Filter an array of sounds by a set of conditions.
+   * Filter an array of sounds by a set of conditions using {@link filterFeatures}.
    * @param sounds the list of sounds to filter through
    * @param conditions the list of conditions to filter by
    * @returns the sounds which match the given conditions
@@ -49,22 +86,18 @@ export function filterSounds(sounds: Sound[], ...conditions: Condition[]) {
 /**
    * Get all feature filters (e.g. heights, manners, places) which contain some of
    * the given sounds.
-   * @param sounds the set of sounds to use
    * @param arr the list of feature filters to filter through
+   * @param sounds the set of sounds to use
    * @param conditions the set of conditions to filter by
    * @returns all elements of arr which match some of the given sounds
    */
 export function filterNonEmptyFeatureSets(
-  sounds: Sound[], arr: FeatureFilter[], ...conditions: Condition[]
+  arr: FeatureFilter[], sounds: Sound[], ...conditions: Condition[]
 ) {
   const soundFeatures = sounds.map((sound) => sound.features);
   return arr.filter(
     ({ features }) => filterFeatures(soundFeatures, features, ...conditions).length > 0,
   );
-}
-
-export function toggleInArray<T>(array: T[], element: T) {
-  return array.includes(element) ? array.filter((e) => e !== element) : [...array, element];
 }
 
 /**
@@ -77,10 +110,6 @@ export function canApplyDiacriticsToSound(diacritics: Diacritic[], sound: Featur
   // can't apply diacritics if they have no effect
   return diacritics.every((diacritic) => filterFeatures([sound], diacritic.requirements).length > 0
             && filterFeatures([sound], diacritic.features).length === 0);
-}
-
-export function cloneSound(sound: Sound) {
-  return { symbol: sound.symbol, features: { ...sound.features } };
 }
 
 /**
@@ -99,6 +128,33 @@ export function applyDiacriticsToSound(sound: Sound, ...diacritics: Diacritic[])
   });
   return newSound;
 }
+
+export function sortSoundsBySimilarityTo(sounds: Sound[], features: Features) {
+  return sounds.slice().sort(
+    // eslint-disable-next-line max-len
+    (a, b) => countDistinctFeatures(a.features, features) - countDistinctFeatures(b.features, features),
+  );
+}
+
+export function findIndexOfMatrices(str: Features[], matrices: Condition[], startIndex = 0) {
+  const n = matrices.length;
+  if (n + startIndex >= str.length) return -1;
+
+  for (let i = startIndex; i + n <= str.length; ++i) {
+    let match = true;
+    for (let j = 0; j < n; ++j) {
+      if (!matchConditions(str[i + j], matrices[j])) {
+        match = false;
+        break;
+      }
+    }
+    if (match) return i;
+  }
+
+  return -1;
+}
+
+// ==================== DE/SERIALIZATION ====================
 
 export function serializeFeatureValue(feature) {
   return (feature === 0 ? '0' : (feature ? '+' : '-'));
