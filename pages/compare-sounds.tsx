@@ -14,5 +14,9 @@ export default function CompareSoundsPage() {
     );
   }
 
-  return <FeatureList sounds={allSounds} contrastWith={neighbor} />;
+  return (
+    <Layout>
+      <FeatureList sounds={allSounds} contrastWith={neighbor} />
+    </Layout>
+  );
 }

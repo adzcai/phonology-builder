@@ -3,7 +3,7 @@ import { FC, useContext } from 'react';
 import { allFeatures } from '../../assets/ipa-data';
 import { TableContext } from '../../lib/context';
 import { Diacritic, Sound } from '../../lib/types';
-import { canApplyDiacriticsToSound, applyDiacriticsToSound } from '../../lib/util';
+import { canApplyDiacriticsToFeatures, applyDiacriticsToSound } from '../../lib/util';
 
 function sortSounds(a, b) {
   // eslint-disable-next-line no-restricted-syntax
@@ -45,11 +45,11 @@ export default function TableCell({
     SoundContainer = ({ sound }: SoundContainerProps) => (
       <button
         type="button"
-        className={`${baseStyles} ${canApplyDiacriticsToSound(selectedDiacritics, sound.features) ? 'bg-blue-300 hover:bg-green-300' : 'bg-yellow-300 hover:bg-yellow-500'}`}
+        className={`${baseStyles} ${canApplyDiacriticsToFeatures(selectedDiacritics, sound.features) ? 'bg-blue-300 hover:bg-green-300' : 'bg-yellow-300 hover:bg-yellow-500'}`}
         onClick={() => {
           setSelectedDiacritics([]);
 
-          if (canApplyDiacriticsToSound(selectedDiacritics, sound.features)) {
+          if (canApplyDiacriticsToFeatures(selectedDiacritics, sound.features)) {
             setAllSounds((prev) => [...prev, applyDiacriticsToSound(sound, ...selectedDiacritics)]);
             insertBelow(selectedDiacritics[0]);
           }

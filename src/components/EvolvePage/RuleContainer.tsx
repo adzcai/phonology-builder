@@ -47,7 +47,7 @@ export default function RuleContainer({
         />
       )}
       <div className="flex items-center gap-4 p-8 overflow-auto">
-        <MatrixList color="bg-yellow-300" matrices={src} setMatrices={setSrc} />
+        <MatrixList color="bg-yellow-300" matrices={src} setMatrices={setSrc} zeroable />
         <span className="text-6xl mx-2"><FaLongArrowAltRight /></span>
         <MatrixList color="bg-purple-300" matrices={dst} setMatrices={setDst} zeroable />
         {hasEnvironment && (

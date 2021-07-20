@@ -12,7 +12,7 @@ import Layout from '../src/components/Layout';
 import FeatureSelector from '../src/components/FilterFeaturesPage/FeatureSelector';
 import { TableContext } from '../src/lib/context';
 import {
-  canApplyDiacriticsToSound, applyDiacriticsToSound, filterSounds, deserializeFeatureValue,
+  canApplyDiacriticsToFeatures, applyDiacriticsToSound, filterSounds, deserializeFeatureValue,
   cloneSound, toggleInArray,
 } from '../src/lib/util';
 
@@ -29,7 +29,7 @@ export default function FilterFeaturesPage() {
     ...allSounds,
     ...selectedDiacritics
       .flatMap((diacritic) => allSounds
-        .filter((sound) => canApplyDiacriticsToSound([diacritic], sound.features))
+        .filter((sound) => canApplyDiacriticsToFeatures([diacritic], sound.features))
         .map((sound) => applyDiacriticsToSound(sound, diacritic))),
   ];
 

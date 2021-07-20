@@ -8,12 +8,13 @@ import {
 
 // explicitly check if they are two booleans since we don't want a comparison
 // with 0 to show up
-export function trueDifference(a: Features, b: Features, feature: keyof Features) {
+// eslint-disable-next-line max-len
+export function trueDifference(a: Partial<Features>, b: Partial<Features>, feature: keyof Features) {
   return ((a[feature] === true && b[feature] === false)
     || (a[feature] === false && b[feature] === true));
 }
 
-export function countDistinctFeatures(a: Features, b: Features) {
+export function countDistinctFeatures(a: Partial<Features>, b: Partial<Features>) {
   return allFeatures.filter(([feature]) => trueDifference(a, b, feature)).length;
 }
 
@@ -35,6 +36,10 @@ export function createRule(): Rule {
   return {
     src: [], dst: [], preceding: [], following: [], id: uuidv4(),
   };
+}
+
+export function replaceConfusables(word: string) {
+  return word.replaceAll('g', '\u0261');
 }
 
 // ==================== FILTER AND MATCH ====================
@@ -106,7 +111,7 @@ export function filterNonEmptyFeatureSets(
    * @param sound the sound we are trying to apply to the diacritics to
    * @returns true if the given diacritics can all be applied to the given sound
    */
-export function canApplyDiacriticsToSound(diacritics: Diacritic[], sound: Features) {
+export function canApplyDiacriticsToFeatures(diacritics: Diacritic[], sound: Features) {
   // can't apply diacritics if they have no effect
   return diacritics.every((diacritic) => filterFeatures([sound], diacritic.requirements).length > 0
             && filterFeatures([sound], diacritic.features).length === 0);
@@ -129,22 +134,22 @@ export function applyDiacriticsToSound(sound: Sound, ...diacritics: Diacritic[])
   return newSound;
 }
 
-export function sortSoundsBySimilarityTo(sounds: Sound[], features: Features) {
+export function sortSoundsBySimilarityTo(sounds: Sound[], features: Partial<Features>) {
   return sounds.slice().sort(
     // eslint-disable-next-line max-len
     (a, b) => countDistinctFeatures(a.features, features) - countDistinctFeatures(b.features, features),
   );
 }
 
-export function findIndexOfMatrices(str: Features[], matrices: ('null' | 'boundary' | Partial<Features>)[], startIndex = 0) {
+// eslint-disable-next-line max-len
+export function findIndexOfMatrices(str: Features[], matrices: Partial<Features>[], startIndex = 0) {
   const n = matrices.length;
   if (n + startIndex >= str.length) return -1;
 
   for (let i = startIndex; i + n <= str.length; ++i) {
     let match = true;
     for (let j = 0; j < n; ++j) {
-      if (matrices[j] === 'null' || matrices[j] === 'boundary') continue; // TODO check for word boundary
-      else if (!matchConditions(str[i + j], matrices[j] as Partial<Features>)) {
+      if (!matchConditions(str[i + j], matrices[j] as Partial<Features>)) {
         match = false;
         break;
       }
