@@ -2,16 +2,16 @@ import React, {
   Dispatch, SetStateAction, useState, useEffect,
 } from 'react';
 import { FaLongArrowAltRight, FaMinus } from 'react-icons/fa';
-import { Matrix, RuleWithId } from '../../lib/types';
+import { Matrix, Rule } from '../../lib/types';
 import { createMatrix, createRule } from '../../lib/util';
 import MatrixList from './MatrixList';
 import ModalButton from './ModalButton';
 import PreviewEvolution from './PreviewEvolution';
 
-export default function RuleComponent({
+export default function RuleContainer({
   setRules, index, words, id, last,
 }: {
-  setRules: Dispatch<SetStateAction<RuleWithId[]>>;
+  setRules: Dispatch<SetStateAction<Rule[]>>;
   index: number;
   words: string[];
   id: React.Key;
@@ -49,7 +49,7 @@ export default function RuleComponent({
       <div className="flex items-center gap-4 p-8 overflow-auto">
         <MatrixList color="bg-yellow-300" matrices={src} setMatrices={setSrc} />
         <span className="text-6xl mx-2"><FaLongArrowAltRight /></span>
-        <MatrixList color="bg-purple-300" matrices={dst} setMatrices={setDst} />
+        <MatrixList color="bg-purple-300" matrices={dst} setMatrices={setDst} zeroable />
         {hasEnvironment && (
           <>
             <span className="text-6xl font-extrabold mx-2">/</span>

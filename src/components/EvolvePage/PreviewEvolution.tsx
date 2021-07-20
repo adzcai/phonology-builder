@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaLongArrowAltRight } from 'react-icons/fa';
 import { allSounds } from '../../assets/ipa-data';
-import { Matrix } from '../../lib/types';
+import { Features, Matrix } from '../../lib/types';
 import {
   featureListToFeatures, findIndexOfMatrices, filterSounds, sortSoundsBySimilarityTo,
 } from '../../lib/util';
@@ -16,8 +16,8 @@ export default function PreviewEvolution({ words, src, dst }: {
       {words.map((word) => {
         // turn word into a list of feature matrices
         const wordMatrices = word.split('').map((char) => allSounds.find((segment) => segment.symbol === char).features);
-        const matrices = src.map((matrix) => featureListToFeatures(matrix.data));
-        const dstMatrices = dst.map((matrix) => featureListToFeatures(matrix.data));
+        const matrices = src.map((matrix) => (typeof matrix.data === 'string' ? matrix.data : featureListToFeatures(matrix.data)));
+        const dstMatrices = dst.map((matrix) => (typeof matrix.data === 'string' ? matrix.data : featureListToFeatures(matrix.data)));
         const foundIndex = findIndexOfMatrices(wordMatrices, matrices);
 
         if (foundIndex < 0) {
@@ -39,9 +39,12 @@ export default function PreviewEvolution({ words, src, dst }: {
         const replacement = wordMatrices
           .slice(foundIndex, foundIndex + matrices.length)
           .map((features, i) => {
+            // skip anything that's not actually a feature matrix
+            if (dstMatrices[i] === 'null' || dstMatrices[i] === 'boundary') return null;
+
             const featuresToFind = {
               ...features,
-              ...dstMatrices[i],
+              ...dstMatrices[i] as Partial<Features>,
             };
             const matchingSounds = filterSounds(allSounds, featuresToFind);
             if (matchingSounds.length === 0) {

@@ -82,7 +82,7 @@ export type Chart = {
   } | null
 };
 
-export type Rule = {
+export type EvolutionRule = {
   src: SerializedFeatureList[],
   dst: SerializedFeatureList[],
   preceding: SerializedFeatureList[],
@@ -90,19 +90,21 @@ export type Rule = {
 };
 
 export type Evolution = {
-  rules: Rule[]
+  rules: EvolutionRule[]
 };
 
 export type SerializedFeatureValue = '+' | '-' | '0';
 
 export type SerializedFeatureList = [keyof Features | '', SerializedFeatureValue][];
 
+export type RuleComponent = SerializedFeatureList | 'null' | 'boundary';
+
 export type Matrix = {
-  data: SerializedFeatureList,
-  id: React.Key
+  data: RuleComponent;
+  id: React.Key;
 };
 
-export type RuleWithId = {
+export type Rule = {
   src: Matrix[];
   dst: Matrix[];
   preceding: Matrix[];

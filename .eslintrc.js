@@ -14,6 +14,7 @@ module.exports = {
     'no-nested-ternary': 'off',
     'consistent-return': 'off',
     'no-plusplus': 'off',
+    'no-continue': 'off',
     'jsx-a11y/label-has-associated-control': [
       'error',
       { required: { some: ['nesting', 'id'] } },

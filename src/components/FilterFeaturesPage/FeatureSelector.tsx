@@ -52,7 +52,7 @@ export default function FeatureSelector({
           ...prev,
           [getNextAvailableFeature(prev), null],
         ])}
-        className={`hover-blue ${typeof buttonLabel === 'string' ? 'py-2 px-4' : 'p-3'} rounded-lg mx-auto`}
+        className="flex items-center justify-center text-sm hover-blue w-full p-2 rounded-lg mx-auto"
       >
         {buttonLabel}
       </button>

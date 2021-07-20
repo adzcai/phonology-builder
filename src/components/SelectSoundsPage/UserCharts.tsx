@@ -30,7 +30,16 @@ export default function UserCharts() {
     );
   }
 
-  if (user.data.charts.length === 0) return <p>Save some charts!</p>;
+  if (user.data.charts.length === 0) {
+    return (
+      <p>
+        No charts found. Save some under
+        {' '}
+        <Link href="/choose-sounds"><a href="/choose-sounds" className="underline">Choose sounds</a></Link>
+        !
+      </p>
+    );
+  }
 
   return (
     <>

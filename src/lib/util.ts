@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { allFeatures } from '../assets/ipa-data';
 import {
-  Features, Condition, Sound, FeatureFilter, Diacritic, SerializedFeatureList, Matrix, RuleWithId,
+  Features, Condition, Sound, FeatureFilter, Diacritic, SerializedFeatureList, Matrix, Rule,
 } from './types';
 
 // ==================== MISC ====================
@@ -31,7 +31,7 @@ export function createMatrix(): Matrix {
   };
 }
 
-export function createRule(): RuleWithId {
+export function createRule(): Rule {
   return {
     src: [], dst: [], preceding: [], following: [], id: uuidv4(),
   };
@@ -136,14 +136,15 @@ export function sortSoundsBySimilarityTo(sounds: Sound[], features: Features) {
   );
 }
 
-export function findIndexOfMatrices(str: Features[], matrices: Condition[], startIndex = 0) {
+export function findIndexOfMatrices(str: Features[], matrices: ('null' | 'boundary' | Partial<Features>)[], startIndex = 0) {
   const n = matrices.length;
   if (n + startIndex >= str.length) return -1;
 
   for (let i = startIndex; i + n <= str.length; ++i) {
     let match = true;
     for (let j = 0; j < n; ++j) {
-      if (!matchConditions(str[i + j], matrices[j])) {
+      if (matrices[j] === 'null' || matrices[j] === 'boundary') continue; // TODO check for word boundary
+      else if (!matchConditions(str[i + j], matrices[j] as Partial<Features>)) {
         match = false;
         break;
       }

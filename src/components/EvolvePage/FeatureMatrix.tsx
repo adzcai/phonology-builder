@@ -1,24 +1,30 @@
 import React, {
   Dispatch, SetStateAction, useState, useEffect,
 } from 'react';
-import { FaHashtag, FaPlus, FaMinus } from 'react-icons/fa';
-import { Matrix, SerializedFeatureList } from '../../lib/types';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  FaHashtag, FaPlus, FaMinus, FaCreativeCommonsZero, FaWindowMaximize,
+} from 'react-icons/fa';
+import { Matrix, RuleComponent } from '../../lib/types';
 import { createMatrix } from '../../lib/util';
 import FeatureSelector from '../FilterFeaturesPage/FeatureSelector';
 import ModalButton from './ModalButton';
 
 export default function FeatureMatrix({
-  setMatrices, index, color, isRightmost, id, deletable, allowWordBoundary,
+  setMatrices, matrix, index, color, isRightmost, id,
+  deletable, allowWordBoundary, zeroable = false,
 }: {
   setMatrices: Dispatch<SetStateAction<Matrix[]>>;
+  matrix: RuleComponent,
   index: number;
   color: string;
   isRightmost: boolean;
   deletable: boolean;
   id: React.Key;
   allowWordBoundary: false | 'left' | 'right';
+  zeroable?: boolean;
 }) {
-  const [features, setFeatures] = useState<SerializedFeatureList>([['', null]]);
+  const [features, setFeatures] = useState<RuleComponent>(matrix);
 
   // whenever we update the features using the FeatureSelector,
   // update the MatrixList that this feature matrix is a part of
@@ -30,51 +36,56 @@ export default function FeatureMatrix({
     ]);
   }, [features]);
 
+  const insertAt = (idx: number, obj: Matrix) => setMatrices((prev) => [
+    ...prev.slice(0, idx), obj, ...prev.slice(idx),
+  ]);
+
+  const canInsertBoundaryLeft = allowWordBoundary === 'left' && index === 0 && features !== 'boundary';
+  const canInsertBoundaryRight = allowWordBoundary === 'right' && isRightmost && features !== 'boundary';
+
   return (
     <div className={`relative ${color} shadow-xl p-4 rounded-lg`}>
       {index === 0 && (
         <ModalButton
-          direction={allowWordBoundary === 'left' && index === 0 ? 'left-0 top-1/4' : 'left'}
-          onClick={() => {
-            setMatrices((prev) => [...prev.slice(0, index), createMatrix(), ...prev.slice(index)]);
-          }}
+          direction={canInsertBoundaryLeft ? 'left-0 top-1/4' : 'left'}
+          onClick={() => insertAt(index, createMatrix())}
         />
       )}
 
-      {allowWordBoundary === 'left' && index === 0 && (
+      {canInsertBoundaryLeft && (
         <ModalButton
           direction="left-0 top-2/3"
           size="tall"
-          onClick={() => {
-            alert('tried to insert word boundary');
-          }}
+          onClick={() => insertAt(index, { id: uuidv4(), data: 'boundary' })}
         >
           <FaHashtag />
         </ModalButton>
       )}
 
-      <FeatureSelector
-        features={features}
-        setFeatures={setFeatures}
-        buttonLabel={<FaPlus />}
-        groupName={id}
-        flexDirection="col"
-      />
+      { features === 'null'
+        ? <FaCreativeCommonsZero />
+        : features === 'boundary'
+          ? <FaHashtag />
+          : (
+            <FeatureSelector
+              features={features}
+              setFeatures={setFeatures}
+              buttonLabel={<FaPlus />}
+              groupName={id}
+              flexDirection="col"
+            />
+          )}
 
       <ModalButton
-        direction={allowWordBoundary === 'right' && isRightmost ? 'left-full top-1/4' : 'right'}
-        onClick={() => {
-          setMatrices((prev) => [...prev, createMatrix()]);
-        }}
+        direction={canInsertBoundaryRight ? 'left-full top-1/4' : 'right'}
+        onClick={() => setMatrices((prev) => [...prev, createMatrix()])}
       />
 
-      {allowWordBoundary === 'right' && isRightmost && (
+      {canInsertBoundaryRight && (
       <ModalButton
         direction="left-full top-2/3"
         size="tall"
-        onClick={() => {
-          alert('tried to insert word boundary');
-        }}
+        onClick={() => insertAt(index + 1, { id: uuidv4(), data: 'boundary' })}
       >
         <FaHashtag />
       </ModalButton>
@@ -89,6 +100,18 @@ export default function FeatureMatrix({
         >
           <FaMinus />
         </button>
+      )}
+
+      {zeroable && (
+        <ModalButton
+          direction="bottom"
+          state={typeof features === 'string' ? 'plus' : 'minus'}
+          onClick={() => setFeatures(features === 'null' ? [['', null]] : 'null')}
+        >
+          {typeof features === 'string'
+            ? <FaWindowMaximize />
+            : <FaCreativeCommonsZero />}
+        </ModalButton>
       )}
     </div>
   );
