@@ -3,12 +3,12 @@ import { SWRConfig } from 'swr';
 import {
   allSounds as rawSounds, allHeights as rawHeights,
 } from '../src/assets/ipa-data';
-import { TableContext, HeightsContext } from '../src/lib/context';
+import { TableContext, HeightsContext, RulesContext } from '../src/lib/context';
 import fetch from '../src/lib/fetchJson';
 import {
-  Sound, Diacritic, FeatureFilter, Chart,
+  Sound, Diacritic, FeatureFilter, Chart, Rule,
 } from '../src/lib/types';
-import { toggleInArray, filterFeatures } from '../src/lib/util';
+import { toggleInArray, filterFeatures, createRule } from '../src/lib/util';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
@@ -18,6 +18,8 @@ function MyApp({ Component, pageProps }) {
   const [selectedDiacritics, setSelectedDiacritics] = useState<Diacritic[]>([]);
   const [allHeights, setAllHeights] = useState(rawHeights);
   const [selectedChart, setSelectedChart] = useState<Chart | null>(null);
+  const [words, setWords] = useState<string[]>([]);
+  const [rules, setRules] = useState<Rule[]>([createRule()]);
 
   const handleDiacriticClick = (diacritic) => setSelectedDiacritics(
     toggleInArray(selectedDiacritics, diacritic),
@@ -62,7 +64,15 @@ function MyApp({ Component, pageProps }) {
           setAllHeights,
         }}
         >
-          <Component {...pageProps} />
+          <RulesContext.Provider value={{
+            words,
+            setWords,
+            rules,
+            setRules,
+          }}
+          >
+            <Component {...pageProps} />
+          </RulesContext.Provider>
         </HeightsContext.Provider>
       </TableContext.Provider>
     </SWRConfig>

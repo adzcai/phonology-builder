@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { allFeatures } from '../assets/ipa-data';
 import {
-  Features, Condition, Sound, FeatureFilter, Diacritic, SerializedFeatureList, Matrix, Rule,
+  Features, Condition, Sound, FeatureFilter, Diacritic,
+  SerializedFeatureList, Matrix, Rule,
 } from './types';
 
 // ==================== MISC ====================
@@ -142,21 +143,22 @@ export function sortSoundsBySimilarityTo(sounds: Sound[], features: Partial<Feat
 }
 
 // eslint-disable-next-line max-len
-export function findIndexOfMatrices(str: Features[], matrices: Partial<Features>[], startIndex = 0) {
-  const n = matrices.length;
-  if (n + startIndex >= str.length) return -1;
+const matchAll = (features: Features[], conditions: Condition[]) => conditions.length <= features.length
+  && conditions.every((condition, i) => matchConditions(features[i], condition));
 
-  for (let i = startIndex; i + n <= str.length; ++i) {
-    let match = true;
-    for (let j = 0; j < n; ++j) {
-      if (!matchConditions(str[i + j], matrices[j] as Partial<Features>)) {
-        match = false;
-        break;
-      }
-    }
-    if (match) return i;
+export function findIndexOfMatrices(
+  haystack: Features[], needle: Partial<Features>[],
+  { startIndex, start, end } = { startIndex: 0, start: false, end: false },
+) {
+  if (start && end) return haystack.length === needle.length && matchAll(haystack, needle) ? 0 : -1;
+  if (start) return matchAll(haystack, needle) ? 0 : -1;
+  if (end) {
+    return matchAll(haystack.slice().reverse(), needle.slice().reverse())
+      ? haystack.length - needle.length : -1;
   }
-
+  for (let i = startIndex; i + needle.length <= haystack.length; ++i) {
+    if (matchAll(haystack.slice(i), needle)) return i;
+  }
   return -1;
 }
 

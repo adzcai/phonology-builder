@@ -1,7 +1,9 @@
 import React, { ReactNode } from 'react';
 import { FaLongArrowAltRight } from 'react-icons/fa';
 import { allDiacritics, allSounds } from '../../assets/ipa-data';
-import { Features, Matrix } from '../../lib/types';
+import {
+  Features, MatchTerm, Matrix, SerializedFeatureList,
+} from '../../lib/types';
 import {
   featureListToFeatures, findIndexOfMatrices, filterSounds, sortSoundsBySimilarityTo,
   canApplyDiacriticsToFeatures,
@@ -34,25 +36,46 @@ const stringToFeatures = (word: string): Features[] => replaceConfusables(word).
 
   type ReplacementState = { wordIndex: number; data: ReactNode[]; };
 
-const transformWord = (word: string, src: Matrix[], dst: Matrix[]) => {
+const extractMatrix = (matrix: Matrix) => (typeof matrix.data === 'string'
+  ? matrix.data : featureListToFeatures(matrix.data as SerializedFeatureList));
+
+const transformWord = (
+  word: string, src: Matrix[], dst: Matrix[], preceding: Matrix[], following: Matrix[],
+) => {
   // turn word into a list of feature matrices
   const wordMatrices = stringToFeatures(word);
-  const srcMatrices = src.map((matrix) => (typeof matrix.data === 'string' ? matrix.data : featureListToFeatures(matrix.data)));
-  const dstMatrices = dst.map((matrix) => (typeof matrix.data === 'string' ? matrix.data : featureListToFeatures(matrix.data)));
-  const realSrcMatrices = srcMatrices.filter((val) => typeof val !== 'string') as Partial<Features>[];
-  const foundIndex = findIndexOfMatrices(wordMatrices, realSrcMatrices);
+  const srcMatrices = src.map(extractMatrix) as ('null' | Partial<Features>)[];
+  const srcMatricesWithoutNulls = srcMatrices.filter((data) => data !== 'null') as Partial<Features>[];
+  const dstMatrices = dst.map(extractMatrix) as ('null' | Partial<Features>)[];
+  const precedingMatrices = preceding.map(extractMatrix);
+  const followingMatrices = following.map(extractMatrix);
+  const options = { startIndex: 0, start: false, end: false };
+  if (precedingMatrices[0] === 'boundary') {
+    options.start = true;
+    precedingMatrices.shift();
+  }
+  if (followingMatrices[followingMatrices.length - 1] === 'boundary') {
+    options.end = true;
+    followingMatrices.pop();
+  }
+  const searchMatrices = [
+    ...precedingMatrices, ...srcMatricesWithoutNulls, ...followingMatrices,
+  ] as Partial<Features>[];
+  let foundIndex = findIndexOfMatrices(wordMatrices, searchMatrices, options);
 
   if (foundIndex < 0) {
     return (
       <li key={word}>
         {word}
         {' '}
-        not found
+        not changed
       </li>
     );
   }
 
-  const nCharsMatched = realSrcMatrices.length;
+  foundIndex += precedingMatrices.length;
+
+  const nCharsMatched = srcMatricesWithoutNulls.length;
   const displayWord = [
     word.slice(0, foundIndex),
     <span className="bg-green-100">{word.substr(foundIndex, nCharsMatched)}</span>,
@@ -64,22 +87,23 @@ const transformWord = (word: string, src: Matrix[], dst: Matrix[]) => {
     // if we matched a "null" in the word,
     // we simply move on to the next destination matrix
     // while looking at the same index in the original word
-    const newWordIndex = (srcMatrix === 'null' || srcMatrix === 'boundary') ? wordIndex : wordIndex + 1;
+    const nextIndex = srcMatrix === 'null' ? wordIndex : wordIndex + 1;
 
     // if a symbol in the word gets converted to null,
     // we increment the cursor in the original word but don't add anything to the output
-    if (dstMatrix === 'null' || dstMatrix === 'boundary') return { wordIndex: newWordIndex, data };
+    if (dstMatrix === 'null') return { wordIndex: nextIndex, data };
 
-    const featuresToFind = (srcMatrix === 'null' || srcMatrix === 'boundary')
+    const featuresToFind = srcMatrix === 'null'
       ? dstMatrix
       : {
         ...wordMatrices[wordIndex],
         ...dstMatrix as Partial<Features>,
       };
+
     const matchingSounds = filterSounds(allSounds, featuresToFind);
     if (matchingSounds.length > 0) {
       return {
-        wordIndex: newWordIndex,
+        wordIndex: nextIndex,
         data: [
           ...data,
           matchingSounds.length === 1
@@ -97,7 +121,7 @@ const transformWord = (word: string, src: Matrix[], dst: Matrix[]) => {
       .map((sound) => sound.symbol);
 
     return {
-      wordIndex: newWordIndex,
+      wordIndex: nextIndex,
       data: [
         ...data,
         <span
@@ -128,14 +152,20 @@ const transformWord = (word: string, src: Matrix[], dst: Matrix[]) => {
   );
 };
 
-export default function PreviewEvolution({ words, src, dst }: {
+type Props = {
   words: string[];
   src: Matrix[];
   dst: Matrix[];
-}) {
+  preceding: Matrix[];
+  following: Matrix[];
+};
+
+export default function PreviewEvolution({
+  words, src, dst, preceding, following,
+}: Props) {
   return (
     <ul>
-      {words.map((word) => transformWord(word, src, dst))}
+      {words.map((word) => transformWord(word, src, dst, preceding, following))}
     </ul>
   );
 }

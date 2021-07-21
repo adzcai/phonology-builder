@@ -1,22 +1,20 @@
-import React, {
-  Dispatch, SetStateAction, useState, useEffect,
-} from 'react';
-import { FaLongArrowAltRight, FaMinus } from 'react-icons/fa';
-import { Matrix, Rule } from '../../lib/types';
+import React, { useState, useEffect, useContext } from 'react';
+import { FaLongArrowAltRight } from 'react-icons/fa';
+import { RulesContext } from '../../lib/context';
+import { Matrix } from '../../lib/types';
 import { createMatrix, createRule } from '../../lib/util';
 import MatrixList from './MatrixList';
 import ModalButton from './ModalButton';
 import PreviewEvolution from './PreviewEvolution';
 
 export default function RuleContainer({
-  setRules, index, words, id, last,
+  index, id, last,
 }: {
-  setRules: Dispatch<SetStateAction<Rule[]>>;
   index: number;
-  words: string[];
   id: React.Key;
   last: boolean;
 }) {
+  const { words, setRules } = useContext(RulesContext);
   const [src, setSrc] = useState<Matrix[]>([createMatrix()]);
   const [dst, setDst] = useState<Matrix[]>([createMatrix()]);
   const [preceding, setPreceding] = useState<Matrix[]>([]);
@@ -46,6 +44,7 @@ export default function RuleContainer({
           ])}
         />
       )}
+
       <div className="flex items-center gap-4 p-8 overflow-auto">
         <MatrixList color="bg-yellow-300" matrices={src} setMatrices={setSrc} zeroable />
         <span className="text-6xl mx-2"><FaLongArrowAltRight /></span>
@@ -81,10 +80,19 @@ export default function RuleContainer({
           onClick={() => setHasEnvironment((prev) => !prev)}
         />
       </div>
+
       <div className="px-8 pb-8">
         <h3 className="font-bold">Word evolution</h3>
         {src.length === dst.length
-          ? <PreviewEvolution words={words} src={src} dst={dst} />
+          ? (
+            <PreviewEvolution
+              words={words}
+              src={src}
+              dst={dst}
+              preceding={preceding}
+              following={following}
+            />
+          )
           : (
             <p>
               Make sure there are the same number of source and destination matrices to enable live
@@ -92,6 +100,7 @@ export default function RuleContainer({
             </p>
           )}
       </div>
+
       <ModalButton
         direction="bottom"
         size="lg"
@@ -101,17 +110,16 @@ export default function RuleContainer({
           ...prev.slice(index + 1),
         ])}
       />
+
       {!last && (
-        <button
-          type="button"
+        <ModalButton
+          direction="top-0 left-full"
+          state="minus"
           onClick={() => setRules((prev) => [
             ...prev.slice(0, index),
             ...prev.slice(index + 1),
           ])}
-          className="absolute z-10 top-0 right-0 translate-x-1/2 -translate-y-1/2 transform bg-red-300 p-3 hover:bg-red-500 rounded-xl transition-colors focus:outline-none"
-        >
-          <FaMinus />
-        </button>
+        />
       )}
     </div>
   );

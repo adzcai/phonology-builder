@@ -1,9 +1,9 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useContext, useState } from 'react';
 
-export default function WordSelector({ words, setWords }: {
-  words: string[],
-  setWords: Dispatch<SetStateAction<string[]>>
-}) {
+import { RulesContext } from '../../lib/context';
+
+export default function WordSelector() {
+  const { words, setWords } = useContext(RulesContext);
   const [value, setValue] = useState<string>('');
 
   return (

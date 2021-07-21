@@ -1,10 +1,10 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import {
-  Sound, SoundHook, Diacritic, Chart, FeatureFilter, Height,
+  Sound, SoundHook, Diacritic, Chart, FeatureFilter, Height, Rule,
 } from './types';
 
 // all of the optional fields are for the FilterFeature component to work properly
-export type TableContextType = {
+type TableContextType = {
   allSounds?: Sound[];
   setAllSounds?: SoundHook;
   selectedSounds: Sound[];
@@ -34,7 +34,7 @@ export const TableContext = createContext<TableContextType>({
   deleteFeatureSet: () => {},
 });
 
-export type HeightsContextType = {
+type HeightsContextType = {
   allHeights: Height[];
   setAllHeights: Dispatch<SetStateAction<FeatureFilter[]>>;
 };
@@ -42,4 +42,18 @@ export type HeightsContextType = {
 export const HeightsContext = createContext<HeightsContextType>({
   allHeights: [],
   setAllHeights: () => {},
+});
+
+type RulesContextType = {
+  words: string[];
+  setWords: Dispatch<SetStateAction<string[]>>;
+  rules: Rule[];
+  setRules: Dispatch<SetStateAction<Rule[]>>;
+};
+
+export const RulesContext = createContext<RulesContextType>({
+  words: [],
+  setWords: () => {},
+  rules: [],
+  setRules: () => {},
 });

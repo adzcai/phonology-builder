@@ -99,6 +99,8 @@ export type SerializedFeatureList = [keyof Features | '', SerializedFeatureValue
 
 export type RuleComponent = SerializedFeatureList | 'null' | 'boundary';
 
+export type MatchTerm = Partial<Features> | 'boundary';
+
 export type Matrix = {
   data: RuleComponent;
   id: React.Key;
