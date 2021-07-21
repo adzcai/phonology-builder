@@ -29,7 +29,8 @@ export default function SelectSoundsPage() {
     const body = { sounds: selectedSounds, name: e.currentTarget['chart-name'].value };
 
     try {
-      const newUser = await fetchJson('/api/user/charts', {
+      console.log(user);
+      const newUser = await fetchJson(`/charts/${user.data._id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

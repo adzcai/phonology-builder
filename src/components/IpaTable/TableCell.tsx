@@ -29,7 +29,7 @@ export default function TableCell({
 }: TableCellProps) {
   const {
     setAllSounds,
-    selectedSounds, setSelectedSounds: setSounds,
+    selectedSounds, setSelectedSounds,
     neighbor, setNeighbor,
     selectedDiacritics, setSelectedDiacritics,
   } = useContext(TableContext);
@@ -74,7 +74,7 @@ export default function TableCell({
           } else if (e.altKey) {
             setAllSounds((prev) => prev.filter((s) => s.symbol !== sound.symbol));
           } else {
-            setSounds((prev: Sound[]) => (
+            setSelectedSounds((prev: Sound[]) => (
               prev.includes(sound)
                 ? prev.filter((s) => s.symbol !== sound.symbol) : [...prev, sound]
             ));

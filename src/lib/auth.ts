@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
+import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
 import { ironSession } from 'next-iron-session';
 import passport from './passport';
 import '../models'; // initialize models
+import { CustomRequest } from './types';
 
 export default nextConnect()
   .use(ironSession({
@@ -27,3 +29,11 @@ export default nextConnect()
   })
   .use(passport.initialize())
   .use(passport.session());
+
+export function authRequired(req: CustomRequest, res: NextApiResponse, next: Function) {
+  if (!req.session.get('user')) {
+    res.status(401).send('Unauthenticated');
+  } else {
+    next();
+  }
+}

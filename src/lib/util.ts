@@ -185,7 +185,7 @@ export function deserializeSound(sound: any) {
 }
 
 export function featureListToFeatures(featureList: SerializedFeatureList): Partial<Features> {
-  return featureList.reduce((obj, [feature, value]) => ({
+  return featureList.reduce((obj, [feature, value]) => (feature === '' ? obj : ({
     ...obj, [feature]: deserializeFeatureValue(value),
-  }), {});
+  })), {});
 }

@@ -94,14 +94,11 @@ export default function FeatureMatrix({
 
   if (deletable) {
     buttons.push(
-      <button
-        type="button"
-        title="remove this feature matrix"
+      <ModalButton
+        state="minus"
+        direction="top-0 left-full"
         onClick={() => setMatrices((prev) => [...prev.slice(0, index), ...prev.slice(index + 1)])}
-        className="absolute top-0 right-0 z-10 transform translate-x-1/2 -translate-y-1/2 p-1 text-sm bg-red-300 rounded-xl focus:outline-none hover:bg-red-500 transition-colors"
-      >
-        <FaMinus />
-      </button>,
+      />,
     );
   }
 

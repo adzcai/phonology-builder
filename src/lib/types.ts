@@ -73,13 +73,14 @@ export type User = {
 };
 
 export type Chart = {
-  _id: string,
-  name: string,
-  sounds: Sound[],
+  _id: string;
+  name: string;
+  sounds: Sound[];
+  words: string[];
   parent: {
-    chart: Chart,
-    evolutionFromParent: Evolution
-  } | null
+    chart: Chart;
+    evolutionFromParent: Evolution;
+  } | null;
 };
 
 export type EvolutionRule = {
@@ -99,8 +100,6 @@ export type SerializedFeatureList = [keyof Features | '', SerializedFeatureValue
 
 export type RuleComponent = SerializedFeatureList | 'null' | 'boundary';
 
-export type MatchTerm = Partial<Features> | 'boundary';
-
 export type Matrix = {
   data: RuleComponent;
   id: React.Key;
@@ -112,4 +111,8 @@ export type Rule = {
   preceding: Matrix[];
   following: Matrix[];
   id: React.Key;
+};
+
+export type WordTransformations = {
+  [key: string]: string[];
 };

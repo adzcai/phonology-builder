@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FaLongArrowAltRight } from 'react-icons/fa';
+import { FaHashtag, FaLongArrowAltRight } from 'react-icons/fa';
+import { v4 as uuidv4 } from 'uuid';
 import { RulesContext } from '../../lib/context';
 import { Matrix } from '../../lib/types';
 import { createMatrix, createRule } from '../../lib/util';
@@ -48,7 +49,7 @@ export default function RuleContainer({
       <div className="flex items-center gap-4 p-8 overflow-auto">
         <MatrixList color="bg-yellow-300" matrices={src} setMatrices={setSrc} zeroable />
         <span className="text-6xl mx-2"><FaLongArrowAltRight /></span>
-        <MatrixList color="bg-purple-300" matrices={dst} setMatrices={setDst} zeroable />
+        <MatrixList color="bg-pink-300" matrices={dst} setMatrices={setDst} zeroable />
         {hasEnvironment && (
           <>
             <span className="text-6xl font-extrabold mx-2">/</span>
@@ -60,9 +61,27 @@ export default function RuleContainer({
               allowWordBoundary="left"
             />
             <div className="relative">
-              {preceding.length === 0 && <ModalButton direction="left" onClick={() => setPreceding((prev) => [...prev, createMatrix()])} />}
+              {preceding.length === 0
+              && (
+              <>
+                <ModalButton direction="top-1/4 left-0" onClick={() => setPreceding([createMatrix()])} />
+                <ModalButton direction="top-3/4 left-0" onClick={() => setPreceding([{ id: uuidv4(), data: 'boundary' }])}><FaHashtag /></ModalButton>
+              </>
+              )}
+              {preceding.length === 1 && preceding[0].data === 'boundary'
+              && (
+                <ModalButton direction="left" onClick={() => setPreceding((prev) => [...prev, createMatrix()])} />
+              )}
               <span className="text-6xl font-extrabold bg-white p-2 rounded">__</span>
-              {following.length === 0 && <ModalButton direction="right" onClick={() => setFollowing((prev) => [createMatrix(), ...prev])} />}
+              {following.length === 1 && following[0].data === 'boundary' && (
+                <ModalButton direction="right" onClick={() => setFollowing((prev) => [createMatrix(), ...prev])} />
+              )}
+              {following.length === 0 && (
+              <>
+                <ModalButton direction="top-1/4 left-full" onClick={() => setFollowing([createMatrix()])} />
+                <ModalButton direction="top-3/4 left-full" onClick={() => setFollowing([{ id: uuidv4(), data: 'boundary' }])}><FaHashtag /></ModalButton>
+              </>
+              )}
             </div>
             <MatrixList
               color="bg-indigo-300"

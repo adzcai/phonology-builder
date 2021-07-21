@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import {
-  Sound, SoundHook, Diacritic, Chart, FeatureFilter, Height, Rule,
+  Sound, SoundHook, Diacritic, Chart, FeatureFilter, Height, Rule, WordTransformations,
 } from './types';
 
 // all of the optional fields are for the FilterFeature component to work properly
@@ -13,8 +13,6 @@ type TableContextType = {
   setNeighbor?: Dispatch<SetStateAction<Sound | null>>;
   selectedDiacritics: Diacritic[] | null;
   setSelectedDiacritics: Dispatch<SetStateAction<Diacritic[]>>;
-  selectedChart: Chart | null;
-  setSelectedChart: Dispatch<SetStateAction<Chart>>;
   handleDiacriticClick: (diacritic: Diacritic) => void;
   deleteFeatureSet?: (featureSet: FeatureFilter) => void;
 };
@@ -28,8 +26,6 @@ export const TableContext = createContext<TableContextType>({
   setNeighbor: () => {},
   selectedDiacritics: null,
   setSelectedDiacritics: () => {},
-  selectedChart: null,
-  setSelectedChart: () => {},
   handleDiacriticClick: () => {},
   deleteFeatureSet: () => {},
 });
@@ -45,15 +41,23 @@ export const HeightsContext = createContext<HeightsContextType>({
 });
 
 type RulesContextType = {
+  selectedChart: Chart;
+  setSelectedChart: Dispatch<SetStateAction<Chart>>;
   words: string[];
   setWords: Dispatch<SetStateAction<string[]>>;
+  wordTransformations: WordTransformations;
+  setWordTransformations: Dispatch<SetStateAction<WordTransformations>>;
   rules: Rule[];
   setRules: Dispatch<SetStateAction<Rule[]>>;
 };
 
 export const RulesContext = createContext<RulesContextType>({
+  selectedChart: null,
+  setSelectedChart: () => {},
   words: [],
   setWords: () => {},
+  wordTransformations: {},
+  setWordTransformations: () => {},
   rules: [],
   setRules: () => {},
 });

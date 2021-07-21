@@ -1,24 +1,18 @@
 import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import auth from '../../../src/lib/auth';
-import { userToJson } from '../../../src/lib/user';
-import { CustomRequest, Sound } from '../../../src/lib/types';
-import { UserModel, SoundModel, ChartModel } from '../../../src/models';
-import { serializeSound } from '../../../src/assets/ipa-data';
+import auth, { authRequired } from '../../../../src/lib/auth';
+import { userToJson } from '../../../../src/lib/user';
+import { CustomRequest, Sound } from '../../../../src/lib/types';
+import { UserModel, SoundModel, ChartModel } from '../../../../src/models';
+import { serializeSound } from '../../../../src/lib/util';
 
 export default nextConnect()
   .use(auth)
-  .use((req: CustomRequest, res: NextApiResponse, next) => {
-    if (!req.session.get('user')) {
-      res.status(401).send('Unauthenticated');
-    } else {
-      next();
-    }
-  })
+  .use(authRequired)
   .get(async (req: CustomRequest, res: NextApiResponse) => {
-    const user = await UserModel.findOne({ username: req.session.get('user').username })
-      .populate('charts').exec();
-    res.json({ charts: user.charts });
+    const { username } = req.session.get('user');
+    const user = await UserModel.findOne({ username }).populate('charts').exec();
+    res.json({ data: { charts: user.charts } });
   })
   .post(async (req: CustomRequest, res: NextApiResponse) => {
     const { sounds, name } = req.body;

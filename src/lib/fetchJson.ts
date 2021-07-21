@@ -1,5 +1,5 @@
 // Client side fetcher utility function.
-export default async function fetcher(
+export default async function fetchJson(
   input: RequestInfo, init?: RequestInit,
 ): Promise<{ data?: any, errorMessage?: string }> {
   const response = await fetch(input, init);

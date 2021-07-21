@@ -10,7 +10,7 @@ import {
 } from '../src/lib/types';
 import Layout from '../src/components/Layout';
 import FeatureSelector from '../src/components/FilterFeaturesPage/FeatureSelector';
-import { TableContext } from '../src/lib/context';
+import { RulesContext, TableContext } from '../src/lib/context';
 import {
   canApplyDiacriticsToFeatures, applyDiacriticsToSound, filterSounds, deserializeFeatureValue,
   cloneSound, toggleInArray,
@@ -66,15 +66,23 @@ export default function FilterFeaturesPage() {
         setSelectedDiacritics,
         selectedSounds,
         handleDiacriticClick,
-        selectedChart,
-        setSelectedChart,
       }}
       >
-        <DiacriticTable>
-          Click diacritics to toggle whether symbols with them appear.
-        </DiacriticTable>
-        <ConsonantTable editable={false} />
-        <VowelTable allHeights={allHeights} setAllHeights={setAllHeights} editable={false} />
+        <RulesContext.Provider value={{
+          selectedChart,
+          setSelectedChart,
+          words: [],
+          setWords: () => {},
+          rules: [],
+          setRules: () => {},
+        }}
+        >
+          <DiacriticTable>
+            Click diacritics to toggle whether symbols with them appear.
+          </DiacriticTable>
+          <ConsonantTable editable={false} />
+          <VowelTable allHeights={allHeights} setAllHeights={setAllHeights} editable={false} />
+        </RulesContext.Provider>
       </TableContext.Provider>
     </Layout>
   );

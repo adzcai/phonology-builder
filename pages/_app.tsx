@@ -4,9 +4,9 @@ import {
   allSounds as rawSounds, allHeights as rawHeights,
 } from '../src/assets/ipa-data';
 import { TableContext, HeightsContext, RulesContext } from '../src/lib/context';
-import fetch from '../src/lib/fetchJson';
+import fetcher from '../src/lib/fetchJson';
 import {
-  Sound, Diacritic, FeatureFilter, Chart, Rule,
+  Sound, Diacritic, FeatureFilter, Chart, Rule, WordTransformations,
 } from '../src/lib/types';
 import { toggleInArray, filterFeatures, createRule } from '../src/lib/util';
 import '../styles/globals.css';
@@ -19,6 +19,7 @@ function MyApp({ Component, pageProps }) {
   const [allHeights, setAllHeights] = useState(rawHeights);
   const [selectedChart, setSelectedChart] = useState<Chart | null>(null);
   const [words, setWords] = useState<string[]>([]);
+  const [wordTransformations, setWordTransformations] = useState<WordTransformations>({});
   const [rules, setRules] = useState<Rule[]>([createRule()]);
 
   const handleDiacriticClick = (diacritic) => setSelectedDiacritics(
@@ -32,13 +33,17 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
   useEffect(() => {
-    if (selectedChart !== null) setSelectedSounds(selectedChart.sounds);
+    if (selectedChart !== null) {
+      console.log({ selectedChart });
+      setSelectedSounds(selectedChart.sounds);
+      setWords(selectedChart.words);
+    }
   }, [selectedChart]);
 
   return (
     <SWRConfig
       value={{
-        fetcher: fetch,
+        fetcher,
         onError: (err) => {
           console.error(err);
         },
@@ -55,8 +60,6 @@ function MyApp({ Component, pageProps }) {
         setSelectedDiacritics,
         handleDiacriticClick,
         deleteFeatureSet,
-        selectedChart,
-        setSelectedChart,
       }}
       >
         <HeightsContext.Provider value={{
@@ -65,8 +68,12 @@ function MyApp({ Component, pageProps }) {
         }}
         >
           <RulesContext.Provider value={{
+            selectedChart,
+            setSelectedChart,
             words,
             setWords,
+            wordTransformations,
+            setWordTransformations,
             rules,
             setRules,
           }}

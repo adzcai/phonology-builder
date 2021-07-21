@@ -7,6 +7,12 @@ const ChartSchema = new mongoose.Schema<Chart>({
   sounds: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Sound' }],
     default: [],
+    required: true,
+  },
+  words: {
+    type: [String],
+    default: [],
+    required: true,
   },
   parent: {
     chart: { type: mongoose.Schema.Types.ObjectId, ref: 'Chart' },
