@@ -2,7 +2,7 @@ import nextConnect from 'next-connect';
 import { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
 import { createUser } from '../../src/lib/api/user';
-import { asyncHandler, onError } from '../../src/lib/api/asyncHandler';
+import { asyncHandler, onError } from '../../src/lib/api/middleware';
 import { withAuth } from '../../src/lib/api/auth';
 
 export default nextConnect({ onError })

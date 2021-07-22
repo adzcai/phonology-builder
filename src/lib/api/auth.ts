@@ -3,7 +3,7 @@ import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
 import { ironSession } from 'next-iron-session';
 import passport from './passport';
-import { asyncHandler } from './asyncHandler';
+import { asyncHandler } from './middleware';
 import { CustomRequest, UserDocument } from './apiTypes';
 
 export const withAuth = nextConnect()

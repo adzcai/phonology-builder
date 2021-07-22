@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
 import { CustomRequest } from '../../../src/lib/api/apiTypes';
-import { asyncHandler, onError } from '../../../src/lib/api/asyncHandler';
+import { asyncHandler, onError } from '../../../src/lib/api/middleware';
 import { withAuth } from '../../../src/lib/api/auth';
 import { UserModel } from '../../../src/models';
 

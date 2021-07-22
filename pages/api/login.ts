@@ -3,7 +3,7 @@ import { NextApiResponse } from 'next';
 import passport from '../../src/lib/api/passport';
 import { CustomRequest } from '../../src/lib/api/apiTypes';
 import { withAuth } from '../../src/lib/api/auth';
-import { onError } from '../../src/lib/api/asyncHandler';
+import { onError } from '../../src/lib/api/middleware';
 
 function authenticate(method, req, res) {
   return new Promise((resolve, reject) => {

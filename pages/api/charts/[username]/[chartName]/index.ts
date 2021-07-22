@@ -1,5 +1,5 @@
 import nextConnect from 'next-connect';
-import { asyncHandler, onError } from '../../../../../src/lib/api/asyncHandler';
+import { asyncHandler, onError } from '../../../../../src/lib/api/middleware';
 import { authRequired } from '../../../../../src/lib/api/auth';
 import { ChartModel } from '../../../../../src/models';
 

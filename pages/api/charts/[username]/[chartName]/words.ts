@@ -1,11 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import { asyncHandler, onError } from '../../../../../src/lib/api/asyncHandler';
+import { asyncHandler, onError } from '../../../../../src/lib/api/middleware';
 import { authRequired } from '../../../../../src/lib/api/auth';
 import { ChartModel } from '../../../../../src/models';
 
 export default nextConnect({ onError })
-  .use(authRequired)
   .get(asyncHandler(async (req, res) => {
     const { username, chartName } = req.query;
     const chart = await ChartModel.findById(`${username}/${chartName}`).lean().exec();
@@ -15,7 +14,7 @@ export default nextConnect({ onError })
       res.json(JSON.stringify(chart.words));
     }
   }))
-  .post(asyncHandler(async (req: NextApiRequest, res: NextApiResponse) => {
+  .post(authRequired, asyncHandler(async (req: NextApiRequest, res: NextApiResponse) => {
     const { username, chartName } = req.query;
 
     if (!username || !chartName) {

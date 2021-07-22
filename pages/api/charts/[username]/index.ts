@@ -2,7 +2,7 @@ import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
 import { authRequired } from '../../../../src/lib/api/auth';
 import { ChartModel } from '../../../../src/models';
-import { asyncHandler, onError } from '../../../../src/lib/api/asyncHandler';
+import { asyncHandler, onError } from '../../../../src/lib/api/middleware';
 import { CustomRequest } from '../../../../src/lib/api/apiTypes';
 import { Phoneme } from '../../../../src/lib/client/types';
 import { deserializeFeatures, serializeFeatures } from '../../../../src/lib/client/util';

@@ -12,9 +12,12 @@ export type PhonemeDocument = {
 };
 
 export type EvolutionDocument = {
+  _id: string;
+  from: string;
   rules: {
     [key in 'src' | 'dst' | 'preceding' | 'following']: PhonemeDocument[];
   }[];
+  to: string;
 };
 
 export type ChartDocument = {

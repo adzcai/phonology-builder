@@ -15,10 +15,6 @@ const ChartSchema = new mongoose.Schema<ChartDocument>({
     default: [],
     required: true,
   },
-  parent: {
-    chart: { type: mongoose.Schema.Types.ObjectId, ref: 'Chart' },
-    evolutionsFromParent: { type: mongoose.Schema.Types.ObjectId, ref: 'Evolution' },
-  },
 });
 
 export default mongoose.models.Chart || mongoose.model<ChartDocument>('Chart', ChartSchema);

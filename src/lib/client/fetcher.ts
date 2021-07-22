@@ -63,7 +63,7 @@ export default async function fetcher(url: RequestInfo, init?: RequestInit) {
   // if the server replies, there's always some data in json
   // if there's a network error, it will throw at the previous line
   if (!res.ok) {
-    const error = new Error(`An error occurred while fetching from ${url}`) as ErrorPayload;
+    const error = new Error(`The request to ${url} returned a non-ok status ${res.status}`) as ErrorPayload;
     error.info = await res.json();
     error.status = res.status;
     throw error;
