@@ -36,13 +36,24 @@ th {
   margin: 0px;
 }
 
-.hover-blue {
-  @apply bg-blue-300 hover:bg-blue-500 focus:bg-blue-500 outline-none focus:outline-none shadow hover:shadow-xl focus:shadow-xl;
+h1 {
+  @apply text-6xl text-center;
+}
 
-  transition-property: background-color, border-color, color, fill, stroke,
-    box-shadow;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+h2 {
+  @apply text-2xl;
+}
+
+h3 {
+  @apply text-xl;
+}
+
+.hover-blue {
+  @apply bg-blue-300 shadow outline-none hover:bg-blue-500 hover:shadow-xl focus:bg-blue-500 focus:outline-none focus:shadow-xl transition-all;
+}
+
+.btn-blue {
+  @apply bg-blue-300 shadow px-4 py-2 rounded-xl outline-none hover:bg-blue-500 hover:shadow-xl focus:bg-blue-500 focus:outline-none focus:shadow-xl transition-all;
 }
 
 .border-gray {

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Matrix } from '../../lib/types';
+import { Matrix } from '../../lib/client/types';
 import FeatureMatrix from './FeatureMatrix';
 
 // Child of RuleContainer

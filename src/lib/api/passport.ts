@@ -1,13 +1,13 @@
 import passport from 'passport';
 import Local from 'passport-local';
-import { UserModel } from '../models';
-import { User } from './types';
+import mongoose from 'mongoose';
+import { UserDocument } from './apiTypes';
 import { validatePassword } from './user';
 
-passport.serializeUser((user: User, done) => done(null, user.username));
+passport.serializeUser((user: UserDocument, done) => done(null, user.username));
 
 passport.deserializeUser(async (req, username, done) => {
-  const user = await UserModel.findOne({ username });
+  const user = await mongoose.model('User').findOne({ username });
   done(null, user);
 });
 
@@ -17,7 +17,7 @@ passport.use(new Local.Strategy(async (
   done,
 ) => {
   try {
-    const user = await UserModel.findOne({ username });
+    const user = await mongoose.model('User').findOne({ username });
     if (user && validatePassword(user, password)) {
       done(null, user);
     } else {

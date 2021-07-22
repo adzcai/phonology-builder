@@ -1,16 +1,18 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
+import useSWR from 'swr';
+import { ChartDocument } from '../api/apiTypes';
 import {
-  Sound, SoundHook, Diacritic, Chart, FeatureFilter, Height, Rule, WordTransformations,
+  Phoneme, SoundHook, Diacritic, FeatureFilter, Height, Rule, WordTransformations,
 } from './types';
 
 // all of the optional fields are for the FilterFeature component to work properly
 type TableContextType = {
-  allSounds?: Sound[];
+  allSounds?: Phoneme[];
   setAllSounds?: SoundHook;
-  selectedSounds: Sound[];
+  selectedSounds: Phoneme[];
   setSelectedSounds?: SoundHook;
-  neighbor?: Sound | null;
-  setNeighbor?: Dispatch<SetStateAction<Sound | null>>;
+  neighbor?: Phoneme | null;
+  setNeighbor?: Dispatch<SetStateAction<Phoneme | null>>;
   selectedDiacritics: Diacritic[] | null;
   setSelectedDiacritics: Dispatch<SetStateAction<Diacritic[]>>;
   handleDiacriticClick: (diacritic: Diacritic) => void;
@@ -41,8 +43,8 @@ export const HeightsContext = createContext<HeightsContextType>({
 });
 
 type RulesContextType = {
-  selectedChart: Chart;
-  setSelectedChart: Dispatch<SetStateAction<Chart>>;
+  selectedChart: ChartDocument;
+  setSelectedChart: Dispatch<SetStateAction<ChartDocument>>;
   words: string[];
   setWords: Dispatch<SetStateAction<string[]>>;
   wordTransformations: WordTransformations;
@@ -61,3 +63,28 @@ export const RulesContext = createContext<RulesContextType>({
   rules: [],
   setRules: () => {},
 });
+
+type UserPayload = {
+  user?: { isLoggedIn: true, username: string };
+  userIsValidating: boolean;
+  userError?: Error & {
+    info: {
+      message: string;
+    };
+    status: number;
+  };
+  mutateUser: (data?: any, shouldRevalidate?: boolean) => Promise<any>;
+};
+
+export function useUser(): UserPayload {
+  const {
+    data, error, isValidating, mutate,
+  } = useSWR('/api/user');
+
+  return {
+    user: data,
+    userIsValidating: isValidating,
+    userError: error,
+    mutateUser: mutate,
+  };
+}

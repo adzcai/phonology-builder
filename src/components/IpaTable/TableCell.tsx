@@ -1,9 +1,9 @@
 import { FC, useContext } from 'react';
 
 import { allFeatures } from '../../assets/ipa-data';
-import { TableContext } from '../../lib/context';
-import { Diacritic, Sound } from '../../lib/types';
-import { canApplyDiacriticsToFeatures, applyDiacriticsToSound } from '../../lib/util';
+import { TableContext } from '../../lib/client/context';
+import { Diacritic, Phoneme } from '../../lib/client/types';
+import { canApplyDiacriticsToFeatures, applyDiacriticsToSound } from '../../lib/client/util';
 
 function sortSounds(a, b) {
   // eslint-disable-next-line no-restricted-syntax
@@ -17,12 +17,12 @@ function sortSounds(a, b) {
 }
 
 type TableCellProps = {
-  sounds: Sound[];
+  sounds: Phoneme[];
   insertBelow?: (toAdd: Diacritic) => void;
   editable: boolean;
 };
 
-type SoundContainerProps = { sound: Sound };
+type SoundContainerProps = { sound: Phoneme };
 
 export default function TableCell({
   sounds, insertBelow, editable,
@@ -74,7 +74,7 @@ export default function TableCell({
           } else if (e.altKey) {
             setAllSounds((prev) => prev.filter((s) => s.symbol !== sound.symbol));
           } else {
-            setSelectedSounds((prev: Sound[]) => (
+            setSelectedSounds((prev: Phoneme[]) => (
               prev.includes(sound)
                 ? prev.filter((s) => s.symbol !== sound.symbol) : [...prev, sound]
             ));

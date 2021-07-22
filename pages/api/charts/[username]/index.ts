@@ -1,42 +1,39 @@
 import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import auth, { authRequired } from '../../../../src/lib/auth';
-import { userToJson } from '../../../../src/lib/user';
-import { CustomRequest, Sound } from '../../../../src/lib/types';
-import { UserModel, SoundModel, ChartModel } from '../../../../src/models';
-import { serializeSound } from '../../../../src/lib/util';
+import { authRequired } from '../../../../src/lib/api/auth';
+import { ChartModel } from '../../../../src/models';
+import { asyncHandler, onError } from '../../../../src/lib/api/asyncHandler';
+import { CustomRequest } from '../../../../src/lib/api/apiTypes';
+import { Phoneme } from '../../../../src/lib/client/types';
+import { deserializeFeatures, serializeFeatures } from '../../../../src/lib/client/util';
 
-export default nextConnect()
-  .use(auth)
+export default nextConnect({ onError })
   .use(authRequired)
-  .get(async (req: CustomRequest, res: NextApiResponse) => {
-    const { username } = req.session.get('user');
-    const user = await UserModel.findOne({ username }).populate('charts').exec();
-    res.json({ data: { charts: user.charts } });
-  })
-  .post(async (req: CustomRequest, res: NextApiResponse) => {
-    const { sounds, name } = req.body;
+  .get(asyncHandler(async (req: CustomRequest, res: NextApiResponse) => {
+    const charts = await ChartModel.find({ username: req.user.username }).lean().exec();
+    const rtn = charts.map((chart) => ({
+      ...chart,
+      sounds: chart.sounds.map(({ symbol, features }) => ({
+        symbol, features: deserializeFeatures(features),
+      })),
+    }));
+    res.json(JSON.stringify(rtn));
+  }))
+  // create new charts
+  .post(asyncHandler(async (req: CustomRequest, res: NextApiResponse) => {
+    const { sounds, name } = req.body as { sounds: Phoneme[]; name: string; };
     const { username } = req.session.get('user');
 
-    const user = await UserModel.findOne({ username }).exec();
-
-    const insertSounds = await Promise.all<Sound>(sounds.map(async (sound: Sound) => {
-      const s = await SoundModel.findOne({ symbol: sound.symbol }).exec();
-      if (s) return s;
-      return SoundModel.create(serializeSound(sound));
+    const serializedSounds = sounds.map(({ symbol, features }) => ({
+      symbol, features: serializeFeatures(features),
     }));
 
     try {
       const chart = await ChartModel.create({
-        _id: `${username}/${name}`, sounds: insertSounds, name, parent: null,
+        _id: `${username}/${name}`, username, name, sounds: serializedSounds, parent: null,
       });
-
-      user.charts.push(chart);
-      user.markModified('charts');
-      await user.save();
-      res.json(userToJson(user));
-    } catch (e) {
-      console.error('Error when saving new chart:', e);
-      res.status(409).json({ errorMessage: e.message });
+      res.json(JSON.stringify(chart));
+    } catch (err) {
+      res.status(409).json({ message: err.message });
     }
-  });
+  }));

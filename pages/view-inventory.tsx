@@ -1,18 +1,17 @@
 import React, { useContext } from 'react';
-import FeatureList from '../src/components/FeatureList';
+import FeatureList from '../src/components/IpaTable/FeatureList';
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
-import Layout from '../src/components/Layout';
-import { TableContext, HeightsContext } from '../src/lib/context';
+import { TableContext, HeightsContext } from '../src/lib/client/context';
 
 export default function ViewInventoryPage() {
   const { selectedSounds } = useContext(TableContext);
   const { allHeights, setAllHeights } = useContext(HeightsContext);
 
-  if (selectedSounds.length === 0) return <Layout><p className="text-center">Begin selecting symbols to view a display chart!</p></Layout>;
+  if (selectedSounds.length === 0) return <p className="text-center">Begin selecting symbols to view a display chart!</p>;
 
   return (
-    <Layout>
+    <>
       <ConsonantTable editable={false} />
       <VowelTable
         allHeights={allHeights}
@@ -25,6 +24,6 @@ export default function ViewInventoryPage() {
       </p>
 
       <FeatureList sounds={selectedSounds} />
-    </Layout>
+    </>
   );
 }

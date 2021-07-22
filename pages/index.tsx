@@ -1,13 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
-import Layout from '../src/components/Layout';
 import AuthSection from '../src/components/IndexPage/AuthSection';
 import SonorityHierarchy from '../src/components/IndexPage/SonorityHierarchy';
 
 export default function IndexPage() {
   return (
-    <Layout>
-      <p className="max-w-lg text-center">
+    <>
+      <p className="container text-center">
         Based on the
         {' '}
         <a href="https://linguistics.ucla.edu/people/hayes/120a/Pheatures/" className="underline">Pheatures</a>
@@ -43,6 +42,6 @@ export default function IndexPage() {
           Play sound audio files
         </li>
       </ul>
-    </Layout>
+    </>
   );
 }

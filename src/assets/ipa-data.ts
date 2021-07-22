@@ -2,15 +2,15 @@ import rawFeatureData from './feature-data.json';
 import rawSounds from './base-features.json';
 import rawDiacritics from './diacritics.json';
 import {
-  Manner, Place, Diacritic, Features, Height, Sound, Frontness,
-} from '../lib/types';
+  Manner, Place, Diacritic, Features, Height, Phoneme, Frontness,
+} from '../lib/client/types';
 
 // the two features missing from the original book are
 // implosive and ATR (equivalent to tense in some languages)
 export const allSounds = rawSounds.map(({ symbol, ...features }) => ({
   symbol,
   features,
-})) as Sound[];
+})) as Phoneme[];
 
 // Descriptions of the supported features in the form [name, category, description].
 export const allFeatures = rawFeatureData.features as [keyof Features, string, string][];

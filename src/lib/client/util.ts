@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
-import { allFeatures } from '../assets/ipa-data';
+import { allFeatures } from '../../assets/ipa-data';
 import {
-  Features, Condition, Sound, FeatureFilter, Diacritic,
+  Features, Condition, Phoneme, FeatureFilter, Diacritic,
   SerializedFeatureList, Matrix, Rule,
 } from './types';
 
@@ -19,7 +19,7 @@ export function countDistinctFeatures(a: Partial<Features>, b: Partial<Features>
   return allFeatures.filter(([feature]) => trueDifference(a, b, feature)).length;
 }
 
-export function cloneSound(sound: Sound) {
+export function cloneSound(sound: Phoneme) {
   return { symbol: sound.symbol, features: { ...sound.features } };
 }
 
@@ -85,7 +85,7 @@ export function filterFeatures(featuresArr: Features[], ...conditions: Condition
    * @param conditions the list of conditions to filter by
    * @returns the sounds which match the given conditions
    */
-export function filterSounds(sounds: Sound[], ...conditions: Condition[]) {
+export function filterSounds(sounds: Phoneme[], ...conditions: Condition[]) {
   return sounds.filter((sound) => matchConditions(sound.features, conditions));
 }
 
@@ -98,7 +98,7 @@ export function filterSounds(sounds: Sound[], ...conditions: Condition[]) {
    * @returns all elements of arr which match some of the given sounds
    */
 export function filterNonEmptyFeatureSets(
-  arr: FeatureFilter[], sounds: Sound[], ...conditions: Condition[]
+  arr: FeatureFilter[], sounds: Phoneme[], ...conditions: Condition[]
 ) {
   const soundFeatures = sounds.map((sound) => sound.features);
   return arr.filter(
@@ -124,9 +124,9 @@ export function canApplyDiacriticsToFeatures(diacritics: Diacritic[], sound: Fea
    * @param diacritics the diacritics to apply
    * @returns the resulting sound when the given diacritics are applied to the given sound
    */
-export function applyDiacriticsToSound(sound: Sound, ...diacritics: Diacritic[]) {
+export function applyDiacriticsToSound(sound: Phoneme, ...diacritics: Diacritic[]) {
   // copy the current sound
-  const newSound: Sound = cloneSound(sound);
+  const newSound: Phoneme = cloneSound(sound);
 
   diacritics.forEach((diacritic) => {
     newSound.symbol += diacritic.symbol; // TODO assumes the diacritic comes after
@@ -135,7 +135,7 @@ export function applyDiacriticsToSound(sound: Sound, ...diacritics: Diacritic[])
   return newSound;
 }
 
-export function sortSoundsBySimilarityTo(sounds: Sound[], features: Partial<Features>) {
+export function sortSoundsBySimilarityTo(sounds: Phoneme[], features: Partial<Features>) {
   return sounds.slice().sort(
     // eslint-disable-next-line max-len
     (a, b) => countDistinctFeatures(a.features, features) - countDistinctFeatures(b.features, features),
@@ -169,19 +169,24 @@ export function serializeFeatureValue(feature) {
 }
 
 export function deserializeFeatureValue(feature) {
-  return ({ 0: 0, '+': true, '-': false }[feature]);
+  return {
+    0: 0,
+    '+': true,
+    '-': false,
+  }[feature];
 }
 
-export function serializeSound(sound: Sound) {
-  return Object.keys(sound).filter((key) => key !== 'symbol').reduce((obj, feature) => ({
-    ...obj, [feature]: serializeFeatureValue(obj[feature]),
-  }), { symbol: sound.symbol });
+export function serializeFeatures(features: Partial<Features>) {
+  return allFeatures.map(([featureName]) => (
+    featureName in features ? serializeFeatureValue(features[featureName]) : '/'
+  )).join('');
 }
 
-export function deserializeSound(sound: any) {
-  return Object.keys(sound).filter((key) => key !== 'symbol').reduce((obj, feature) => ({
-    ...obj, [feature]: deserializeFeatureValue(obj[feature]),
-  }), { symbol: sound.symbol });
+export function deserializeFeatures(features: string) {
+  return allFeatures.reduce((obj, [feature], i) => {
+    if (features[i] === '/') return obj;
+    return { ...obj, [feature]: deserializeFeatureValue(features[i]) };
+  }, {});
 }
 
 export function featureListToFeatures(featureList: SerializedFeatureList): Partial<Features> {

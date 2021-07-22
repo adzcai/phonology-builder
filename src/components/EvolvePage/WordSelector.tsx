@@ -1,35 +1,56 @@
 import { useContext, useState } from 'react';
+import useSWR from 'swr';
 
-import { RulesContext } from '../../lib/context';
-import fetcher from '../../lib/fetchJson';
+import { RulesContext } from '../../lib/client/context';
+import fetcher from '../../lib/client/fetcher';
 
 export default function WordSelector() {
-  const { words, setWords, selectedChart } = useContext(RulesContext);
-  const [value, setValue] = useState<string>('');
+  const { selectedChart } = useContext(RulesContext);
+  const { data: words, mutate: mutateWords, error } = useSWR(() => `/api/charts/${selectedChart._id}/words`);
   // const [savingState, setSavingState] = useState<string>('');
 
-  const handleSaveWords = async () => {
-    const data = await fetcher(`/api/charts/${selectedChart._id}/words`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ words }),
-    });
+  if (!selectedChart) {
+    return <p>Select a chart to save words!</p>;
+  }
 
-    if (data.errorMessage) {
-      console.error(data.errorMessage);
+  if (error) {
+    return (
+      <p>
+        An error occurred fetching the words from the current chart:
+        {' '}
+        {error.info.message}
+      </p>
+    );
+  }
+
+  if (!words) {
+    return <p>Loading...</p>;
+  }
+
+  const handleSaveWords = async (e) => {
+    e.preventDefault();
+
+    const { value } = e.currentTarget.word;
+    e.currentTarget.word.value = '';
+
+    if (value.length > 0 && !words.includes(value)) {
+      try {
+        await mutateWords([...words, value]);
+        await fetcher(`/api/charts/${selectedChart._id}/words`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ words }),
+        });
+        await mutateWords();
+      } catch (err) {
+        console.error(err.info.message);
+      }
     }
   };
 
   return (
     <div>
-      <form
-        className="flex items-center gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (value.length > 0 && !words.includes(value)) setWords((prev) => [...prev, value]);
-          setValue('');
-        }}
-      >
+      <form className="flex items-center gap-2" onSubmit={handleSaveWords}>
         <label className="contents">
           <span>Word:</span>
           <input
@@ -37,13 +58,11 @@ export default function WordSelector() {
             name="word"
             placeholder="Type word here"
             className="outline-none p-2 rounded"
-            value={value}
-            onChange={(e) => setValue(e.currentTarget.value)}
           />
         </label>
         <button type="submit" className="px-4 py-2 rounded bg-blue-300 hover:bg-blue-500 transition-colors focus:outline-none">Add</button>
       </form>
-      <button type="button" onClick={handleSaveWords} className="hover-blue px-4 py-2 rounded">
+      <button type="button" className="hover-blue px-4 py-2 rounded">
         Save words to current chart (
         {selectedChart ? selectedChart.name : 'none selected'}
         )
@@ -53,7 +72,7 @@ export default function WordSelector() {
           <li key={word}>
             <button
               type="button"
-              onClick={() => setWords((prev) => prev.filter((w) => w !== word))}
+              onClick={() => mutateWords(words.filter((w) => w !== word))}
               className="hover:line-through"
             >
               {word}

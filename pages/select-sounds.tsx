@@ -1,48 +1,89 @@
 import React, {
-  useCallback, useContext, useState,
+  useCallback, useContext,
 } from 'react';
 import useSWR from 'swr';
 import {
   allHeights as rawHeights, allSounds as rawSounds,
 } from '../src/assets/ipa-data';
-import fetchJson from '../src/lib/fetchJson';
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
-import Layout from '../src/components/Layout';
+import RequireUser from '../src/components/RequireUser';
 import UserCharts from '../src/components/SelectSoundsPage/UserCharts';
-import { TableContext, HeightsContext } from '../src/lib/context';
+import { TableContext, HeightsContext, useUser } from '../src/lib/client/context';
+import fetcher from '../src/lib/client/fetcher';
 
-export default function SelectSoundsPage() {
-  const { data: user, mutate: mutateUser } = useSWR('/api/user');
-
-  const {
-    selectedSounds, setAllSounds, allSounds, setSelectedSounds, setNeighbor, setSelectedDiacritics,
-  } = useContext(TableContext);
-  const { allHeights, setAllHeights } = useContext(HeightsContext);
-
-  const [saveErrorMsg, setSaveErrorMsg] = useState('');
-
-  async function handleSaveSounds(e) {
+function SaveChartComponent() {
+  const { user } = useUser();
+  const { selectedSounds } = useContext(TableContext);
+  const { data: charts, mutate: mutateCharts, error: chartsError } = useSWR(() => `/api/charts/${user.username}`);
+  const handleSaveSounds = useCallback(async (e) => {
     e.preventDefault();
 
-    const body = { sounds: selectedSounds, name: e.currentTarget['chart-name'].value };
-
     try {
-      console.log(user);
-      const newUser = await fetchJson(`/charts/${user.data._id}`, {
+      const newChart = { sounds: selectedSounds, name: e.currentTarget['chart-name'].value };
+
+      console.log({ newChart });
+
+      await mutateCharts([...charts, newChart]);
+      await fetcher(`/api/charts/${user.username}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(newChart),
       });
-
-      await mutateUser(newUser);
-    } catch (error) {
+      await mutateCharts();
+      console.log('result', { charts });
+    } catch (err) {
       // eslint-disable-next-line no-console
-      console.error('An unexpected error happened:', error);
-      setSaveErrorMsg(`An unexpected error occurred: ${error.data.message || error.message}`);
+      console.error('An unexpected error happened:', err.info.message);
+      alert(err.info.message);
     }
+  }, [selectedSounds, charts, user]);
+
+  if (chartsError) {
+    return (
+      <p>
+        Error loading charts:
+        {' '}
+        {chartsError.info.message}
+      </p>
+    );
   }
+
+  if (!charts) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <>
+      <form onSubmit={handleSaveSounds} className="flex flex-col items-center space-y-4">
+        <label htmlFor="chart-name" className="contents space-y-2 md:space-y-0 md:space-x-2">
+          <span>Chart name</span>
+          <input
+            type="text"
+            id="chart-name"
+            name="chart-name"
+            required
+            className="pl-1.5 rounded-lg outline-none shadow focus:shadow-lg transition-shadow"
+            placeholder="Enter chart name"
+          />
+        </label>
+        <button
+          type="submit"
+          className="hover-blue p-2 rounded"
+        >
+          Save as chart
+        </button>
+      </form>
+    </>
+  );
+}
+
+export default function SelectSoundsPage() {
+  const {
+    setAllSounds, allSounds, setSelectedSounds, setNeighbor, setSelectedDiacritics,
+  } = useContext(TableContext);
+  const { allHeights, setAllHeights } = useContext(HeightsContext);
 
   const resetAll = useCallback(() => {
     setAllSounds(rawSounds);
@@ -53,7 +94,7 @@ export default function SelectSoundsPage() {
   }, []);
 
   return (
-    <Layout>
+    <>
       <ul className="mx-auto text-center p-4 max-w-lg w-full md:w-max space-y-2 bg-pink-300 rounded-2xl">
         <li>
           Hover over a row or column to see the features that define it.
@@ -101,31 +142,9 @@ export default function SelectSoundsPage() {
             Select all
           </button>
         </div>
-        {user?.data?.isLoggedIn && (
-        <>
-          <form onSubmit={handleSaveSounds} className="flex flex-col items-center space-y-4">
-            <label htmlFor="chart-name" className="contents space-y-2 md:space-y-0 md:space-x-2">
-              <span>Chart name</span>
-              <input
-                type="text"
-                id="chart-name"
-                name="chart-name"
-                required
-                className="pl-1.5 rounded-lg outline-none shadow focus:shadow-lg transition-shadow"
-                placeholder="Enter chart name"
-              />
-            </label>
-            <button
-              type="submit"
-              className="hover-blue p-2 rounded"
-            >
-              Save selected sounds
-            </button>
-          </form>
-
-          {saveErrorMsg}
-        </>
-        )}
+        <RequireUser>
+          <SaveChartComponent />
+        </RequireUser>
       </div>
 
       <div className="flex flex-col w-full items-center space-y-8">
@@ -146,9 +165,10 @@ export default function SelectSoundsPage() {
         </DiacriticTable>
       </div>
 
-      {/* undefined > 0 is false, so this only works if the user has positive charts */}
-      <h2 className="text-2xl font-bold">Your charts</h2>
-      <UserCharts />
-    </Layout>
+      <RequireUser>
+        <h2 className="text-2xl font-bold">Your charts</h2>
+        <UserCharts />
+      </RequireUser>
+    </>
   );
 }

@@ -3,12 +3,12 @@ import { FaLongArrowAltRight } from 'react-icons/fa';
 import { allDiacritics, allSounds } from '../../assets/ipa-data';
 import {
   Features, Matrix, SerializedFeatureList,
-} from '../../lib/types';
+} from '../../lib/client/types';
 import {
   featureListToFeatures, findIndexOfMatrices, filterSounds, sortSoundsBySimilarityTo,
   canApplyDiacriticsToFeatures,
   replaceConfusables,
-} from '../../lib/util';
+} from '../../lib/client/util';
 
 type FeaturesOrZero = Partial<Features> | 'null';
 

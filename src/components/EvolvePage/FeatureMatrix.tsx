@@ -5,8 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   FaHashtag, FaPlus, FaMinus, FaCreativeCommonsZero, FaWindowMaximize,
 } from 'react-icons/fa';
-import { Matrix, RuleComponent } from '../../lib/types';
-import { createMatrix } from '../../lib/util';
+import { Matrix, RuleComponent } from '../../lib/client/types';
+import { createMatrix } from '../../lib/client/util';
 import FeatureSelector from '../FilterFeaturesPage/FeatureSelector';
 import ModalButton from './ModalButton';
 

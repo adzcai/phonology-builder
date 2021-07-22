@@ -7,14 +7,13 @@ import VowelTable from '../src/components/IpaTable/VowelTable';
 import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
 import {
   Diacritic, Features, Height, SerializedFeatureList,
-} from '../src/lib/types';
-import Layout from '../src/components/Layout';
+} from '../src/lib/client/types';
 import FeatureSelector from '../src/components/FilterFeaturesPage/FeatureSelector';
-import { RulesContext, TableContext } from '../src/lib/context';
+import { RulesContext, TableContext } from '../src/lib/client/context';
 import {
   canApplyDiacriticsToFeatures, applyDiacriticsToSound, filterSounds, deserializeFeatureValue,
   cloneSound, toggleInArray,
-} from '../src/lib/util';
+} from '../src/lib/client/util';
 
 export default function FilterFeaturesPage() {
   const [filters, setFilters] = useState<SerializedFeatureList>([]);
@@ -57,7 +56,7 @@ export default function FilterFeaturesPage() {
   );
 
   return (
-    <Layout>
+    <>
       <FeatureSelector features={filters} setFeatures={setFilters} buttonLabel="Add new filter condition" groupName="filter-condition" />
       <FeatureSelector features={soundChanges} setFeatures={setSoundChanges} buttonLabel="Add new sound change" groupName="sound-change" />
 
@@ -84,6 +83,6 @@ export default function FilterFeaturesPage() {
           <VowelTable allHeights={allHeights} setAllHeights={setAllHeights} editable={false} />
         </RulesContext.Provider>
       </TableContext.Provider>
-    </Layout>
+    </>
   );
 }

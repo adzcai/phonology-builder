@@ -1,6 +1,6 @@
 import React, { ChangeEventHandler } from 'react';
 import { allFeatures } from '../../assets/ipa-data';
-import { SerializedFeatureValue } from '../../lib/types';
+import { SerializedFeatureValue } from '../../lib/client/types';
 
 type SelectorRowProps = {
   selected: string;

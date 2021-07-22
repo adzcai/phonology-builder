@@ -4,9 +4,9 @@ import {
   useCallback, useContext,
 } from 'react';
 import { allFrontnesses } from '../../assets/ipa-data';
-import { TableContext } from '../../lib/context';
-import { Height, Diacritic } from '../../lib/types';
-import { filterNonEmptyFeatureSets, filterSounds } from '../../lib/util';
+import { TableContext } from '../../lib/client/context';
+import { Height, Diacritic } from '../../lib/client/types';
+import { filterNonEmptyFeatureSets, filterSounds } from '../../lib/client/util';
 import TableCell from './TableCell';
 import styles from './VowelTable.module.css';
 

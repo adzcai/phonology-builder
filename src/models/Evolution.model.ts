@@ -1,13 +1,19 @@
 import mongoose from 'mongoose';
-import { Evolution } from '../lib/types';
+import { EvolutionDocument } from '../lib/api/apiTypes';
 
-const EvolutionSchema = new mongoose.Schema<Evolution>({
+const MatrixListDocument = {
+  type: [{ symbol: String, features: String }],
+  default: [],
+  required: true,
+};
+
+const EvolutionSchema = new mongoose.Schema<EvolutionDocument>({
   rules: [{
-    src: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
-    dst: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
-    preceding: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
-    following: [{ type: mongoose.Types.ObjectId, ref: 'Sound' }],
+    src: MatrixListDocument,
+    dst: MatrixListDocument,
+    preceding: MatrixListDocument,
+    following: MatrixListDocument,
   }],
 });
 
-export default mongoose.models.Evolution || mongoose.model<Evolution>('Evolution', EvolutionSchema);
+export default mongoose.models.Evolution || mongoose.model<EvolutionDocument>('Evolution', EvolutionSchema);

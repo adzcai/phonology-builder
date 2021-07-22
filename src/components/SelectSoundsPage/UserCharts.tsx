@@ -1,32 +1,33 @@
 import React, { useContext } from 'react';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { Chart } from '../../lib/types';
-import { RulesContext } from '../../lib/context';
+import { RulesContext, useUser } from '../../lib/client/context';
+import { ChartDocument } from '../../lib/api/apiTypes';
 
 export default function UserCharts() {
-  const { data: user } = useSWR('/api/user');
-  const { data: charts } = useSWR(`/api/charts/${user.data.username}`);
+  const { user, userError } = useUser();
+  const { data: charts, error: chartsError } = useSWR<ChartDocument[]>(() => `/api/charts/${user.username}`);
   const { setSelectedChart } = useContext(RulesContext);
 
-  if (!charts) return <p>Loading...</p>;
-
-  if (charts.errorMessage) {
-    console.error(charts.errorMessage);
+  if (chartsError) {
+    if (chartsError.status === 401) return <p>Log in to save your charts!</p>;
     return (
       <p>
-        An error occurred:
-        {charts.errorMessage}
+        An unexpected error occurred:
+        {' '}
+        {chartsError.info.message}
       </p>
     );
   }
 
-  if (charts.data.charts.length === 0) {
+  if (!charts) return <p>Loading...</p>;
+
+  if (charts.length === 0) {
     return (
       <p>
         No charts found. Save some under
         {' '}
-        <Link href="/choose-sounds"><a href="/choose-sounds" className="underline">Choose sounds</a></Link>
+        <Link href="/select-sounds"><a href="/select-sounds" className="underline">Select sounds</a></Link>
         !
       </p>
     );
@@ -36,7 +37,7 @@ export default function UserCharts() {
     <>
       <p className="mx-auto w-full text-center">Click a chart to load it!</p>
       <ul className="flex flex-wrap gap-4 justify-center">
-        {charts.data.charts.map((chart: Chart) => (
+        {charts.map((chart) => (
           <li key={chart.name}>
             <button
               type="button"

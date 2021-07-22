@@ -1,6 +1,6 @@
 import React, { Dispatch, ReactNode, SetStateAction } from 'react';
 import { allFeatures } from '../../assets/ipa-data';
-import { Features, SerializedFeatureList } from '../../lib/types';
+import { Features, SerializedFeatureList } from '../../lib/client/types';
 import SelectorRow from './SelectorRow';
 
 type Props = {

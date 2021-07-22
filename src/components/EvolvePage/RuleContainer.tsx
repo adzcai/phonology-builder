@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FaHashtag, FaLongArrowAltRight } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
-import { RulesContext } from '../../lib/context';
-import { Matrix } from '../../lib/types';
-import { createMatrix, createRule } from '../../lib/util';
+import { RulesContext } from '../../lib/client/context';
+import { Matrix } from '../../lib/client/types';
+import { createMatrix, createRule } from '../../lib/client/util';
 import MatrixList from './MatrixList';
 import ModalButton from './ModalButton';
 import PreviewEvolution from './PreviewEvolution';

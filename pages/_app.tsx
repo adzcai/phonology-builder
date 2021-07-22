@@ -1,23 +1,26 @@
 import { useState, useCallback, useEffect } from 'react';
 import { SWRConfig } from 'swr';
+import type { AppProps } from 'next/app';
 import {
   allSounds as rawSounds, allHeights as rawHeights,
 } from '../src/assets/ipa-data';
-import { TableContext, HeightsContext, RulesContext } from '../src/lib/context';
-import fetcher from '../src/lib/fetchJson';
+import Layout from '../src/components/Layout';
+import type { ChartDocument } from '../src/lib/api/apiTypes';
+import { TableContext, HeightsContext, RulesContext } from '../src/lib/client/context';
+import fetcher from '../src/lib/client/fetcher';
 import {
-  Sound, Diacritic, FeatureFilter, Chart, Rule, WordTransformations,
-} from '../src/lib/types';
-import { toggleInArray, filterFeatures, createRule } from '../src/lib/util';
+  Phoneme, Diacritic, FeatureFilter, Rule, WordTransformations,
+} from '../src/lib/client/types';
+import { toggleInArray, filterFeatures, createRule } from '../src/lib/client/util';
 import '../styles/globals.css';
 
-function MyApp({ Component, pageProps }) {
-  const [allSounds, setAllSounds] = useState<Sound[]>(rawSounds);
-  const [selectedSounds, setSelectedSounds] = useState<Sound[]>([]);
-  const [neighbor, setNeighbor] = useState<Sound | null>(null);
+function MyApp({ Component, pageProps }: AppProps) {
+  const [allSounds, setAllSounds] = useState<Phoneme[]>(rawSounds);
+  const [selectedSounds, setSelectedSounds] = useState<Phoneme[]>([]);
+  const [neighbor, setNeighbor] = useState<Phoneme | null>(null);
   const [selectedDiacritics, setSelectedDiacritics] = useState<Diacritic[]>([]);
   const [allHeights, setAllHeights] = useState(rawHeights);
-  const [selectedChart, setSelectedChart] = useState<Chart | null>(null);
+  const [selectedChart, setSelectedChart] = useState<ChartDocument | null>(null);
   const [words, setWords] = useState<string[]>([]);
   const [wordTransformations, setWordTransformations] = useState<WordTransformations>({});
   const [rules, setRules] = useState<Rule[]>([createRule()]);
@@ -41,14 +44,7 @@ function MyApp({ Component, pageProps }) {
   }, [selectedChart]);
 
   return (
-    <SWRConfig
-      value={{
-        fetcher,
-        onError: (err) => {
-          console.error(err);
-        },
-      }}
-    >
+    <SWRConfig value={{ fetcher }}>
       <TableContext.Provider value={{
         allSounds,
         setAllSounds,
@@ -78,7 +74,9 @@ function MyApp({ Component, pageProps }) {
             setRules,
           }}
           >
-            <Component {...pageProps} />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
           </RulesContext.Provider>
         </HeightsContext.Provider>
       </TableContext.Provider>

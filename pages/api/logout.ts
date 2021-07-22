@@ -1,11 +1,12 @@
 import { NextApiResponse } from 'next';
 import nextConnect from 'next-connect';
-import auth from '../../src/lib/auth';
-import { CustomRequest } from '../../src/lib/types';
+import { CustomRequest } from '../../src/lib/api/apiTypes';
+import { onError } from '../../src/lib/api/asyncHandler';
+import { withAuth } from '../../src/lib/api/auth';
 
-export default nextConnect()
-  .use(auth)
-  .post(async (req: CustomRequest, res: NextApiResponse) => {
+export default nextConnect({ onError })
+  .use(withAuth)
+  .post((req: CustomRequest, res: NextApiResponse) => {
     req.session.destroy();
-    res.json({ data: { isLoggedIn: false } });
+    res.json({ isLoggedIn: false });
   });
