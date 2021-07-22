@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import useSWR from 'swr';
 
 import { RulesContext } from '../../lib/client/context';
@@ -7,7 +7,6 @@ import fetcher from '../../lib/client/fetcher';
 export default function WordSelector() {
   const { selectedChart } = useContext(RulesContext);
   const { data: words, mutate: mutateWords, error } = useSWR(() => `/api/charts/${selectedChart._id}/words`);
-  // const [savingState, setSavingState] = useState<string>('');
 
   if (!selectedChart) {
     return <p>Select a chart to save words!</p>;
@@ -27,7 +26,7 @@ export default function WordSelector() {
     return <p>Loading...</p>;
   }
 
-  const handleSaveWords = async (e) => {
+  const handleAddWord = async (e) => {
     e.preventDefault();
 
     const { value } = e.currentTarget.word;
@@ -35,11 +34,12 @@ export default function WordSelector() {
 
     if (value.length > 0 && !words.includes(value)) {
       try {
-        await mutateWords([...words, value]);
+        const newWords = [...words, value];
+        await mutateWords(newWords);
         await fetcher(`/api/charts/${selectedChart._id}/words`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ words }),
+          body: JSON.stringify({ words: newWords }),
         });
         await mutateWords();
       } catch (err) {
@@ -50,7 +50,7 @@ export default function WordSelector() {
 
   return (
     <div>
-      <form className="flex items-center gap-2" onSubmit={handleSaveWords}>
+      <form className="flex items-center gap-2" onSubmit={handleAddWord}>
         <label className="contents">
           <span>Word:</span>
           <input
@@ -67,12 +67,22 @@ export default function WordSelector() {
         {selectedChart ? selectedChart.name : 'none selected'}
         )
       </button>
+
       <ul>
         {words.map((word) => (
           <li key={word}>
             <button
               type="button"
-              onClick={() => mutateWords(words.filter((w) => w !== word))}
+              onClick={async () => {
+                const newWords = words.filter((w) => w !== word);
+                await mutateWords(newWords);
+                await fetcher(`/api/charts/${selectedChart._id}/words`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ words: newWords }),
+                });
+                await mutateWords();
+              }}
               className="hover:line-through"
             >
               {word}

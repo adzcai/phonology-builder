@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  FaHashtag, FaPlus, FaMinus, FaCreativeCommonsZero, FaWindowMaximize,
+  FaHashtag, FaPlus, FaCreativeCommonsZero, FaWindowMaximize,
 } from 'react-icons/fa';
 import { Matrix, RuleComponent } from '../../lib/client/types';
 import { createMatrix } from '../../lib/client/util';
@@ -55,6 +55,7 @@ export default function FeatureMatrix({
       <ModalButton
         direction={canInsertBoundaryLeft ? 'left-0 top-1/4' : 'left'}
         onClick={() => insertAt(index, createMatrix())}
+        key="left-add-matrix-button"
       />,
     );
   }
@@ -64,6 +65,7 @@ export default function FeatureMatrix({
       <ModalButton
         direction={canInsertBoundaryRight ? 'left-full top-1/4' : 'right'}
         onClick={() => setMatrices((prev) => [...prev, createMatrix()])}
+        key="right-add-matrix-button"
       />,
     );
   }
@@ -74,6 +76,7 @@ export default function FeatureMatrix({
         direction="left-0 top-2/3"
         size="tall"
         onClick={() => insertAt(index, { id: uuidv4(), data: 'boundary' })}
+        key="left-add-boundary-button"
       >
         <FaHashtag />
       </ModalButton>,
@@ -86,6 +89,7 @@ export default function FeatureMatrix({
         direction="left-full top-2/3"
         size="tall"
         onClick={() => insertAt(index + 1, { id: uuidv4(), data: 'boundary' })}
+        key="right-add-boundary-button"
       >
         <FaHashtag />
       </ModalButton>,
@@ -98,6 +102,7 @@ export default function FeatureMatrix({
         state="minus"
         direction="top-0 left-full"
         onClick={() => setMatrices((prev) => [...prev.slice(0, index), ...prev.slice(index + 1)])}
+        key="delete-button"
       />,
     );
   }
@@ -108,6 +113,7 @@ export default function FeatureMatrix({
         direction="bottom"
         state={typeof features === 'string' ? 'plus' : 'minus'}
         onClick={() => setFeatures(features === 'null' ? [['', null]] : 'null')}
+        key="zero-button"
       >
         {typeof features === 'string'
           ? <FaWindowMaximize />

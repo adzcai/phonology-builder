@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import Link from 'next/link';
-import useSWR from 'swr';
-import { RulesContext, useUser } from '../../lib/client/context';
-import { ChartDocument } from '../../lib/api/apiTypes';
+import { FaTrash } from 'react-icons/fa';
+import { RulesContext, useCharts, useUser } from '../../lib/client/context';
+import fetcher from '../../lib/client/fetcher';
 
 export default function UserCharts() {
-  const { user, userError } = useUser();
-  const { data: charts, error: chartsError } = useSWR<ChartDocument[]>(() => `/api/charts/${user.username}`);
+  const { user } = useUser();
+  const { charts, chartsError, mutateCharts } = useCharts(user);
   const { setSelectedChart } = useContext(RulesContext);
 
   if (chartsError) {
@@ -45,6 +45,22 @@ export default function UserCharts() {
               onClick={() => setSelectedChart(chart)}
             >
               {chart.name}
+            </button>
+            <button
+              type="button"
+              className="bg-red-300 hover:bg-red-500 rounded drop-shadow transition-all"
+              onClick={async () => {
+                try {
+                  await fetcher(`/api/charts/${user.username}/${chart.name}`, {
+                    method: 'DELETE',
+                  });
+                  mutateCharts();
+                } catch (err) {
+                  alert(err.info.message);
+                }
+              }}
+            >
+              <FaTrash />
             </button>
           </li>
         ))}

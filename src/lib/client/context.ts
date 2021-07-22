@@ -64,27 +64,35 @@ export const RulesContext = createContext<RulesContextType>({
   setRules: () => {},
 });
 
-type UserPayload = {
-  user?: { isLoggedIn: true, username: string };
-  userIsValidating: boolean;
-  userError?: Error & {
-    info: {
-      message: string;
-    };
-    status: number;
-  };
-  mutateUser: (data?: any, shouldRevalidate?: boolean) => Promise<any>;
-};
+type User = { isLoggedIn: boolean, username?: string };
 
-export function useUser(): UserPayload {
+export function useUser() {
   const {
-    data, error, isValidating, mutate,
-  } = useSWR('/api/user');
+    data, error, mutate,
+  } = useSWR<User>('/api/user');
 
   return {
     user: data,
-    userIsValidating: isValidating,
     userError: error,
     mutateUser: mutate,
+  };
+}
+
+export function useCharts(user: User) {
+  const { data, error, mutate } = useSWR<ChartDocument[]>(() => `/api/charts/${user.username}`);
+  return {
+    charts: data,
+    chartsError: error,
+    mutateCharts: mutate,
+  };
+}
+
+export function useWords(selectedChart) {
+  const { data, mutate, error } = useSWR(() => `/api/charts/${selectedChart._id}/words`);
+
+  return {
+    words: data,
+    wordsError: error,
+    mutateWords: mutate,
   };
 }

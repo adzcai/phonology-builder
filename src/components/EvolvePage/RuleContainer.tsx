@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FaHashtag, FaLongArrowAltRight } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
-import { RulesContext } from '../../lib/client/context';
+import { RulesContext, useWords } from '../../lib/client/context';
 import { Matrix } from '../../lib/client/types';
 import { createMatrix, createRule } from '../../lib/client/util';
 import MatrixList from './MatrixList';
@@ -15,7 +15,8 @@ export default function RuleContainer({
   id: React.Key;
   last: boolean;
 }) {
-  const { words, setRules } = useContext(RulesContext);
+  const { selectedChart, setRules } = useContext(RulesContext);
+  const { words } = useWords(selectedChart);
   const [src, setSrc] = useState<Matrix[]>([createMatrix()]);
   const [dst, setDst] = useState<Matrix[]>([createMatrix()]);
   const [preceding, setPreceding] = useState<Matrix[]>([]);
