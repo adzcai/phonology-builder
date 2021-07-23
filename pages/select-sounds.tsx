@@ -149,16 +149,8 @@ export default function SelectSoundsPage() {
 
       <div className="flex flex-col w-full items-center space-y-8">
         <div className="flex flex-col items-center space-y-8 w-full max-w-full lg:flex-row lg:space-y-0 lg:space-x-8">
-          {/* <div style={{ flexBasis: 'fill' }}> */}
           <ConsonantTable editable />
-          {/* </div> */}
-          {/* <div style={{ flexBasis: 'fill' }}> */}
-          <VowelTable
-            allHeights={allHeights}
-            setAllHeights={setAllHeights}
-            editable
-          />
-          {/* </div> */}
+          <VowelTable editable />
         </div>
         <DiacriticTable>
           Click a diacritic to select it, then click a sound to apply it.

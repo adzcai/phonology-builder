@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { allFeatures } from '../../assets/ipa-data';
+import { serializeFeatureValue } from '../../lib/api/serialization';
 import { Phoneme } from '../../lib/client/types';
 import {
-  countDistinctFeatures, serializeFeatureValue, sortSoundsBySimilarityTo, trueDifference,
+  countDistinctFeatures, sortSoundsBySimilarityTo, trueDifference,
 } from '../../lib/client/util';
 import TableContainer from './TableContainer';
 

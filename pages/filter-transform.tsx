@@ -11,9 +11,10 @@ import type {
 import FeatureSelector from '../src/components/FilterFeaturesPage/FeatureSelector';
 import { GlobalContext } from '../src/lib/client/context';
 import {
-  canApplyDiacriticsToFeatures, applyDiacriticsToSound, filterSounds, deserializeFeatureValue,
+  canApplyDiacriticsToFeatures, applyDiacriticsToSound, filterSounds,
   cloneSound, toggleInArray,
 } from '../src/lib/client/util';
+import { deserializeFeatureValue } from '../src/lib/api/serialization';
 
 export default function FilterFeaturesPage() {
   const [filters, setFilters] = useState<SerializedFeatureList>([]);

@@ -5,7 +5,7 @@ import VowelTable from '../src/components/IpaTable/VowelTable';
 import { GlobalContext } from '../src/lib/client/context';
 
 export default function ViewInventoryPage() {
-  const { selectedSounds, allHeights, setAllHeights } = useContext(GlobalContext);
+  const { selectedSounds } = useContext(GlobalContext);
 
   if (selectedSounds.length === 0) return <p className="text-center">Begin selecting symbols to view a display chart!</p>;
 
@@ -13,11 +13,7 @@ export default function ViewInventoryPage() {
     <>
       <ConsonantTable editable={false} />
 
-      <VowelTable
-        allHeights={allHeights}
-        setAllHeights={setAllHeights}
-        editable={false}
-      />
+      <VowelTable editable={false} />
 
       <p className="mx-auto text-center mb-8">
         Hover a feature to see its definition.
