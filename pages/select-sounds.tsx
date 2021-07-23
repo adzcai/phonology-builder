@@ -10,12 +10,12 @@ import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
 import RequireUser from '../src/components/RequireUser';
 import UserCharts from '../src/components/SelectSoundsPage/UserCharts';
-import { TableContext, HeightsContext, useUser } from '../src/lib/client/context';
+import { GlobalContext, useUser } from '../src/lib/client/context';
 import fetcher from '../src/lib/client/fetcher';
 
 function SaveChartComponent() {
   const { user } = useUser();
-  const { selectedSounds } = useContext(TableContext);
+  const { selectedSounds } = useContext(GlobalContext);
   const { data: charts, mutate: mutateCharts, error: chartsError } = useSWR(() => `/api/charts/${user.username}`);
   const handleSaveSounds = useCallback(async (e) => {
     e.preventDefault();
@@ -81,9 +81,9 @@ function SaveChartComponent() {
 
 export default function SelectSoundsPage() {
   const {
-    setAllSounds, allSounds, setSelectedSounds, setNeighbor, setSelectedDiacritics,
-  } = useContext(TableContext);
-  const { allHeights, setAllHeights } = useContext(HeightsContext);
+    allSounds, setAllSounds,
+    setSelectedSounds, setNeighbor, setSelectedDiacritics, allHeights, setAllHeights,
+  } = useContext(GlobalContext);
 
   const resetAll = useCallback(() => {
     setAllSounds(rawSounds);

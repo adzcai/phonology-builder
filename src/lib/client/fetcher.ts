@@ -50,15 +50,7 @@ type ErrorPayload = Error & {
 
 // Client side fetcher utility function.
 export default async function fetcher(url: RequestInfo, init?: RequestInit) {
-  let res = null;
-
-  try {
-    res = await fetch(url, init);
-  } catch (err) {
-    console.log(`Error fetching ${url}`, err);
-    err.info = { message: err.message };
-    throw err;
-  }
+  const res = await fetch(url, init);
 
   // if the server replies, there's always some data in json
   // if there's a network error, it will throw at the previous line
@@ -70,4 +62,12 @@ export default async function fetcher(url: RequestInfo, init?: RequestInit) {
   }
 
   return res.json();
+}
+
+export function postJson(url: RequestInfo, json: object) {
+  return fetcher(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(json),
+  });
 }

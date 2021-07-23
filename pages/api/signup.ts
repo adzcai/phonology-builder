@@ -1,12 +1,9 @@
-import nextConnect from 'next-connect';
 import { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
 import { createUser } from '../../src/lib/api/user';
-import { asyncHandler, onError } from '../../src/lib/api/middleware';
-import { withAuth } from '../../src/lib/api/auth';
+import { asyncHandler, createEndpoint } from '../../src/lib/api/middleware';
 
-export default nextConnect({ onError })
-  .use(withAuth)
+export default createEndpoint()
   .post(asyncHandler(async (req: NextApiRequest, res: NextApiResponse) => {
     const { username, password, confirmPassword } = req.body;
 

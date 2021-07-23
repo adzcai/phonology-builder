@@ -1,21 +1,24 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+  useState, useEffect, useContext, Dispatch, SetStateAction,
+} from 'react';
 import { FaHashtag, FaLongArrowAltRight } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
-import { RulesContext, useWords } from '../../lib/client/context';
-import { Matrix } from '../../lib/client/types';
+import { GlobalContext, useWords } from '../../lib/client/context';
+import { Matrix, Rule } from '../../lib/client/types';
 import { createMatrix, createRule } from '../../lib/client/util';
 import MatrixList from './MatrixList';
 import ModalButton from './ModalButton';
 import PreviewEvolution from './PreviewEvolution';
 
 export default function RuleContainer({
-  index, id, last,
+  index, id, last, setRules,
 }: {
   index: number;
   id: React.Key;
   last: boolean;
+  setRules: Dispatch<SetStateAction<Rule[]>>;
 }) {
-  const { selectedChart, setRules } = useContext(RulesContext);
+  const { selectedChart } = useContext(GlobalContext);
   const { words } = useWords(selectedChart);
   const [src, setSrc] = useState<Matrix[]>([createMatrix()]);
   const [dst, setDst] = useState<Matrix[]>([createMatrix()]);

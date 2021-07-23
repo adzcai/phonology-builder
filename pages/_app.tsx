@@ -6,12 +6,12 @@ import {
 } from '../src/assets/ipa-data';
 import Layout from '../src/components/Layout';
 import type { ChartDocument } from '../src/lib/api/apiTypes';
-import { TableContext, HeightsContext, RulesContext } from '../src/lib/client/context';
+import { GlobalContext } from '../src/lib/client/context';
 import fetcher from '../src/lib/client/fetcher';
 import {
-  Phoneme, Diacritic, FeatureFilter, Rule, WordTransformations,
+  Phoneme, Diacritic, FeatureFilter,
 } from '../src/lib/client/types';
-import { toggleInArray, filterFeatures, createRule } from '../src/lib/client/util';
+import { toggleInArray, filterFeatures } from '../src/lib/client/util';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -21,9 +21,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [selectedDiacritics, setSelectedDiacritics] = useState<Diacritic[]>([]);
   const [allHeights, setAllHeights] = useState(rawHeights);
   const [selectedChart, setSelectedChart] = useState<ChartDocument | null>(null);
-  const [words, setWords] = useState<string[]>([]);
-  const [wordTransformations, setWordTransformations] = useState<WordTransformations>({});
-  const [rules, setRules] = useState<Rule[]>([createRule()]);
 
   const handleDiacriticClick = (diacritic) => setSelectedDiacritics(
     toggleInArray(selectedDiacritics, diacritic),
@@ -39,47 +36,38 @@ function MyApp({ Component, pageProps }: AppProps) {
     if (selectedChart !== null) {
       console.log({ selectedChart });
       setSelectedSounds(selectedChart.sounds);
-      setWords(selectedChart.words);
     }
   }, [selectedChart]);
 
   return (
     <SWRConfig value={{ fetcher }}>
-      <TableContext.Provider value={{
+      <GlobalContext.Provider value={{
         allSounds,
         setAllSounds,
+
         selectedSounds,
         setSelectedSounds,
+
+        allHeights,
+        setAllHeights,
+
         neighbor,
         setNeighbor,
+
         selectedDiacritics,
         setSelectedDiacritics,
+
+        selectedChart,
+        setSelectedChart,
+
         handleDiacriticClick,
         deleteFeatureSet,
       }}
       >
-        <HeightsContext.Provider value={{
-          allHeights,
-          setAllHeights,
-        }}
-        >
-          <RulesContext.Provider value={{
-            selectedChart,
-            setSelectedChart,
-            words,
-            setWords,
-            wordTransformations,
-            setWordTransformations,
-            rules,
-            setRules,
-          }}
-          >
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </RulesContext.Provider>
-        </HeightsContext.Provider>
-      </TableContext.Provider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </GlobalContext.Provider>
     </SWRConfig>
   );
 }

@@ -1,9 +1,7 @@
-import nextConnect from 'next-connect';
 import { NextApiResponse } from 'next';
 import passport from '../../src/lib/api/passport';
 import { CustomRequest } from '../../src/lib/api/apiTypes';
-import { withAuth } from '../../src/lib/api/auth';
-import { onError } from '../../src/lib/api/middleware';
+import { createEndpoint } from '../../src/lib/api/middleware';
 
 function authenticate(method, req, res) {
   return new Promise((resolve, reject) => {
@@ -17,8 +15,7 @@ function authenticate(method, req, res) {
   });
 }
 
-export default nextConnect({ onError })
-  .use(withAuth)
+export default createEndpoint()
   .post(async (req: CustomRequest, res: NextApiResponse) => {
     try {
       // hacky typescript workaround, user is the second argument to `done` in /src/lib/passport.ts

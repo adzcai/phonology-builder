@@ -19,10 +19,7 @@ export type FeatureFilter = {
   features: Condition;
 };
 
-export type Phoneme = {
-  symbol: string;
-  features: Features
-};
+export type User = { isLoggedIn: boolean, username?: string };
 
 export type Manner = FeatureFilter;
 
@@ -40,17 +37,18 @@ export type Diacritic = {
   createNewRow: boolean;
 };
 
-export type SoundHook = Dispatch<SetStateAction<Phoneme[]>>;
-
-export type EvolutionRule = {
-  src: SerializedFeatureList[],
-  dst: SerializedFeatureList[],
-  preceding: SerializedFeatureList[],
-  following: SerializedFeatureList[]
+export type Phoneme = {
+  symbol: string;
+  features: Features
 };
 
+export type SoundHook = Dispatch<SetStateAction<Phoneme[]>>;
+
 export type Evolution = {
-  rules: EvolutionRule[]
+  _id: string;
+  from: string;
+  to: string;
+  rules: Rule[];
 };
 
 export type SerializedFeatureValue = '+' | '-' | '0';
@@ -60,18 +58,14 @@ export type SerializedFeatureList = [keyof Features | '', SerializedFeatureValue
 export type RuleComponent = SerializedFeatureList | 'null' | 'boundary';
 
 export type Matrix = {
+  id: string;
   data: RuleComponent;
-  id: React.Key;
 };
 
 export type Rule = {
+  id: string;
   src: Matrix[];
   dst: Matrix[];
-  preceding: Matrix[];
-  following: Matrix[];
-  id: React.Key;
-};
-
-export type WordTransformations = {
-  [key: string]: string[];
+  preceding?: Matrix[];
+  following?: Matrix[];
 };

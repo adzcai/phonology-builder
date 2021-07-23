@@ -1,7 +1,7 @@
 import { FC, useContext } from 'react';
 
 import { allFeatures } from '../../assets/ipa-data';
-import { TableContext } from '../../lib/client/context';
+import { GlobalContext } from '../../lib/client/context';
 import { Diacritic, Phoneme } from '../../lib/client/types';
 import { canApplyDiacriticsToFeatures, applyDiacriticsToSound } from '../../lib/client/util';
 
@@ -32,7 +32,7 @@ export default function TableCell({
     selectedSounds, setSelectedSounds,
     neighbor, setNeighbor,
     selectedDiacritics, setSelectedDiacritics,
-  } = useContext(TableContext);
+  } = useContext(GlobalContext);
 
   const baseStyles = 'px-1 lg:py-1 w-8 focus:outline-none font-serif text-center';
   let SoundContainer: FC<SoundContainerProps>;

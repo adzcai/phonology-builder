@@ -1,11 +1,8 @@
 import { NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
 import { CustomRequest } from '../../src/lib/api/apiTypes';
-import { onError } from '../../src/lib/api/middleware';
-import { withAuth } from '../../src/lib/api/auth';
+import { createEndpoint } from '../../src/lib/api/middleware';
 
-export default nextConnect({ onError })
-  .use(withAuth)
+export default createEndpoint()
   .post((req: CustomRequest, res: NextApiResponse) => {
     req.session.destroy();
     res.json({ isLoggedIn: false });

@@ -1,16 +1,13 @@
 import { NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
-import { authRequired } from '../../../../src/lib/api/auth';
 import { ChartModel } from '../../../../src/models';
-import { asyncHandler, onError } from '../../../../src/lib/api/middleware';
+import { asyncHandler, createEndpoint } from '../../../../src/lib/api/middleware';
 import { CustomRequest } from '../../../../src/lib/api/apiTypes';
 import { Phoneme } from '../../../../src/lib/client/types';
-import { deserializeFeatures, serializeFeatures } from '../../../../src/lib/client/util';
+import { deserializeFeatures, serializeFeatures } from '../../../../src/lib/api/serialization';
 
-export default nextConnect({ onError })
-  .use(authRequired)
+export default createEndpoint()
   .get(asyncHandler(async (req: CustomRequest, res: NextApiResponse) => {
-    const charts = await ChartModel.find({ username: req.user.username }).lean().exec();
+    const charts = await ChartModel.find({ username: req.query.username as string }).lean().exec();
     const rtn = charts.map((chart) => ({
       ...chart,
       sounds: chart.sounds.map(({ symbol, features }) => ({

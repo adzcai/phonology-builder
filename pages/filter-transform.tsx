@@ -9,7 +9,7 @@ import {
   Diacritic, Features, Height, SerializedFeatureList,
 } from '../src/lib/client/types';
 import FeatureSelector from '../src/components/FilterFeaturesPage/FeatureSelector';
-import { RulesContext, TableContext } from '../src/lib/client/context';
+import { GlobalContext } from '../src/lib/client/context';
 import {
   canApplyDiacriticsToFeatures, applyDiacriticsToSound, filterSounds, deserializeFeatureValue,
   cloneSound, toggleInArray,
@@ -60,29 +60,23 @@ export default function FilterFeaturesPage() {
       <FeatureSelector features={filters} setFeatures={setFilters} buttonLabel="Add new filter condition" groupName="filter-condition" />
       <FeatureSelector features={soundChanges} setFeatures={setSoundChanges} buttonLabel="Add new sound change" groupName="sound-change" />
 
-      <TableContext.Provider value={{
+      <GlobalContext.Provider value={{
         selectedDiacritics,
         setSelectedDiacritics,
         selectedSounds,
         handleDiacriticClick,
+        selectedChart,
+        setSelectedChart,
+        allHeights,
+        setAllHeights,
       }}
       >
-        <RulesContext.Provider value={{
-          selectedChart,
-          setSelectedChart,
-          words: [],
-          setWords: () => {},
-          rules: [],
-          setRules: () => {},
-        }}
-        >
-          <DiacriticTable>
-            Click diacritics to toggle whether symbols with them appear.
-          </DiacriticTable>
-          <ConsonantTable editable={false} />
-          <VowelTable allHeights={allHeights} setAllHeights={setAllHeights} editable={false} />
-        </RulesContext.Provider>
-      </TableContext.Provider>
+        <DiacriticTable>
+          Click diacritics to toggle whether symbols with them appear.
+        </DiacriticTable>
+        <ConsonantTable editable={false} />
+        <VowelTable editable={false} />
+      </GlobalContext.Provider>
     </>
   );
 }

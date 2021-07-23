@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { allManners as rawManners, allPlaces } from '../../assets/ipa-data';
-import { TableContext } from '../../lib/client/context';
+import { GlobalContext } from '../../lib/client/context';
 import { Diacritic } from '../../lib/client/types';
 import { filterNonEmptyFeatureSets, filterSounds } from '../../lib/client/util';
 import TableCell from './TableCell';
 
 export default function ConsonantTable({ editable }: { editable: boolean }) {
-  const { allSounds, selectedSounds, deleteFeatureSet } = useContext(TableContext);
+  const { allSounds, selectedSounds, deleteFeatureSet } = useContext(GlobalContext);
   const [allManners, setAllManners] = useState(rawManners);
 
   const sounds = editable ? allSounds : selectedSounds;

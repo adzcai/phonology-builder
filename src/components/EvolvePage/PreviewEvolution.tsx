@@ -1,11 +1,12 @@
 import React, { ReactNode } from 'react';
 import { FaLongArrowAltRight } from 'react-icons/fa';
 import { allDiacritics, allSounds } from '../../assets/ipa-data';
+import { featureListToFeatures } from '../../lib/api/serialization';
 import {
   Features, Matrix, SerializedFeatureList,
 } from '../../lib/client/types';
 import {
-  featureListToFeatures, findIndexOfMatrices, filterSounds, sortSoundsBySimilarityTo,
+  findIndexOfMatrices, filterSounds, sortSoundsBySimilarityTo,
   canApplyDiacriticsToFeatures,
   replaceConfusables,
 } from '../../lib/client/util';
@@ -148,6 +149,8 @@ type Props = {
 export default function PreviewEvolution({
   words, src, dst, preceding, following,
 }: Props) {
+  if (!words) return <p>Select some words to begin!</p>;
+
   return (
     <ul>
       {words.map((word) => {

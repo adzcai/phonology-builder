@@ -1,23 +1,19 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback, useContext,
-} from 'react';
+import { useCallback, useContext } from 'react';
 import { allFrontnesses } from '../../assets/ipa-data';
-import { TableContext } from '../../lib/client/context';
-import { Height, Diacritic } from '../../lib/client/types';
+import { GlobalContext } from '../../lib/client/context';
+import { Diacritic } from '../../lib/client/types';
 import { filterNonEmptyFeatureSets, filterSounds } from '../../lib/client/util';
 import TableCell from './TableCell';
 import styles from './VowelTable.module.css';
 
 type Props = {
   editable: boolean,
-  allHeights: Height[],
-  setAllHeights: Dispatch<SetStateAction<Height[]>>
 };
 
-export default function VowelTable({ editable, allHeights, setAllHeights }: Props) {
-  const { allSounds, selectedSounds, deleteFeatureSet } = useContext(TableContext);
+export default function VowelTable({ editable }: Props) {
+  const {
+    allSounds, selectedSounds, deleteFeatureSet, allHeights, setAllHeights,
+  } = useContext(GlobalContext);
 
   const sounds = editable ? allSounds : selectedSounds;
 

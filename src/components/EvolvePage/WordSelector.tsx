@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import useSWR from 'swr';
 
-import { RulesContext } from '../../lib/client/context';
-import fetcher from '../../lib/client/fetcher';
+import { GlobalContext } from '../../lib/client/context';
+import fetcher, { postJson } from '../../lib/client/fetcher';
 
 export default function WordSelector() {
-  const { selectedChart } = useContext(RulesContext);
+  const { selectedChart } = useContext(GlobalContext);
   const { data: words, mutate: mutateWords, error } = useSWR(() => `/api/charts/${selectedChart._id}/words`);
 
   if (!selectedChart) {
@@ -49,7 +49,7 @@ export default function WordSelector() {
   };
 
   return (
-    <div>
+    <div className="flex flex-col gap-2 bg-green-100 rounded-xl shadow-xl p-4">
       <form className="flex items-center gap-2" onSubmit={handleAddWord}>
         <label className="contents">
           <span>Word:</span>
@@ -62,13 +62,8 @@ export default function WordSelector() {
         </label>
         <button type="submit" className="px-4 py-2 rounded bg-blue-300 hover:bg-blue-500 transition-colors focus:outline-none">Add</button>
       </form>
-      <button type="button" className="hover-blue px-4 py-2 rounded">
-        Save words to current chart (
-        {selectedChart ? selectedChart.name : 'none selected'}
-        )
-      </button>
 
-      <ul>
+      <ul className="flex flex-wrap gap-2">
         {words.map((word) => (
           <li key={word}>
             <button
@@ -76,20 +71,22 @@ export default function WordSelector() {
               onClick={async () => {
                 const newWords = words.filter((w) => w !== word);
                 await mutateWords(newWords);
-                await fetcher(`/api/charts/${selectedChart._id}/words`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ words: newWords }),
-                });
+                await postJson(`/api/charts/${selectedChart._id}/words`, { words: newWords });
                 await mutateWords();
               }}
-              className="hover:line-through"
+              className="hover:line-through bg-blue-300 rounded hover:bg-red-300 transition-colors px-2 py-1 focus:outline-none"
             >
               {word}
             </button>
           </li>
         ))}
       </ul>
+
+      <button type="button" className="hover-blue px-4 py-2 rounded self-end">
+        Save words to current chart (
+        {selectedChart ? selectedChart.name : 'none selected'}
+        )
+      </button>
     </div>
   );
 }

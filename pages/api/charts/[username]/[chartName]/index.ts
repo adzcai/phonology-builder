@@ -1,9 +1,14 @@
-import nextConnect from 'next-connect';
-import { asyncHandler, onError } from '../../../../../src/lib/api/middleware';
-import { authRequired } from '../../../../../src/lib/api/auth';
+import { asyncHandler, authRequired, createEndpoint } from '../../../../../src/lib/api/middleware';
 import { ChartModel } from '../../../../../src/models';
 
-export default nextConnect({ onError })
+export default createEndpoint()
+  // return this chart
+  .get(asyncHandler(async (req, res) => {
+    const { username, chartName } = req.query;
+    const chart = await ChartModel.findById(`${username}/${chartName}`).lean().exec();
+    res.json(JSON.stringify(chart));
+  }))
+  // delete this chart
   .use(authRequired)
   .delete(asyncHandler(async (req, res) => {
     const { chartName } = req.query;
