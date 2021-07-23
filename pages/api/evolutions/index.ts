@@ -12,5 +12,6 @@ export default createEndpoint()
     }
     const evolution = await EvolutionModel.create({ from, rules, to });
     await evolution.save();
-    res.json(deserializeEvolution(evolution));
+
+    res.json(JSON.stringify(deserializeEvolution(evolution)));
   }));

@@ -1,8 +1,7 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import useSWR from 'swr';
-import { ChartDocument } from '../api/apiTypes';
-import {
-  Phoneme, SoundHook, Diacritic, FeatureFilter, Height, User,
+import type {
+  Phoneme, SoundHook, Diacritic, FeatureFilter, Height, User, Chart,
 } from './types';
 
 // all of the optional fields are for the FilterFeature component to work properly
@@ -19,8 +18,8 @@ type GlobalContextType = {
   selectedDiacritics: Diacritic[] | null;
   setSelectedDiacritics: Dispatch<SetStateAction<Diacritic[]>>;
 
-  selectedChart: ChartDocument;
-  setSelectedChart: Dispatch<SetStateAction<ChartDocument>>;
+  selectedChart: Chart;
+  setSelectedChart: Dispatch<SetStateAction<Chart>>;
 
   allHeights: Height[];
   setAllHeights: Dispatch<SetStateAction<FeatureFilter[]>>;
@@ -65,7 +64,7 @@ export function useUser() {
 }
 
 export function useCharts(user: User) {
-  const { data, error, mutate } = useSWR<ChartDocument[]>(() => `/api/charts/${user.username}`);
+  const { data, error, mutate } = useSWR<Chart[]>(() => `/api/charts/${user.username}`);
   return {
     charts: data,
     chartsError: error,

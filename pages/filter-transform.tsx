@@ -5,7 +5,7 @@ import {
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
 import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
-import {
+import type {
   Diacritic, Features, Height, SerializedFeatureList,
 } from '../src/lib/client/types';
 import FeatureSelector from '../src/components/FilterFeaturesPage/FeatureSelector';

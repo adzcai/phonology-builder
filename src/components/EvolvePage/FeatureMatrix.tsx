@@ -17,8 +17,7 @@ type Props = {
   color: string;
   isLeftmostFeatureMatrix: boolean;
   isRightmost: boolean;
-  deletable: boolean;
-  id: React.Key;
+  id: string;
   allowWordBoundary: false | 'left' | 'right';
   zeroable?: boolean;
 };
@@ -26,7 +25,7 @@ type Props = {
 // child of MatrixList
 export default function FeatureMatrix({
   setMatrices, matrix, index, color, isLeftmostFeatureMatrix, isRightmost,
-  id, deletable, allowWordBoundary, zeroable = false,
+  id, allowWordBoundary, zeroable = false,
 }: Props) {
   const [features, setFeatures] = useState<RuleComponent>(matrix);
 
@@ -96,16 +95,14 @@ export default function FeatureMatrix({
     );
   }
 
-  if (deletable) {
-    buttons.push(
-      <ModalButton
-        state="minus"
-        direction="top-0 left-full"
-        onClick={() => setMatrices((prev) => [...prev.slice(0, index), ...prev.slice(index + 1)])}
-        key="delete-button"
-      />,
-    );
-  }
+  buttons.push(
+    <ModalButton
+      state="minus"
+      direction="top-0 left-full"
+      onClick={() => setMatrices((prev) => [...prev.slice(0, index), ...prev.slice(index + 1)])}
+      key="delete-button"
+    />,
+  );
 
   if (zeroable) {
     buttons.push(

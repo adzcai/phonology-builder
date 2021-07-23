@@ -16,17 +16,21 @@ export default function EvolvePage() {
   const { selectedChart } = useContext(GlobalContext);
   const [rules, setRules] = useState<Rule[]>(null);
 
-  useEffect(() => {
-    if (selectedChart?._id) {
-      fetcher(`/api/charts/${selectedChart._id}/evolutions`)
-        .then((data) => setEvolutions(data))
-        .catch((err) => alert(err));
+  const mutateEvolutions = useCallback(async () => {
+    try {
+      const data = await fetcher(`/api/charts/${selectedChart._id}/evolutions`);
+      setEvolutions(data);
+    } catch (err) {
+      alert(err);
     }
+  }, [selectedChart, setEvolutions]);
+
+  useEffect(() => {
+    if (selectedChart?._id) mutateEvolutions();
   }, [selectedChart]);
 
   useEffect(() => {
     if (selectedEvolution) {
-      console.log('rules', selectedEvolution.rules);
       setRules(selectedEvolution.rules);
     }
   }, [selectedEvolution]);
@@ -38,16 +42,17 @@ export default function EvolvePage() {
       {selectedChart
       && (
       <div className="container">
-        <nav className="container flex">
+        <nav className="container flex flex-wrap">
           <ul className="contents">
             {evolutions && evolutions.map((evolution, i) => (
               <li key={evolution._id}>
                 <button
                   type="button"
                   onClick={() => setSelectedEvolution(evolution)}
-                  className="hover-blue rounded-t px-4 py-2"
+                  className={`hover:bg-blue-500 w-28 shadow rounded-t px-4 py-2 ${selectedEvolution?._id === evolution._id ? 'bg-indigo-400' : 'bg-blue-300'}`}
                 >
-                  Evolution #
+                  Evolution
+                  {' '}
                   {i}
                 </button>
               </li>
@@ -56,7 +61,7 @@ export default function EvolvePage() {
           <button
             type="button"
             onClick={() => postJson('/api/evolutions', { from: selectedChart._id })
-              .then((data) => setEvolutions(data))
+              .then(mutateEvolutions)
               .catch((err) => alert(`error posting evolutions: ${err}`))}
             className="bg-green-300 hover:bg-green-500 transition-colors shadow px-4 py-2 rounded-t"
           >
@@ -76,11 +81,11 @@ export default function EvolvePage() {
                   Create new rule
                 </button>
               </>
-            ) : rules.map(({ id }, i) => (
+            ) : rules.map((rule, i) => (
               <RuleContainer
                 index={i}
-                key={id}
-                id={id}
+                key={rule.id}
+                rule={rule}
                 last={rules.length === 1}
                 setRules={setRules}
               />

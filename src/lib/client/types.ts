@@ -69,3 +69,11 @@ export type Rule = {
   preceding?: Matrix[];
   following?: Matrix[];
 };
+
+export type Chart = {
+  _id: string;
+  username: string;
+  name: string;
+  sounds: Phoneme[];
+  words: string[];
+};

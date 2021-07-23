@@ -5,11 +5,10 @@ import {
   allSounds as rawSounds, allHeights as rawHeights,
 } from '../src/assets/ipa-data';
 import Layout from '../src/components/Layout';
-import type { ChartDocument } from '../src/lib/api/apiTypes';
 import { GlobalContext } from '../src/lib/client/context';
 import fetcher from '../src/lib/client/fetcher';
-import {
-  Phoneme, Diacritic, FeatureFilter,
+import type {
+  Phoneme, Diacritic, FeatureFilter, Chart,
 } from '../src/lib/client/types';
 import { toggleInArray, filterFeatures } from '../src/lib/client/util';
 import '../styles/globals.css';
@@ -20,7 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [neighbor, setNeighbor] = useState<Phoneme | null>(null);
   const [selectedDiacritics, setSelectedDiacritics] = useState<Diacritic[]>([]);
   const [allHeights, setAllHeights] = useState(rawHeights);
-  const [selectedChart, setSelectedChart] = useState<ChartDocument | null>(null);
+  const [selectedChart, setSelectedChart] = useState<Chart>(null);
 
   const handleDiacriticClick = (diacritic) => setSelectedDiacritics(
     toggleInArray(selectedDiacritics, diacritic),
@@ -34,7 +33,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     if (selectedChart !== null) {
-      console.log({ selectedChart });
       setSelectedSounds(selectedChart.sounds);
     }
   }, [selectedChart]);
