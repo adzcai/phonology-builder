@@ -1,12 +1,12 @@
 import { PropsWithChildren, useContext } from 'react';
 import { allDiacritics } from '../../assets/ipa-data';
-import { TableContext } from '../../lib/context';
+import { GlobalContext } from '../../lib/client/context';
 
 // This table will only exist if the parent IpaTable is editable
 export default function DiacriticTable({ children }: PropsWithChildren<{}>) {
   const {
     selectedDiacritics, handleDiacriticClick,
-  } = useContext(TableContext);
+  } = useContext(GlobalContext);
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full space-y-8">

@@ -5,16 +5,16 @@ import {
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
 import DiacriticTable from '../src/components/IpaTable/DiacriticTable';
-import {
+import type {
   Diacritic, Features, Height, SerializedFeatureList,
-} from '../src/lib/types';
-import Layout from '../src/components/Layout';
+} from '../src/lib/client/types';
 import FeatureSelector from '../src/components/FilterFeaturesPage/FeatureSelector';
-import { TableContext } from '../src/lib/context';
+import { GlobalContext } from '../src/lib/client/context';
 import {
-  canApplyDiacriticsToFeatures, applyDiacriticsToSound, filterSounds, deserializeFeatureValue,
+  canApplyDiacriticsToFeatures, applyDiacriticsToSound, filterSounds,
   cloneSound, toggleInArray,
-} from '../src/lib/util';
+} from '../src/lib/client/util';
+import { deserializeFeatureValue } from '../src/lib/api/serialization';
 
 export default function FilterFeaturesPage() {
   const [filters, setFilters] = useState<SerializedFeatureList>([]);
@@ -57,25 +57,27 @@ export default function FilterFeaturesPage() {
   );
 
   return (
-    <Layout>
+    <>
       <FeatureSelector features={filters} setFeatures={setFilters} buttonLabel="Add new filter condition" groupName="filter-condition" />
       <FeatureSelector features={soundChanges} setFeatures={setSoundChanges} buttonLabel="Add new sound change" groupName="sound-change" />
 
-      <TableContext.Provider value={{
+      <GlobalContext.Provider value={{
         selectedDiacritics,
         setSelectedDiacritics,
         selectedSounds,
         handleDiacriticClick,
         selectedChart,
         setSelectedChart,
+        allHeights,
+        setAllHeights,
       }}
       >
         <DiacriticTable>
           Click diacritics to toggle whether symbols with them appear.
         </DiacriticTable>
         <ConsonantTable editable={false} />
-        <VowelTable allHeights={allHeights} setAllHeights={setAllHeights} editable={false} />
-      </TableContext.Provider>
-    </Layout>
+        <VowelTable editable={false} />
+      </GlobalContext.Provider>
+    </>
   );
 }

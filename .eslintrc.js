@@ -15,6 +15,7 @@ module.exports = {
     'consistent-return': 'off',
     'no-plusplus': 'off',
     'no-continue': 'off',
+    'no-underscore-dangle': 'off',
     'jsx-a11y/label-has-associated-control': [
       'error',
       { required: { some: ['nesting', 'id'] } },

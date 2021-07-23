@@ -1,23 +1,25 @@
 import { useState, useCallback, useEffect } from 'react';
 import { SWRConfig } from 'swr';
+import type { AppProps } from 'next/app';
 import {
   allSounds as rawSounds, allHeights as rawHeights,
 } from '../src/assets/ipa-data';
-import { TableContext, HeightsContext } from '../src/lib/context';
-import fetch from '../src/lib/fetchJson';
-import {
-  Sound, Diacritic, FeatureFilter, Chart,
-} from '../src/lib/types';
-import { toggleInArray, filterFeatures } from '../src/lib/util';
+import Layout from '../src/components/Layout';
+import { GlobalContext } from '../src/lib/client/context';
+import fetcher from '../src/lib/client/fetcher';
+import type {
+  Phoneme, Diacritic, FeatureFilter, Chart,
+} from '../src/lib/client/types';
+import { toggleInArray, filterFeatures } from '../src/lib/client/util';
 import '../styles/globals.css';
 
-function MyApp({ Component, pageProps }) {
-  const [allSounds, setAllSounds] = useState<Sound[]>(rawSounds);
-  const [selectedSounds, setSelectedSounds] = useState<Sound[]>([]);
-  const [neighbor, setNeighbor] = useState<Sound | null>(null);
+function MyApp({ Component, pageProps }: AppProps) {
+  const [allSounds, setAllSounds] = useState<Phoneme[]>(rawSounds);
+  const [selectedSounds, setSelectedSounds] = useState<Phoneme[]>([]);
+  const [neighbor, setNeighbor] = useState<Phoneme | null>(null);
   const [selectedDiacritics, setSelectedDiacritics] = useState<Diacritic[]>([]);
   const [allHeights, setAllHeights] = useState(rawHeights);
-  const [selectedChart, setSelectedChart] = useState<Chart | null>(null);
+  const [selectedChart, setSelectedChart] = useState<Chart>(null);
 
   const handleDiacriticClick = (diacritic) => setSelectedDiacritics(
     toggleInArray(selectedDiacritics, diacritic),
@@ -30,41 +32,40 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
   useEffect(() => {
-    if (selectedChart !== null) setSelectedSounds(selectedChart.sounds);
+    if (selectedChart !== null) {
+      setSelectedSounds(selectedChart.sounds);
+    }
   }, [selectedChart]);
 
   return (
-    <SWRConfig
-      value={{
-        fetcher: fetch,
-        onError: (err) => {
-          console.error(err);
-        },
-      }}
-    >
-      <TableContext.Provider value={{
+    <SWRConfig value={{ fetcher }}>
+      <GlobalContext.Provider value={{
         allSounds,
         setAllSounds,
+
         selectedSounds,
         setSelectedSounds,
+
+        allHeights,
+        setAllHeights,
+
         neighbor,
         setNeighbor,
+
         selectedDiacritics,
         setSelectedDiacritics,
-        handleDiacriticClick,
-        deleteFeatureSet,
+
         selectedChart,
         setSelectedChart,
+
+        handleDiacriticClick,
+        deleteFeatureSet,
       }}
       >
-        <HeightsContext.Provider value={{
-          allHeights,
-          setAllHeights,
-        }}
-        >
+        <Layout>
           <Component {...pageProps} />
-        </HeightsContext.Provider>
-      </TableContext.Provider>
+        </Layout>
+      </GlobalContext.Provider>
     </SWRConfig>
   );
 }

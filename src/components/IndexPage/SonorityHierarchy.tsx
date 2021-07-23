@@ -33,44 +33,42 @@ function SonorityHierarchy() {
           ))}
         </tbody>
       </TableContainer>
-      <div className="mx-auto text-center p-4 max-w-lg w-full md:w-max bg-pink-300 rounded-2xl mt-8">
-        <details>
-          <summary className="focus:outline-none cursor-pointer">Explanation</summary>
-          <ul>
-            <li>
-              <strong>vowels</strong>
-              {' '}
-              are [+syllabic];
-            </li>
-            <li>
-              <strong>glides</strong>
-              {' '}
-              like [j] and [ɹ] are [-syllabic, -consonantal];
-            </li>
-            <li>
-              <strong>liquids</strong>
-              {' '}
-              like [r] and [l] are [+consonantal], [+approximant];
-            </li>
-            <li>
-              <strong>nasals</strong>
-              {' '}
-              like [m] and [n] are [-approximant, +sonorant];
-            </li>
-            <li>
-              <strong>obstruents</strong>
-              {' '}
-              (stops, fricatives, and affricates) are [-sonorant].
-            </li>
-          </ul>
-          <p>
-            You can experiment with these using the
+      <h3 className="text-lg font-bold">Explanation</h3>
+      <div className="container text-center">
+        <ul>
+          <li>
+            <strong>vowels</strong>
             {' '}
-            <Link href="/filter-sounds"><a href="/filter-sounds" className="underline">filter sounds by feature</a></Link>
+            are [+syllabic];
+          </li>
+          <li>
+            <strong>glides</strong>
             {' '}
-            utility.
-          </p>
-        </details>
+            like [j] and [ɹ] are [-syllabic, -consonantal];
+          </li>
+          <li>
+            <strong>liquids</strong>
+            {' '}
+            like [r] and [l] are [+consonantal], [+approximant];
+          </li>
+          <li>
+            <strong>nasals</strong>
+            {' '}
+            like [m] and [n] are [-approximant, +sonorant];
+          </li>
+          <li>
+            <strong>obstruents</strong>
+            {' '}
+            (stops, fricatives, and affricates) are [-sonorant].
+          </li>
+        </ul>
+        <p>
+          You can experiment with these using the
+          {' '}
+          <Link href="/filter-sounds"><a href="/filter-sounds" className="underline">filter sounds by feature</a></Link>
+          {' '}
+          utility.
+        </p>
       </div>
     </>
   );

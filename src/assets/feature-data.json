@@ -311,6 +311,7 @@
       "manner",
       "see sonority hierarchy; includes frication (hissing) noise"
     ],
+
     ["nasal", "manner", "air escapes through the nose"],
     ["tap", "manner", "motion where one articulator is thrown against another"],
     ["trill", "manner", "vibration between the active and passive articulator"],
@@ -330,7 +331,6 @@
     ["labial", "place", "articulated with the lips"],
     ["round", "place", "rounded lips"],
     ["labiodental", "place", "touching lower lip to upper teeth"],
-
     ["coronal", "place", "articulated with the tip/blade of the tongue"],
     ["anterior", "place", "at the alveolar ridge or forward"],
     [

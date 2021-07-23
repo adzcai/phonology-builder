@@ -1,33 +1,92 @@
 import React, {
-  Dispatch, SetStateAction, useState, useEffect,
+  useState, useEffect, useContext, Dispatch, SetStateAction,
 } from 'react';
-import { FaLongArrowAltRight, FaMinus } from 'react-icons/fa';
-import { Matrix, Rule } from '../../lib/types';
-import { createMatrix, createRule } from '../../lib/util';
+import { FaLongArrowAltRight } from 'react-icons/fa';
+import { GlobalContext, useWords } from '../../lib/client/context';
+import type { Matrix, Rule } from '../../lib/client/types';
+import { createMatrix, createRule, insertAt } from '../../lib/client/util';
 import MatrixList from './MatrixList';
 import ModalButton from './ModalButton';
 import PreviewEvolution from './PreviewEvolution';
 
-export default function RuleContainer({
-  setRules, index, words, id, last,
-}: {
-  setRules: Dispatch<SetStateAction<Rule[]>>;
+type RuleEnvironmentProps = {
+  preceding: Matrix[];
+  setPreceding: Dispatch<SetStateAction<Matrix[]>>;
+  following: Matrix[];
+  setFollowing: Dispatch<SetStateAction<Matrix[]>>;
+};
+
+function RuleEnvironment({
+  preceding, setPreceding, following, setFollowing,
+}: RuleEnvironmentProps) {
+  const buttons = [];
+
+  if (preceding.length === 1 && preceding[0].data === 'boundary') {
+    buttons.push(
+      <ModalButton
+        key="add-preceding-matrix"
+        direction="left"
+        onClick={() => setPreceding([...preceding, createMatrix()])}
+      />,
+    );
+  }
+
+  if (following.length === 1 && following[0].data === 'boundary') {
+    buttons.push(
+      <ModalButton
+        key="add-following-matrix"
+        direction="right"
+        onClick={() => setFollowing([createMatrix(), ...following])}
+      />,
+    );
+  }
+
+  return (
+    <>
+      <span className="text-6xl font-extrabold mx-2">/</span>
+      <MatrixList
+        color="bg-indigo-300"
+        matrices={preceding}
+        setMatrices={setPreceding}
+        allowWordBoundary="left"
+      />
+      <div className="relative">
+        <span className="text-6xl font-extrabold bg-white p-2 rounded">__</span>
+        {buttons}
+      </div>
+      <MatrixList
+        color="bg-indigo-300"
+        matrices={following}
+        setMatrices={setFollowing}
+        allowWordBoundary="right"
+      />
+    </>
+  );
+}
+
+type Props = {
+  rule: Rule;
   index: number;
-  words: string[];
-  id: React.Key;
   last: boolean;
-}) {
-  const [src, setSrc] = useState<Matrix[]>([createMatrix()]);
-  const [dst, setDst] = useState<Matrix[]>([createMatrix()]);
-  const [preceding, setPreceding] = useState<Matrix[]>([]);
-  const [following, setFollowing] = useState<Matrix[]>([]);
+  setRules: Dispatch<SetStateAction<Rule[]>>;
+};
+
+export default function RuleContainer({
+  index, last, setRules, rule,
+}: Props) {
+  const { selectedChart } = useContext(GlobalContext);
+  const { words } = useWords(selectedChart);
+  const [src, setSrc] = useState<Matrix[]>(rule.src);
+  const [dst, setDst] = useState<Matrix[]>(rule.dst);
+  const [preceding, setPreceding] = useState<Matrix[]>(rule.preceding);
+  const [following, setFollowing] = useState<Matrix[]>(rule.following);
   const [hasEnvironment, setHasEnvironment] = useState<boolean>(false);
 
   useEffect(() => {
     setRules((prev) => [
       ...prev.slice(0, index),
       {
-        src, dst, preceding, following, id,
+        src, dst, preceding, following, id: rule.id,
       },
       ...prev.slice(index + 1),
     ]);
@@ -39,52 +98,42 @@ export default function RuleContainer({
         <ModalButton
           direction="top"
           size="lg"
-          onClick={() => setRules((prev) => [
-            ...prev.slice(0, index),
-            createRule(),
-            ...prev.slice(index),
-          ])}
+          onClick={() => insertAt(setRules, index, createRule())}
         />
       )}
+
       <div className="flex items-center gap-4 p-8 overflow-auto">
         <MatrixList color="bg-yellow-300" matrices={src} setMatrices={setSrc} zeroable />
         <span className="text-6xl mx-2"><FaLongArrowAltRight /></span>
-        <MatrixList color="bg-purple-300" matrices={dst} setMatrices={setDst} zeroable />
+        <MatrixList color="bg-pink-300" matrices={dst} setMatrices={setDst} zeroable />
         {hasEnvironment && (
-          <>
-            <span className="text-6xl font-extrabold mx-2">/</span>
-            <MatrixList
-              color="bg-indigo-300"
-              preserveLast={false}
-              matrices={preceding}
-              setMatrices={setPreceding}
-              allowWordBoundary="left"
-            />
-            <div className="relative">
-              {preceding.length === 0 && <ModalButton direction="left" onClick={() => setPreceding((prev) => [...prev, createMatrix()])} />}
-              <span className="text-6xl font-extrabold bg-white p-2 rounded">__</span>
-              {following.length === 0 && <ModalButton direction="right" onClick={() => setFollowing((prev) => [createMatrix(), ...prev])} />}
-            </div>
-            <MatrixList
-              color="bg-indigo-300"
-              preserveLast={false}
-              matrices={following}
-              setMatrices={setFollowing}
-              allowWordBoundary="right"
-            />
-          </>
+        <RuleEnvironment
+          preceding={preceding}
+          setPreceding={setPreceding}
+          following={following}
+          setFollowing={setFollowing}
+        />
         )}
         <ModalButton
           direction="right"
           size="tall"
           state={hasEnvironment ? 'minus' : 'plus'}
-          onClick={() => setHasEnvironment((prev) => !prev)}
+          onClick={() => setHasEnvironment(!hasEnvironment)}
         />
       </div>
+
       <div className="px-8 pb-8">
         <h3 className="font-bold">Word evolution</h3>
         {src.length === dst.length
-          ? <PreviewEvolution words={words} src={src} dst={dst} />
+          ? (
+            <PreviewEvolution
+              words={words}
+              src={src}
+              dst={dst}
+              preceding={preceding}
+              following={following}
+            />
+          )
           : (
             <p>
               Make sure there are the same number of source and destination matrices to enable live
@@ -92,26 +141,22 @@ export default function RuleContainer({
             </p>
           )}
       </div>
+
       <ModalButton
         direction="bottom"
         size="lg"
-        onClick={() => setRules((prev) => [
-          ...prev.slice(0, index + 1),
-          createRule(),
-          ...prev.slice(index + 1),
-        ])}
+        onClick={() => insertAt(setRules, index + 1, createRule())}
       />
+
       {!last && (
-        <button
-          type="button"
+        <ModalButton
+          direction="top-0 left-full"
+          state="minus"
           onClick={() => setRules((prev) => [
             ...prev.slice(0, index),
             ...prev.slice(index + 1),
           ])}
-          className="absolute z-10 top-0 right-0 translate-x-1/2 -translate-y-1/2 transform bg-red-300 p-3 hover:bg-red-500 rounded-xl transition-colors focus:outline-none"
-        >
-          <FaMinus />
-        </button>
+        />
       )}
     </div>
   );

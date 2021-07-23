@@ -1,16 +1,11 @@
 import mongoose from 'mongoose';
-import { User } from '../lib/types';
+import { UserDocument } from '../lib/api/apiTypes';
 
 // also includes createdAt and updatedAt
-const UserSchema = new mongoose.Schema<User>({
+const UserSchema = new mongoose.Schema<UserDocument>({
   username: { type: String, required: true },
   hash: { type: String, required: true },
   salt: { type: String, required: true },
-  charts: {
-    type: [{ type: String, ref: 'Chart' }],
-    default: [],
-    required: true,
-  },
 });
 
-export default mongoose.models.User || mongoose.model<User>('User', UserSchema);
+export default mongoose.models.User || mongoose.model<UserDocument>('User', UserSchema);

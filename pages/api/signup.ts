@@ -1,24 +1,26 @@
-import nextConnect from 'next-connect';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createUser } from '../../src/lib/user';
-import auth from '../../src/lib/auth';
-import { UserModel } from '../../src/models';
+import mongoose from 'mongoose';
+import { createUser } from '../../src/lib/api/user';
+import { asyncHandler, createEndpoint } from '../../src/lib/api/middleware';
 
-export default nextConnect()
-  .use(auth)
-  .post(async (req: NextApiRequest, res: NextApiResponse) => {
+export default createEndpoint()
+  .post(asyncHandler(async (req: NextApiRequest, res: NextApiResponse) => {
     const { username, password, confirmPassword } = req.body;
 
     if (!username || !password || !confirmPassword) {
-      return res.status(400).json({ errorMessage: 'Missing fields' });
+      return res.status(400).json({ message: 'Missing fields' });
     }
 
-    if (password !== confirmPassword) return res.status(400).json({ errorMessage: 'Passwords do not match' });
+    if (username.includes('/')) {
+      return res.status(400).json({ message: 'No slashes allowed in usernames' });
+    }
 
-    if (await UserModel.exists({ username })) return res.status(409).json({ errorMessage: 'That username is already taken' });
+    if (password !== confirmPassword) return res.status(400).json({ message: 'Passwords do not match' });
+
+    if (await mongoose.model('User').exists({ username })) return res.status(409).json({ message: 'That username is already taken' });
 
     await createUser({ username, password });
 
     // this will save the required cookie
     res.redirect('/api/login');
-  });
+  }));

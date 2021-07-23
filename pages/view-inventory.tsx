@@ -1,30 +1,25 @@
 import React, { useContext } from 'react';
-import FeatureList from '../src/components/FeatureList';
+import FeatureList from '../src/components/IpaTable/FeatureList';
 import ConsonantTable from '../src/components/IpaTable/ConsonantTable';
 import VowelTable from '../src/components/IpaTable/VowelTable';
-import Layout from '../src/components/Layout';
-import { TableContext, HeightsContext } from '../src/lib/context';
+import { GlobalContext } from '../src/lib/client/context';
 
 export default function ViewInventoryPage() {
-  const { selectedSounds } = useContext(TableContext);
-  const { allHeights, setAllHeights } = useContext(HeightsContext);
+  const { selectedSounds } = useContext(GlobalContext);
 
-  if (selectedSounds.length === 0) return <Layout><p className="text-center">Begin selecting symbols to view a display chart!</p></Layout>;
+  if (selectedSounds.length === 0) return <p className="text-center">Begin selecting symbols to view a display chart!</p>;
 
   return (
-    <Layout>
+    <>
       <ConsonantTable editable={false} />
-      <VowelTable
-        allHeights={allHeights}
-        setAllHeights={setAllHeights}
-        editable={false}
-      />
+
+      <VowelTable editable={false} />
 
       <p className="mx-auto text-center mb-8">
         Hover a feature to see its definition.
       </p>
 
       <FeatureList sounds={selectedSounds} />
-    </Layout>
+    </>
   );
 }

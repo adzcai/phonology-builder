@@ -1,6 +1,6 @@
-import React, { InputHTMLAttributes, useState } from 'react';
-import useSWR from 'swr';
-import fetchJson from '../../lib/fetchJson';
+import React, { InputHTMLAttributes, useState, useCallback } from 'react';
+import { useUser } from '../../lib/client/context';
+import fetcher from '../../lib/client/fetcher';
 
 const TextInput = ({ name, ...props }: InputHTMLAttributes<{}>) => (
   <input
@@ -12,72 +12,88 @@ const TextInput = ({ name, ...props }: InputHTMLAttributes<{}>) => (
   />
 );
 
+type RequestBody = {
+  username: string;
+  password: string;
+  confirmPassword?: string;
+};
+
 export default function AuthSection() {
-  const { data: user, mutate: mutateUser } = useSWR('/api/user');
   const [formState, setFormState] = useState<'Closed' | 'Log in' | 'Sign up'>('Closed');
   const [errorMsg, setErrorMsg] = useState('');
+  const { user, userError, mutateUser } = useUser();
 
   // when user attempts to log in
-  async function handleSubmit(e) {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
 
-    const body: { username: string, password: string, confirmPassword?: string } = {
+    const body = {
       username: e.currentTarget.username.value,
       password: e.currentTarget.password.value,
-    };
+    } as RequestBody;
 
     if (formState === 'Sign up') body.confirmPassword = e.currentTarget['confirm-password'].value;
 
     try {
       // will always throw error with { data: ... }
       const url = formState === 'Log in' ? '/api/login' : '/api/signup';
-      const payload = await fetchJson(url, {
+      const payload = await fetcher(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
-
-      if (!payload.errorMessage) {
-        await mutateUser(payload);
-      } else {
-        setErrorMsg(payload.errorMessage);
-      }
+      await mutateUser(payload);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('An unexpected error occurred:', error);
-      setErrorMsg(`An unexpected error occurred: ${error.message || error}`);
+      setErrorMsg(`An unexpected error occurred: ${error.info.message}`);
     }
+  }, [formState]);
+
+  if (userError) {
+    return (
+      <p>
+        An error occurred loading data:
+        {' '}
+        {JSON.stringify(userError.info)}
+      </p>
+    );
   }
 
   if (!user) {
     return <p>Loading...</p>;
   }
 
-  if (user.data?.isLoggedIn) {
+  if (user.isLoggedIn) {
     return (
-      <button
-        type="button"
-        onClick={async () => mutateUser(await fetchJson('/api/logout', { method: 'POST' }))}
-        className="bg-pink-300 rounded-xl p-2"
-      >
-        Logout
-      </button>
+      <div className="text-center space-y-2">
+        <p>
+          Logged in as
+          {' '}
+          {user.username}
+        </p>
+        <button
+          type="button"
+          onClick={async () => mutateUser(await fetcher('/api/logout', { method: 'POST' }))}
+          className="btn-blue"
+        >
+          Logout
+        </button>
+      </div>
     );
   }
 
   return (
     <>
       <div className="flex space-x-8 w-max">
-        <button type="button" className="rounded-xl bg-pink-300 hover:bg-pink-500 py-2 px-4 shadow-lg hover:shadow-xl transition focus:outline-none" onClick={() => setFormState('Log in')}>
+        <button type="button" className="btn-blue" onClick={() => setFormState('Log in')}>
           Log in
         </button>
-        <button type="button" className="rounded-xl bg-pink-300 hover:bg-pink-500 py-2 px-4 shadow-lg hover:shadow-xl transition focus:outline-none" onClick={() => setFormState('Sign up')}>
+        <button type="button" className="btn-blue" onClick={() => setFormState('Sign up')}>
           Sign up
         </button>
       </div>
 
       {formState !== 'Closed' && (
-        <div className="bg-pink-300 w-max max-w-sm p-4 rounded-xl">
+        <div className="bg-indigo-300 w-max max-w-sm p-4 rounded-xl">
           <h3 className="font-bold text-center">{formState}</h3>
 
           <form onSubmit={handleSubmit} className="w-full mt-4 flex flex-col items-center space-y-4">
@@ -98,7 +114,7 @@ export default function AuthSection() {
               )}
             </div>
 
-            <button type="submit" className="hover-blue py-2 px-4 rounded-lg shadow">{formState}</button>
+            <button type="submit" className="btn-blue">{formState}</button>
 
             {errorMsg && <p className="text-center">{errorMsg}</p>}
           </form>

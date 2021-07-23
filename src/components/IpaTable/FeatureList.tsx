@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { allFeatures } from '../assets/ipa-data';
-import { Sound } from '../lib/types';
+import { allFeatures } from '../../assets/ipa-data';
+import { serializeFeatureValue } from '../../lib/api/serialization';
+import { Phoneme } from '../../lib/client/types';
 import {
-  countDistinctFeatures, serializeFeatureValue, sortSoundsBySimilarityTo, trueDifference,
-} from '../lib/util';
-import TableContainer from './IpaTable/TableContainer';
+  countDistinctFeatures, sortSoundsBySimilarityTo, trueDifference,
+} from '../../lib/client/util';
+import TableContainer from './TableContainer';
 
 type Props = {
-  sounds: Sound[];
-  contrastWith?: Sound;
+  sounds: Phoneme[];
+  contrastWith?: Phoneme;
 };
 
 type TableRowProps = {
-  sound: Sound;
-  contrastWith: Sound;
+  sound: Phoneme;
+  contrastWith: Phoneme;
 };
 
 const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'pink'];

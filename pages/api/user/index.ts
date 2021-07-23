@@ -1,26 +1,18 @@
 import { NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
-import auth from '../../../src/lib/auth';
-import { userToJson } from '../../../src/lib/user';
-import { CustomRequest } from '../../../src/lib/types';
+import { CustomRequest } from '../../../src/lib/api/apiTypes';
+import { asyncHandler, createEndpoint } from '../../../src/lib/api/middleware';
 import { UserModel } from '../../../src/models';
 
-export default nextConnect()
-  .use(auth)
-  .get(async (req: CustomRequest, res: NextApiResponse) => {
-    const user = req.session.get('user');
-
-    if (user) {
-      const userData = await UserModel.findOne({ username: user.username }).populate({
-        path: 'charts',
-        populate: {
-          path: 'sounds',
-          model: 'Sound',
-        },
-      }).exec();
-
-      res.json(userToJson(userData));
+export default createEndpoint()
+  .get(asyncHandler(async (req: CustomRequest, res: NextApiResponse) => {
+    if (!req.session.get('user')?.username) {
+      res.json({ isLoggedIn: false });
     } else {
-      res.json({ data: { isLoggedIn: false }, errorMessage: 'You must be logged in' });
+      const { username } = req.session.get('user');
+      if (await UserModel.exists({ username })) {
+        res.json({ isLoggedIn: true, username });
+      } else {
+        res.json({ isLoggedIn: false });
+      }
     }
-  });
+  }));

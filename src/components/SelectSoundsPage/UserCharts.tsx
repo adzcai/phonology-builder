@@ -1,41 +1,33 @@
 import React, { useContext } from 'react';
 import Link from 'next/link';
-import useSWR from 'swr';
-import { Chart } from '../../lib/types';
-import { TableContext } from '../../lib/context';
+import { FaTrash } from 'react-icons/fa';
+import { GlobalContext, useCharts, useUser } from '../../lib/client/context';
+import fetcher from '../../lib/client/fetcher';
 
 export default function UserCharts() {
-  const { data: user } = useSWR('/api/user');
-  const { setSelectedChart } = useContext(TableContext);
+  const { user } = useUser();
+  const { charts, chartsError, mutateCharts } = useCharts(user);
+  const { setSelectedChart } = useContext(GlobalContext);
 
-  if (!user) return <p>Loading...</p>;
-
-  if (user.errorMessage) {
-    console.error(user.errorMessage);
+  if (chartsError) {
+    if (chartsError.status === 401) return <p>Log in to save your charts!</p>;
     return (
       <p>
-        An error occurred:
-        {user.errorMessage}
-      </p>
-    );
-  }
-
-  if (!user.data.isLoggedIn) {
-    return (
-      <p>
-        <Link href="/"><a href="/" className="underline">Sign up</a></Link>
+        An unexpected error occurred:
         {' '}
-        to save your own sound charts!
+        {chartsError.info.message}
       </p>
     );
   }
 
-  if (user.data.charts.length === 0) {
+  if (!charts) return <p>Loading...</p>;
+
+  if (charts.length === 0) {
     return (
       <p>
         No charts found. Save some under
         {' '}
-        <Link href="/choose-sounds"><a href="/choose-sounds" className="underline">Choose sounds</a></Link>
+        <Link href="/select-sounds"><a href="/select-sounds" className="underline">Select sounds</a></Link>
         !
       </p>
     );
@@ -45,14 +37,30 @@ export default function UserCharts() {
     <>
       <p className="mx-auto w-full text-center">Click a chart to load it!</p>
       <ul className="flex flex-wrap gap-4 justify-center">
-        {user.data.charts.map((chart: Chart) => (
-          <li key={chart.name}>
+        {charts.map((chart) => (
+          <li key={chart.name} className="flex">
             <button
               type="button"
-              className="bg-green-300 hover:bg-green-500 drop-shadow rounded p-2"
+              className="bg-green-300 hover:bg-green-500 drop-shadow rounded p-2 w-12 min-w-max"
               onClick={() => setSelectedChart(chart)}
             >
               {chart.name}
+            </button>
+            <button
+              type="button"
+              className="bg-red-300 hover:bg-red-500 rounded drop-shadow transition-all p-2"
+              onClick={async () => {
+                try {
+                  await fetcher(`/api/charts/${user.username}/${chart.name}`, {
+                    method: 'DELETE',
+                  });
+                  await mutateCharts();
+                } catch (err) {
+                  alert(err.info.message);
+                }
+              }}
+            >
+              <FaTrash />
             </button>
           </li>
         ))}

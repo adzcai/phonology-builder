@@ -1,20 +1,5 @@
 import crypto from 'crypto';
-import User from '../models/User.model';
-
-export function userToJson(user: { username: string, charts?: { name: string, sounds: any[] }[] }) {
-  return {
-    data: {
-      isLoggedIn: true,
-      username: user.username,
-      charts: user.charts ? user.charts.map(({ name, sounds }) => ({
-        name,
-        sounds: sounds
-          .map((s) => Object.keys(s.toJSON())
-            .reduce((prev, curr) => ({ ...prev, [curr]: ['true', 'false', '0'].includes(s[curr]) ? JSON.parse(s[curr]) : s[curr] }), {})),
-      })) : [],
-    },
-  };
-}
+import mongoose from 'mongoose';
 
 export async function createUser({ username, password }) {
   const salt = crypto.randomBytes(16).toString('hex');
@@ -28,7 +13,7 @@ export async function createUser({ username, password }) {
   };
 
   // This is an in memory store for users, there is no data persistence without a proper DB
-  await User.create(user);
+  await mongoose.model('User').create(user);
 
   return { username, createdAt: Date.now() };
 }
